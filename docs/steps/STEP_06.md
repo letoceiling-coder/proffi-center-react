@@ -156,49 +156,65 @@ SEO формируется через **SeoResolver**; schema — через **S
 
 ---
 
+## Правила published-фильтрации
+
+- **Page, Service, Product:** выдаются только при `status = published` и `published_at <= now()` (или `published_at` пусто). Черновики и запланированные (published_at в будущем) не отдаются — 404.
+- **ProductCategory:** выдаётся по slug без проверки published (у категорий нет status).
+- **Reviews:** только `status = published` и `published_at <= now()` для текущего сайта; без fallback на root.
+- **Sitemap:** в XML попадают только URL опубликованных страниц, услуг, категорий и товаров (draft и future не включаются).
+
+---
+
 ## Как проверить
 
 ### Запуск тестов
 
 ```bash
-# Все тесты публичного API (18 тестов)
+# Все тесты публичного API (27 тестов)
 php artisan test tests/Feature/PublicApiTest.php
 
 # Все тесты проекта
 php artisan test
 ```
 
-### Примеры curl (базовый URL — ваш хост)
+Ожидаемый вывод для PublicApiTest: `Tests: 27 passed`.
+
+### Примеры запросов (curl, базовый URL — ваш хост)
 
 ```bash
-# Резолв сайта
+# 1) Резолв сайта по host
 curl -s "http://localhost/api/v1/site/resolve?host=example.com" | jq .
 
-# Меню header
+# 2) Меню header
 curl -s "http://localhost/api/v1/menu/header?host=example.com" | jq .
 
-# Страница по slug
+# 3) Страница по slug
 curl -s "http://localhost/api/v1/page/about?host=example.com" | jq .
 
-# Услуга
+# 4) Услуга по slug
 curl -s "http://localhost/api/v1/service/ustanovka?host=example.com" | jq .
 
-# Товар
+# 5) Категория товаров
+curl -s "http://localhost/api/v1/product-category/catalog?host=example.com" | jq .
+
+# 6) Товар по slug
 curl -s "http://localhost/api/v1/product/panel?host=example.com" | jq .
 
-# Отзывы
-curl -s "http://localhost/api/v1/reviews?host=example.com&per_page=5" | jq .
+# 7) Отзывы (с пагинацией)
+curl -s "http://localhost/api/v1/reviews?host=example.com&page=1&per_page=5" | jq .
 
-# Проверка редиректа
+# 8) Проверка редиректа
 curl -s "http://localhost/api/v1/redirects/check?host=example.com&path=/old-page" | jq .
 
-# robots.txt (Content-Type: text/plain)
+# 9) robots.txt (проверка Content-Type: text/plain)
 curl -sI "http://localhost/api/v1/robots.txt?host=example.com"
 
-# sitemap.xml (Content-Type: application/xml)
+# 10) sitemap.xml (проверка Content-Type: application/xml и содержимое)
 curl -sI "http://localhost/api/v1/sitemap.xml?host=example.com"
 curl -s "http://localhost/api/v1/sitemap.xml?host=example.com"
 ```
+
+Без `jq` ответы всё равно придут; для JSON-эндпоинтов можно смотреть сырой вывод.
 
 ---
 
@@ -206,5 +222,5 @@ curl -s "http://localhost/api/v1/sitemap.xml?host=example.com"
 
 - [x] React может по host получить: site config, меню (header/footer), page/service/product-category/product по slug с data, blocks, media, meta.seo (resolved), meta.schema (JSON-LD).
 - [x] robots.txt и sitemap.xml отдаются с корректными Content-Type.
-- [x] Все тесты в `tests/Feature/PublicApiTest.php` проходят (18 тестов).
+- [x] Все тесты в `tests/Feature/PublicApiTest.php` проходят (27 тестов).
 - [x] CMS-эндпоинты и схема БД не изменялись; публичный API без auth.

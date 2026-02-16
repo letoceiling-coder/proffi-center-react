@@ -5,9 +5,11 @@ namespace Tests\Feature;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Page;
+use App\Models\ProductCategory;
 use App\Models\Redirect;
 use App\Models\Review;
 use App\Models\SeoSetting;
+use App\Models\Service;
 use App\Models\Site;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -47,6 +49,20 @@ class PublicApiTest extends TestCase
         $response->assertStatus(200)->assertJsonPath('data.site.domain', 'main.org');
     }
 
+    public function test_site_resolve_normalizes_host(): void
+    {
+        $site = Site::factory()->create(['domain' => 'example.com']);
+        $response = $this->getJson('/api/v1/site/resolve?host=https://Example.com/path');
+        $response->assertStatus(200)->assertJsonPath('data.site.id', $site->id)->assertJsonPath('data.site.domain', 'example.com');
+    }
+
+    public function test_site_resolve_uses_header_host_when_no_query(): void
+    {
+        $site = Site::factory()->create(['domain' => 'header.example.com']);
+        $response = $this->withHeader('X-Forwarded-Host', 'header.example.com')->getJson('/api/v1/site/resolve');
+        $response->assertStatus(200)->assertJsonPath('data.site.id', $site->id);
+    }
+
     public function test_menu_resolve_returns_tree(): void
     {
         $site = Site::factory()->create();
@@ -74,6 +90,36 @@ class PublicApiTest extends TestCase
         $site = Site::factory()->create();
         $response = $this->getJson('/api/v1/menu/invalid?host=' . $site->domain);
         $response->assertStatus(404);
+    }
+
+    public function test_menu_link_type_page_builds_href(): void
+    {
+        $site = Site::factory()->create();
+        Page::factory()->published()->create(['site_id' => $site->id, 'slug' => 'about']);
+        $menu = Menu::create(['site_id' => $site->id, 'slug' => 'header', 'title' => 'Header']);
+        MenuItem::create(['menu_id' => $menu->id, 'parent_id' => null, 'title' => 'About', 'link_type' => 'page', 'link_value' => 'about', 'order' => 0]);
+        $response = $this->getJson('/api/v1/menu/header?host=' . $site->domain);
+        $response->assertStatus(200)->assertJsonPath('data.0.href', '/about');
+    }
+
+    public function test_menu_link_type_service_builds_href(): void
+    {
+        $site = Site::factory()->create();
+        Service::create(['site_id' => $site->id, 'slug' => 'ustanovka', 'title' => 'Установка', 'status' => 'published', 'published_at' => now()->subDay()]);
+        $menu = Menu::create(['site_id' => $site->id, 'slug' => 'header', 'title' => 'Header']);
+        MenuItem::create(['menu_id' => $menu->id, 'parent_id' => null, 'title' => 'Установка', 'link_type' => 'service', 'link_value' => 'ustanovka', 'order' => 0]);
+        $response = $this->getJson('/api/v1/menu/header?host=' . $site->domain);
+        $response->assertStatus(200)->assertJsonPath('data.0.href', '/uslugi/ustanovka');
+    }
+
+    public function test_menu_link_type_category_builds_href(): void
+    {
+        $site = Site::factory()->create();
+        ProductCategory::factory()->create(['site_id' => $site->id, 'slug' => 'catalog']);
+        $menu = Menu::create(['site_id' => $site->id, 'slug' => 'header', 'title' => 'Header']);
+        MenuItem::create(['menu_id' => $menu->id, 'parent_id' => null, 'title' => 'Каталог', 'link_type' => 'category', 'link_value' => 'catalog', 'order' => 0]);
+        $response = $this->getJson('/api/v1/menu/header?host=' . $site->domain);
+        $response->assertStatus(200)->assertJsonPath('data.0.href', '/catalog/catalog');
     }
 
     public function test_page_by_slug_current_site_hit(): void
@@ -105,6 +151,14 @@ class PublicApiTest extends TestCase
         $response->assertStatus(404);
     }
 
+    public function test_page_future_published_at_not_returned(): void
+    {
+        $site = Site::factory()->create();
+        Page::create(['site_id' => $site->id, 'slug' => 'future-page', 'title' => 'Future', 'status' => 'published', 'published_at' => now()->addDay()]);
+        $response = $this->getJson('/api/v1/page/future-page?host=' . $site->domain);
+        $response->assertStatus(404);
+    }
+
     public function test_page_not_found_returns_404(): void
     {
         $site = Site::factory()->create();
@@ -130,6 +184,14 @@ class PublicApiTest extends TestCase
         $site = Site::factory()->create();
         $response = $this->getJson('/api/v1/redirects/check?host=' . $site->domain . '&path=/no-redirect');
         $response->assertStatus(200)->assertJsonPath('matched', false)->assertJsonPath('to', null);
+    }
+
+    public function test_redirects_inactive_not_matched(): void
+    {
+        $site = Site::factory()->create();
+        Redirect::create(['site_id' => $site->id, 'from_path' => '/inactive', 'to_url' => 'https://example.com/new', 'code' => 301, 'is_active' => false]);
+        $response = $this->getJson('/api/v1/redirects/check?host=' . $site->domain . '&path=/inactive');
+        $response->assertStatus(200)->assertJsonPath('matched', false);
     }
 
     public function test_robots_txt_returns_text_plain(): void
@@ -169,6 +231,20 @@ class PublicApiTest extends TestCase
         $this->assertStringContainsString('test-page', $body);
     }
 
+    public function test_sitemap_xml_excludes_draft_and_future(): void
+    {
+        $site = Site::factory()->create(['domain' => 'sitemap2.example.com']);
+        Page::factory()->published()->create(['site_id' => $site->id, 'slug' => 'published-only']);
+        Page::factory()->create(['site_id' => $site->id, 'slug' => 'draft-sitemap', 'title' => 'Draft', 'status' => 'draft']);
+        Page::create(['site_id' => $site->id, 'slug' => 'future-sitemap', 'title' => 'Future', 'status' => 'published', 'published_at' => now()->addDays(2)]);
+        $response = $this->get('/api/v1/sitemap.xml?host=sitemap2.example.com');
+        $response->assertStatus(200);
+        $body = $response->getContent();
+        $this->assertStringContainsString('published-only', $body);
+        $this->assertStringNotContainsString('draft-sitemap', $body);
+        $this->assertStringNotContainsString('future-sitemap', $body);
+    }
+
     public function test_reviews_current_site_only_published(): void
     {
         $site = Site::factory()->create();
@@ -179,6 +255,17 @@ class PublicApiTest extends TestCase
         $data = $response->json('data');
         $this->assertCount(1, $data);
         $this->assertSame('Published', $data[0]['author_name']);
+    }
+
+    public function test_reviews_pagination_per_page(): void
+    {
+        $site = Site::factory()->create();
+        Review::create(['site_id' => $site->id, 'author_name' => 'A', 'text' => 't', 'status' => 'published', 'published_at' => now()->subDay()]);
+        Review::create(['site_id' => $site->id, 'author_name' => 'B', 'text' => 't', 'status' => 'published', 'published_at' => now()->subDay()]);
+        Review::create(['site_id' => $site->id, 'author_name' => 'C', 'text' => 't', 'status' => 'published', 'published_at' => now()->subDay()]);
+        $response = $this->getJson('/api/v1/reviews?host=' . $site->domain . '&per_page=2');
+        $response->assertStatus(200)->assertJsonPath('meta.pagination.per_page', 2);
+        $this->assertCount(2, $response->json('data'));
     }
 
     public function test_public_api_does_not_require_auth(): void
