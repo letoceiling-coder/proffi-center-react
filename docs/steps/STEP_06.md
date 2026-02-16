@@ -170,14 +170,14 @@ SEO формируется через **SeoResolver**; schema — через **S
 ### Запуск тестов
 
 ```bash
-# Все тесты публичного API (27 тестов)
+# Все тесты публичного API (41 тест)
 php artisan test tests/Feature/PublicApiTest.php
 
 # Все тесты проекта
 php artisan test
 ```
 
-Ожидаемый вывод для PublicApiTest: `Tests: 27 passed`.
+Ожидаемый вывод для PublicApiTest: `Tests: 41 passed`.
 
 ### Примеры запросов (curl, базовый URL — ваш хост)
 
@@ -222,5 +222,5 @@ curl -s "http://localhost/api/v1/sitemap.xml?host=example.com"
 
 - [x] React может по host получить: site config, меню (header/footer), page/service/product-category/product по slug с data, blocks, media, meta.seo (resolved), meta.schema (JSON-LD).
 - [x] robots.txt и sitemap.xml отдаются с корректными Content-Type.
-- [x] Все тесты в `tests/Feature/PublicApiTest.php` проходят (27 тестов).
+- [x] Все тесты в `tests/Feature/PublicApiTest.php` проходят (41 тест).
 - [x] CMS-эндпоинты и схема БД не изменялись; публичный API без auth.

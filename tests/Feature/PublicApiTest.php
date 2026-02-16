@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Page;
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Redirect;
 use App\Models\Review;
 use App\Models\SeoSetting;
 use App\Models\Service;
 use App\Models\Site;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -273,5 +275,153 @@ class PublicApiTest extends TestCase
         $site = Site::factory()->create();
         $this->getJson('/api/v1/site/resolve?host=' . $site->domain)->assertStatus(200);
         $this->getJson('/api/v1/menu/header?host=' . $site->domain)->assertStatus(200);
+    }
+
+    // --- Critical coverage (fallback, redirect precedence, robots/sitemap, reviews no-fallback) ---
+
+    public function test_redirects_path_normalized_with_leading_slash(): void
+    {
+        $site = Site::factory()->create();
+        Redirect::create(['site_id' => $site->id, 'from_path' => '/old', 'to_url' => 'https://example.com/new', 'code' => 301, 'is_active' => true]);
+        $response = $this->getJson('/api/v1/redirects/check?host=' . $site->domain . '&path=old');
+        $response->assertStatus(200)->assertJsonPath('matched', true)->assertJsonPath('to', 'https://example.com/new');
+    }
+
+    public function test_redirects_same_from_path_current_site_wins_over_root(): void
+    {
+        $root = Site::factory()->primary()->create(['domain' => 'root.local']);
+        $current = Site::factory()->create(['domain' => 'current.local']);
+        Redirect::create(['site_id' => $root->id, 'from_path' => '/same', 'to_url' => 'https://root.local/target', 'code' => 301, 'is_active' => true]);
+        Redirect::create(['site_id' => $current->id, 'from_path' => '/same', 'to_url' => 'https://current.local/target', 'code' => 302, 'is_active' => true]);
+        $response = $this->getJson('/api/v1/redirects/check?host=current.local&path=/same');
+        $response->assertStatus(200)->assertJsonPath('matched', true)->assertJsonPath('to', 'https://current.local/target')->assertJsonPath('code', 302);
+    }
+
+    public function test_page_fallback_root_when_not_on_current_site_returns_200(): void
+    {
+        $root = Site::factory()->primary()->create();
+        $current = Site::factory()->create(['domain' => 'other.org']);
+        Page::factory()->published()->create(['site_id' => $root->id, 'slug' => 'only-on-root', 'title' => 'Root Page']);
+        $response = $this->getJson('/api/v1/page/only-on-root?host=other.org');
+        $response->assertStatus(200)->assertJsonPath('data.slug', 'only-on-root')->assertJsonPath('data.title', 'Root Page');
+    }
+
+    public function test_service_fallback_root_when_not_on_current_site_returns_200(): void
+    {
+        $root = Site::factory()->primary()->create();
+        $current = Site::factory()->create(['domain' => 'other.org']);
+        Service::create(['site_id' => $root->id, 'slug' => 'root-service', 'title' => 'Root Service', 'status' => 'published', 'published_at' => now()->subDay()]);
+        $response = $this->getJson('/api/v1/service/root-service?host=other.org');
+        $response->assertStatus(200)->assertJsonPath('data.slug', 'root-service')->assertJsonPath('data.title', 'Root Service');
+    }
+
+    public function test_product_fallback_root_when_not_on_current_site_returns_200(): void
+    {
+        $root = Site::factory()->primary()->create();
+        $current = Site::factory()->create(['domain' => 'other.org']);
+        $cat = ProductCategory::factory()->create(['site_id' => $root->id, 'slug' => 'cat', 'title' => 'Cat']);
+        Product::create(['site_id' => $root->id, 'product_category_id' => $cat->id, 'slug' => 'root-product', 'name' => 'Root Product', 'status' => 'published', 'published_at' => now()->subDay()]);
+        $response = $this->getJson('/api/v1/product/root-product?host=other.org');
+        $response->assertStatus(200)->assertJsonPath('data.slug', 'root-product')->assertJsonPath('data.name', 'Root Product');
+    }
+
+    public function test_page_fallback_root_only_draft_returns_404(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2025-06-01 12:00:00'));
+        $root = Site::factory()->primary()->create();
+        $current = Site::factory()->create(['domain' => 'other.org']);
+        Page::factory()->create(['site_id' => $root->id, 'slug' => 'draft-on-root', 'title' => 'Draft', 'status' => 'draft']);
+        $response = $this->getJson('/api/v1/page/draft-on-root?host=other.org');
+        $response->assertStatus(404);
+        Carbon::setTestNow();
+    }
+
+    public function test_page_fallback_root_only_future_published_at_returns_404(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2025-06-01 12:00:00'));
+        $root = Site::factory()->primary()->create();
+        $current = Site::factory()->create(['domain' => 'other.org']);
+        Page::create(['site_id' => $root->id, 'slug' => 'future-on-root', 'title' => 'Future', 'status' => 'published', 'published_at' => Carbon::parse('2025-06-02 12:00:00')]);
+        $response = $this->getJson('/api/v1/page/future-on-root?host=other.org');
+        $response->assertStatus(404);
+        Carbon::setTestNow();
+    }
+
+    public function test_menu_fallback_root_header_when_current_has_no_header(): void
+    {
+        $root = Site::factory()->primary()->create(['domain' => 'root.org']);
+        $current = Site::factory()->create(['domain' => 'current.org']);
+        $rootMenu = Menu::create(['site_id' => $root->id, 'slug' => 'header', 'title' => 'Root Header']);
+        MenuItem::create(['menu_id' => $rootMenu->id, 'parent_id' => null, 'title' => 'From Root', 'link_type' => 'url', 'link_value' => '/from-root', 'order' => 0]);
+        $response = $this->getJson('/api/v1/menu/header?host=current.org');
+        $response->assertStatus(200)->assertJsonPath('data.0.title', 'From Root')->assertJsonPath('data.0.href', '/from-root');
+    }
+
+    public function test_menu_tree_siblings_sorted_by_order(): void
+    {
+        $site = Site::factory()->create();
+        $menu = Menu::create(['site_id' => $site->id, 'slug' => 'header', 'title' => 'Header']);
+        MenuItem::create(['menu_id' => $menu->id, 'parent_id' => null, 'title' => 'Second', 'link_type' => 'url', 'link_value' => '/b', 'order' => 2]);
+        MenuItem::create(['menu_id' => $menu->id, 'parent_id' => null, 'title' => 'First', 'link_type' => 'url', 'link_value' => '/a', 'order' => 0]);
+        $response = $this->getJson('/api/v1/menu/header?host=' . $site->domain);
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(2, $data);
+        $this->assertSame('First', $data[0]['title']);
+        $this->assertSame(0, $data[0]['order']);
+        $this->assertSame('Second', $data[1]['title']);
+        $this->assertSame(2, $data[1]['order']);
+    }
+
+    public function test_robots_txt_content_type_is_text_plain_with_charset(): void
+    {
+        $site = Site::factory()->create();
+        $response = $this->get('/api/v1/robots.txt?host=' . $site->domain);
+        $response->assertStatus(200);
+        $ct = $response->headers->get('Content-Type');
+        $this->assertStringContainsString('text/plain', $ct);
+    }
+
+    public function test_sitemap_content_type_is_application_xml(): void
+    {
+        $site = Site::factory()->create();
+        $response = $this->get('/api/v1/sitemap.xml?host=' . $site->domain);
+        $response->assertStatus(200);
+        $ct = $response->headers->get('Content-Type');
+        $this->assertTrue(str_contains($ct, 'application/xml') || str_contains($ct, 'text/xml'), 'Content-Type should be application/xml or text/xml');
+    }
+
+    public function test_sitemap_body_excludes_draft_and_future_urls(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2025-06-01 12:00:00'));
+        $site = Site::factory()->create(['domain' => 'critical.example.com']);
+        Page::factory()->published()->create(['site_id' => $site->id, 'slug' => 'live']);
+        Page::factory()->create(['site_id' => $site->id, 'slug' => 'draft-url', 'title' => 'D', 'status' => 'draft']);
+        Page::create(['site_id' => $site->id, 'slug' => 'future-url', 'title' => 'F', 'status' => 'published', 'published_at' => now()->addDay()]);
+        $response = $this->get('/api/v1/sitemap.xml?host=critical.example.com');
+        $response->assertStatus(200);
+        $body = $response->getContent();
+        $this->assertStringContainsString('live', $body);
+        $this->assertStringNotContainsString('draft-url', $body);
+        $this->assertStringNotContainsString('future-url', $body);
+        Carbon::setTestNow();
+    }
+
+    public function test_reviews_returns_empty_when_current_site_has_none_root_has_published(): void
+    {
+        $root = Site::factory()->primary()->create(['domain' => 'root.reviews.local']);
+        $current = Site::factory()->create(['domain' => 'current.reviews.local']);
+        Review::create(['site_id' => $root->id, 'author_name' => 'Root Review', 'text' => 'T', 'status' => 'published', 'published_at' => now()->subDay()]);
+        $response = $this->getJson('/api/v1/reviews?host=current.reviews.local');
+        $response->assertStatus(200)->assertJsonPath('data', []);
+        $this->assertSame(0, $response->json('meta.pagination.total'));
+    }
+
+    public function test_site_resolve_unknown_host_returns_primary_site(): void
+    {
+        $primary = Site::factory()->primary()->create(['domain' => 'primary.local']);
+        Site::factory()->create(['domain' => 'secondary.local']);
+        $response = $this->getJson('/api/v1/site/resolve?host=unknown.local');
+        $response->assertStatus(200)->assertJsonPath('data.site.id', $primary->id)->assertJsonPath('data.site.is_primary', true);
     }
 }
