@@ -1,0 +1,68 @@
+/* Local fonts - paths relative to /css/ */
+@font-face {
+    font-family: "RobotoRegular";
+    src: url("../fonts/RobotoRegular/RobotoRegular.woff") format("woff"),
+         url("../fonts/RobotoRegular/RobotoRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoLight";
+    src: url("../fonts/RobotoLight/RobotoLight.woff") format("woff"),
+         url("../fonts/RobotoLight/RobotoLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoMedium";
+    src: url("../fonts/RobotoMedium/RobotoMedium.woff") format("woff"),
+         url("../fonts/RobotoMedium/RobotoMedium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoBold";
+    src: url("../fonts/RobotoBold/RobotoBold.woff") format("woff"),
+         url("../fonts/RobotoBold/RobotoBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoCondensedRegular";
+    src: url("../fonts/RobotoCondensedRegular/RobotoCondensedRegular.woff") format("woff"),
+         url("../fonts/RobotoCondensedRegular/RobotoCondensedRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoCondensedLight";
+    src: url("../fonts/RobotoCondensedLight/RobotoCondensedLight.woff") format("woff"),
+         url("../fonts/RobotoCondensedLight/RobotoCondensedLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: "RobotoCondensedBold";
+    src: url("../fonts/RobotoCondensedBold/RobotoCondensedBold.woff") format("woff"),
+         url("../fonts/RobotoCondensedBold/RobotoCondensedBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+@font-face {
+    font-family: 'officinaserifcbold';
+    src: url('../fonts/officinaserifc-bold-webfont.woff') format('woff'),
+         url('../fonts/officinaserifc-bold-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'officinaserifcregular';
+    src: url('../fonts/officinaserifc-book-webfont.woff') format('woff'),
+         url('../fonts/officinaserifc-book-webfont.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'impact';
+    src: url('../fonts/impact.ttf') format('truetype');
+}

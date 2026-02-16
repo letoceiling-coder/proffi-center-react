@@ -1,0 +1,378 @@
+/* Контент по центру: не сужать body/#root и не центрировать через flex */
+body,
+#root {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body {
+  display: block !important;
+  place-items: unset !important;
+}
+/* Блокировка скролла страницы при открытом мобильном меню */
+body.menu-open {
+  overflow: hidden !important;
+}
+
+/* Попап по центру экрана (в шаблоне margin: auto не центрирует position: fixed по горизонтали) */
+.popup1 {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin-left: 0 !important;
+}
+
+/* Кнопка «Вам перезвонить?» — вид как в оригинале (синий пунктир, цвет, шрифт), без обводки фокуса */
+.s_top .call:focus {
+  outline: none;
+}
+.s_top .tel button.call,
+.s_top .b_line button.call {
+  background: none !important;
+  border: none !important;
+  border-bottom: 1px dashed #2861dc !important;
+  color: #2861dc;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  text-align: inherit;
+}
+.s_top .tel button.call {
+  float: right;
+  font-family: "RobotoRegular", sans-serif;
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 12px;
+  margin-bottom: 7px;
+  padding-bottom: 6px;
+  padding-top: 7px;
+}
+.s_top .b_line button.call {
+  float: right;
+  font-family: "RobotoCondensedLight", sans-serif;
+  font-size: 20px;
+  margin-top: 5px;
+  padding-right: 10px;
+  text-decoration: underline;
+}
+
+/* Фиксированная шапка только на мобильных (≤992px); на десктопе — без фиксации */
+@media (min-width: 993px) {
+  .s_top.pop_up_block,
+  .s_top.pop_up_block.fixed {
+    position: relative !important;
+    top: auto !important;
+    display: block !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+  }
+}
+@media (max-width: 992px) {
+  .s_top.pop_up_block.fixed {
+    transition: top 0.2s ease-out;
+    will-change: top;
+  }
+  .s_top.pop_up_block {
+    display: block !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Мобильное меню: контейнер фиксированный на весь экран, скролл только у списка */
+.s_top .menu.show {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 9998 !important;
+}
+/* Скролл только у списка пунктов меню */
+.s_top .menu.show > ul {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  max-height: calc(100vh - 80px) !important;
+  margin-top: 70px !important;
+  padding-bottom: 24px;
+  -webkit-overflow-scrolling: touch;
+}
+/* Кнопка закрытия мобильного меню — как в оригинале, поверх и кликабельна */
+.s_top .menu.show .m_close {
+  display: block !important;
+  cursor: pointer !important;
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+.s_top .menu.show .m_close img {
+  display: block;
+}
+
+/* s_gallery: навигация как в оригинале (owl .owl-prev/.owl-next) — только свои картинки, без лишнего */
+.s_gallery .swiper-button-prev,
+.s_gallery .swiper-button-next {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 38px;
+  height: 54px;
+  margin-top: -27px;
+  top: 35%;
+  color: transparent !important;
+}
+.s_gallery .swiper-button-prev { left: 4px; background-image: url("/images/g_prev.png"); }
+.s_gallery .swiper-button-next { right: 4px; background-image: url("/images/g_next.png"); }
+.s_gallery .swiper-button-prev::after,
+.s_gallery .swiper-button-next::after { display: none !important; }
+.s_gallery .swiper-button-prev svg,
+.s_gallery .swiper-button-next svg { display: none !important; }
+
+/* s_otz_car: навигация как в оригинале — только свои картинки, без лишнего */
+.s_otz_car .swiper-button-prev,
+.s_otz_car .swiper-button-next {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  width: 25px;
+  height: 41px;
+  margin-top: -20px;
+  top: 19%;
+  color: transparent !important;
+}
+.s_otz_car .swiper-button-prev { left: 0; background-image: url("/images/prev2.png"); }
+.s_otz_car .swiper-button-next { right: 0; background-image: url("/images/next2.png"); }
+.s_otz_car .swiper-button-prev::after,
+.s_otz_car .swiper-button-next::after { display: none !important; }
+.s_otz_car .swiper-button-prev svg,
+.s_otz_car .swiper-button-next svg { display: none !important; }
+
+.pre-loader-hidden {
+  display: none !important;
+}
+
+.s_form_lowprice .digits {
+  overflow: hidden;
+}
+.s_form_lowprice .digits .cntDigit {
+  overflow: hidden;
+  background-repeat: no-repeat;
+}
+
+/* FlipClockCountdown: вид как в оригинале */
+.s_form_lowprice .s_form_lowprice_flip_wrap {
+  display: flex;
+  justify-content: center;
+  width: 527px;
+  margin: 0 auto;
+}
+.s_form_lowprice .s_form_lowprice_flip_wrap {
+  --fcc-background: #2861dc;
+  --fcc-digit-color: #fff;
+  --fcc-digit-block-width: 80px;
+  --fcc-digit-block-height: 108px;
+  --fcc-digit-block-radius: 10px;
+  --fcc-digit-font-size: 88px;
+  --fcc-label-color: #333;
+  --fcc-label-font-size: 18px;
+  --fcc-separator-color: #1a237e;
+  --fcc-separator-size: 8px;
+}
+
+/* s_simple_text: современный вид в духе основного дизайна */
+.s_simple_text {
+  margin-top: 0;
+  padding: 48px 0 56px;
+  background: #fff;
+}
+.s_simple_text_inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.s_simple_text_h1,
+.s_simple_text_h2,
+.s_simple_text_h3 {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  color: #1a1a1a;
+  margin: 0 0 0.6em;
+  line-height: 1.25;
+  font-weight: 700;
+}
+.s_simple_text_h1 { font-size: 28px; }
+.s_simple_text_h2 {
+  font-size: 24px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #2861dc;
+}
+.s_simple_text_h3 {
+  font-size: 22px;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+.s_simple_text_inner > .s_simple_text_h3:first-child { margin-top: 0; }
+.s_simple_text p {
+  margin: 0 0 1em;
+  font-family: "RobotoRegular", "Roboto", sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #444;
+  text-align: left;
+  text-indent: 0;
+}
+.s_simple_text p a {
+  color: #2861dc;
+  text-decoration: none;
+  font-size: inherit;
+  padding-top: 0;
+  text-align: left;
+}
+.s_simple_text p a:hover { text-decoration: underline; }
+.s_simple_text_list {
+  list-style: none;
+  margin: 0 0 1.5em;
+  padding: 0;
+}
+.s_simple_text_list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  font-family: "RobotoRegular", "Roboto", sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #444;
+}
+.s_simple_text_list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  background: #2861dc;
+  border-radius: 50%;
+}
+.s_simple_text_content p:last-child,
+.s_simple_text_inner > p:last-child { margin-bottom: 0; }
+.s_simple_text_list:last-child { margin-bottom: 0; }
+
+@media (max-width: 768px) {
+  .s_simple_text { padding: 32px 0 40px; }
+  .s_simple_text_inner { padding: 0 12px; }
+  .s_simple_text_h1 { font-size: 24px; }
+  .s_simple_text_h2 { font-size: 20px; padding-bottom: 10px; margin-bottom: 16px; }
+  .s_simple_text_h3 { font-size: 19px; margin-top: 24px; margin-bottom: 12px; }
+  .s_simple_text p,
+  .s_simple_text_list li { font-size: 16px; }
+}
+
+/* Мини-калькулятор: нативный range вместо jQuery UI слайдера */
+.s_minicalc .mc_slider_place input[type="range"] {
+  width: 465px;
+  max-width: 100%;
+  float: left;
+  margin: 0;
+  vertical-align: middle;
+}
+
+/* Калькулятор потолков: ползунок без jQuery UI — позиционирование как в оригинале */
+.potplok_calc #slider-horizontal {
+  position: relative;
+}
+.potplok_calc #slider-horizontal .ui-slider-range {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+}
+.potplok_calc #slider-horizontal .ui-slider-handle {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+/* О компании: карусель s_about — точки как в шаблоне (owl-dots) */
+.s_about .carousel_about .swiper-pagination-bullet {
+  background: #fff;
+  border: 2px solid #ffe501;
+  border-radius: 30px;
+  width: 25px;
+  height: 25px;
+  margin: 5px 7px;
+  opacity: 1;
+}
+.s_about .carousel_about .swiper-pagination-bullet-active {
+  background: #ffe501;
+}
+
+/* Страница отзывов s24: слайдер фото — автовысота по фото (Swiper autoHeight задаёт высоту контейнера по активному слайду) */
+.s24 .otz_block .otz_block_carousel {
+  margin-top: 15px;
+  max-width: 100%;
+  overflow: hidden;
+}
+.s24 .otz_block .otz_block_carousel .swiper {
+  overflow: hidden;
+}
+.s24 .otz_block .otz_block_carousel .swiper-wrapper {
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+.s24 .otz_block .otz_block_carousel .swiper-slide {
+  height: auto !important;
+  box-sizing: border-box;
+  display: block;
+}
+.s24 .otz_block .otz_block_carousel .swiper-slide img {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+.s24 .otz_block .otz_block_carousel .swiper-pagination {
+  position: relative;
+  margin-top: 10px;
+}
+.s24 .otz_block .otz_block_carousel .swiper-pagination-bullet {
+  background: #333;
+  opacity: 0.4;
+  width: 8px;
+  height: 8px;
+}
+.s24 .otz_block .otz_block_carousel .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: #ffe501;
+}
+
+/* otz_right: форма фиксируется при скролле (как lockfixed в оригинале), только десктоп */
+.s24 .otz_page .otz_right .otz_right_sticky_wrap {
+  position: relative;
+}
+@media (min-width: 1201px) {
+  .s24 .otz_page .otz_right .otz_right_sticky_wrap .zakaz_vp {
+    position: sticky;
+    top: 10px;
+  }
+}
+@media (max-width: 1200px) {
+  .s24 .otz_page .otz_right .otz_right_sticky_wrap .zakaz_vp {
+    position: relative;
+  }
+}
+
+/* Контейнер карты на странице «Где заказать» — как в шаблоне */
+#map {
+  width: 100%;
+  min-height: 85vh;
+  margin: 0;
+  padding: 0;
+}
+

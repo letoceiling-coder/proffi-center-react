@@ -1,0 +1,20 @@
+/* Дополнительные глобальные стили приложения (шаблон — в /css) */
+
+/* Плавный скролл по якорям и при переходе наверх */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Плавное появление контента при смене маршрута */
+.route-transition {
+  animation: routeFadeIn 0.25s ease-out;
+}
+
+@keyframes routeFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
