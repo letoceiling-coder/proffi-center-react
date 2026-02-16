@@ -47,8 +47,10 @@ class AdminApiTest extends TestCase
             ->getJson('/api/v1/admin/menu');
 
         $response->assertStatus(200)
-            ->assertJsonStructure(['menu'])
-            ->assertJsonPath('menu.0.title', 'Медиа');
+            ->assertJsonStructure(['menu']);
+        $titles = array_column($response->json('menu'), 'title');
+        $this->assertContains('Регионы', $titles);
+        $this->assertContains('Медиа', $titles);
     }
 
     public function test_admin_route_returns_admin_view(): void
