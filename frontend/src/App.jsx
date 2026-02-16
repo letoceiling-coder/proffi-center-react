@@ -17,8 +17,12 @@ import './App.css'
 
 function RouteTransition({ children }) {
   const location = useLocation()
+  const pathname = location.pathname
+  const key = pathname.startsWith('/gotovye-potolki')
+    ? '/gotovye-potolki'
+    : pathname
   return (
-    <div key={location.pathname} className="route-transition">
+    <div key={key} className="route-transition">
       {children}
     </div>
   )

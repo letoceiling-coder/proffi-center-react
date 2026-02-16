@@ -18,3 +18,17 @@ html {
     opacity: 1;
   }
 }
+
+/* Плавная смена только блока карточек на «Готовые потолки» (без скролла вверх) */
+.gotovye-cards-wrap {
+  animation: gotovyeCardsFade 0.3s ease-out;
+}
+
+@keyframes gotovyeCardsFade {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}

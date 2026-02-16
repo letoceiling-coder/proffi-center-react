@@ -1,102 +1,291 @@
 # React Proffi
 
-Laravel API (Sanctum) + React SPA. API версии **v1**: префикс `/api/v1`.
+Веб-проект на **Laravel** (API, Sanctum) с публичным сайтом на **React SPA** и админ-панелью на **Vue 3** (Vuex, Vue Router). API версии **v1**: префикс `/api/v1`.
 
-## Настройка
+---
 
-### База данных MySQL
+## Содержание
 
-- **Пользователь:** root  
-- **Пароль:** без пароля  
-- **База:** react_proffi  
+- [Требования](#требования)
+- [Установка](#установка)
+- [Запуск](#запуск)
+- [Структура проекта](#структура-проекта)
+- [API v1](#api-v1)
+- [Админ-панель](#админ-панель)
+- [Скрипты](#скрипты)
+- [Конфигурация](#конфигурация)
+- [Лицензия](#лицензия)
 
-Если база не создана (например, в phpMyAdmin OSPanel): создайте БД `react_proffi`. Миграции уже выполнены при настройке.
+---
 
-### Запуск
+## Требования
 
-**1. Backend (Laravel):**
+- **PHP** 8.2+
+- **Composer** 2.x
+- **Node.js** 18+ и **npm**
+- **MySQL** 5.7+ / 8.x (или MariaDB)
+- Расширения PHP: `bcmath`, `ctype`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo`, `tokenizer`, `xml`, `curl`
+
+---
+
+## Установка
+
+### 1. Клонирование и зависимости
+
+```bash
+git clone <url-репозитория> react-proffi
+cd react-proffi
+composer install
+npm install --legacy-peer-deps
+```
+
+### 2. Окружение
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+В `.env` задайте:
+
+- `APP_URL` — URL сайта (например `http://proffi-center.loc`)
+- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` — доступ к MySQL
+
+### 3. База данных
+
+Создайте БД (например в phpMyAdmin или консоли):
+
+```sql
+CREATE DATABASE react_proffi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Выполните миграции:
+
+```bash
+php artisan migrate
+```
+
+### 4. Первый пользователь-админ
+
+Создание пользователя с ролью `admin` (по умолчанию: email `dsc-23@yandex.ru`, пароль `123123123`, имя «Джон Уик»):
+
+```bash
+php artisan user:create
+```
+
+Интерактивно можно указать email, пароль, имя и роли.
+
+### 5. Сборка фронтенда
+
+**Публичный сайт (React):**
+
+```bash
+npm run build:spa
+```
+
+**Админка (Vue):**
+
+```bash
+npm run build
+```
+
+Либо для разработки см. [Запуск](#запуск).
+
+---
+
+## Запуск
+
+### Режим разработки
+
+**Backend (Laravel):**
+
 ```bash
 php artisan serve
 ```
-API: http://127.0.0.1:8000
 
-**2. Frontend (React):**
+API: `http://127.0.0.1:8000`
+
+**Публичный фронтенд (React):**
+
 ```bash
 cd frontend
 npm run dev
 ```
-Приложение: http://localhost:5173 (Vite проксирует `/api` на Laravel).
 
-### API v1
+Сайт: `http://localhost:5173` (Vite проксирует `/api` на Laravel).
 
-| Метод | URL | Описание |
-|-------|-----|----------|
-| GET | /api/v1/ping | Проверка API |
-| POST | /api/v1/login | Вход (email, password) |
-| POST | /api/v1/register | Регистрация (name, email, password, password_confirmation) |
-| GET | /api/v1/user | Текущий пользователь (Bearer token) |
-| POST | /api/v1/logout | Выход (Bearer token) |
+**Админка (Vue):** при использовании OSPanel/другого веб-сервера с корнем в `public/` — соберите один раз и открывайте по домену:
 
-Фронтенд использует `frontend/src/api/client.js`: клиент `apiV1` с базовым URL `/api/v1` и подстановкой токена из `localStorage.auth_token`.
+```bash
+npm run build
+```
+
+Админка: `http://<ваш-домен>/admin` (например `http://proffi-center.loc/admin`).
+
+При `php artisan serve` для админки нужен собранный билд (`npm run build`), затем: `http://127.0.0.1:8000/admin`.
+
+### Продакшен
+
+1. `composer install --no-dev`
+2. `npm run build` и при необходимости `npm run build:spa`
+3. Настройте веб-сервер (Nginx/Apache) на каталог `public/`
+4. `php artisan config:cache` и `php artisan route:cache`
 
 ---
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Структура проекта
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+| Часть              | Технологии                    | Описание |
+|--------------------|-------------------------------|----------|
+| **Backend**        | Laravel 11, Sanctum           | API, БД, миграции, модели, сервисы |
+| **Публичный сайт** | React (в `frontend/`)         | SPA на Vite, главная и страницы сайта |
+| **Админка**        | Vue 3, Vuex, Vue Router       | Точка входа `resources/js/admin.js`, сборка через Vite |
 
-## About Laravel
+Основные каталоги:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- `app/` — контроллеры, модели, сервисы, middleware
+- `config/` — конфиги (в т.ч. `media.php`, `telegram.php`)
+- `database/migrations/` — миграции (users, roles, notifications, bots, folders, media и др.)
+- `frontend/` — React SPA
+- `resources/js/` — Vue-админка: `admin.js`, `layouts/`, `pages/`, `components/admin/`, `utils/api.js`, `composables/`
+- `resources/views/` — `spa.blade.php`, `admin.blade.php`
+- `public/` — точка входа веб-сервера; `public/system/` — иконки для раздела «Медиа» (folder.png, basket.png и т.д.)
+- `routes/api.php` — маршруты API v1; `routes/web.php` — SPA и админка
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## API v1
 
-## Learning Laravel
+Базовый URL: `/api/v1`. Авторизация: заголовок `Authorization: Bearer <token>` (кроме login/register).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Общие
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Метод | URL           | Описание |
+|-------|----------------|----------|
+| GET   | `/ping`        | Проверка API |
+| POST  | `/login`       | Вход: `email`, `password` |
+| POST  | `/register`    | Регистрация: `name`, `email`, `password`, `password_confirmation` |
 
-## Laravel Sponsors
+### С авторизацией (auth:sanctum)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+| Метод | URL                    | Описание |
+|-------|------------------------|----------|
+| GET   | `/user`                | Текущий пользователь с ролями |
+| POST  | `/logout`              | Выход |
+| GET   | `/admin/menu`          | Меню админки по ролям |
 
-### Premium Partners
+### Уведомления
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Метод | URL                           | Описание |
+|-------|--------------------------------|----------|
+| GET   | `/notifications`               | Список для виджета (лимит) |
+| GET   | `/notifications/all`           | Полный список с пагинацией и фильтрами |
+| POST  | `/notifications/{id}/read`     | Отметить прочитанным |
+| DELETE| `/notifications/{id}`          | Удалить |
+| GET   | `/notifications/unread-count` | Количество непрочитанных |
 
-## Contributing
+### Папки (Медиа)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Метод | URL                              | Описание |
+|-------|-----------------------------------|----------|
+| GET   | `/folders`                        | Список папок |
+| GET   | `/folders/tree/all`               | Дерево папок |
+| POST  | `/folders`                        | Создать папку |
+| PUT   | `/folders/{id}`                   | Обновить |
+| DELETE| `/folders/{id}`                   | Удалить (в корзину) |
+| POST  | `/folders/{id}/restore`           | Восстановить |
+| POST  | `/folders/update-positions`       | Обновить порядок |
 
-## Code of Conduct
+### Медиафайлы
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Метод | URL                      | Описание |
+|-------|---------------------------|----------|
+| GET   | `/media`                  | Список с пагинацией, фильтр по папке |
+| POST  | `/media`                  | Загрузка файла (multipart, `file`, `folder_id`) |
+| GET   | `/media/{id}`             | Один файл |
+| PUT   | `/media/{id}`             | Обновить (в т.ч. перенос в папку) |
+| DELETE| `/media/{id}`              | В корзину |
+| POST  | `/media/{id}/restore`     | Восстановить |
+| DELETE| `/media/trash/empty`       | Очистить корзину |
 
-## Security Vulnerabilities
+### Только для роли admin (middleware admin)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Метод | URL                                | Описание |
+|-------|-------------------------------------|----------|
+| GET/POST/PUT/DELETE | `/roles`              | Роли |
+| GET/POST/PUT/DELETE | `/users`              | Пользователи |
+| GET/POST/PUT/DELETE | `/bots`               | Боты |
+| GET   | `/bots/{id}/check-webhook`           | Проверка webhook |
+| POST  | `/bots/{id}/register-webhook`       | Регистрация webhook |
 
-## License
+Вне префикса v1:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `POST /api/telegram/webhook/{id}` — webhook для Telegram-бота (без Sanctum).
+
+---
+
+## Админ-панель
+
+- **URL:** `/admin` (вход: `/admin`, после логина — маршруты Vue).
+- **Стек:** Vue 3, Vuex, Vue Router, Vite, Tailwind CSS, Axios, SweetAlert2, vue-advanced-cropper, fslightbox-vue.
+
+### Страницы (по меню)
+
+| Пункт меню   | Маршрут        | Роли доступа      |
+|--------------|----------------|-------------------|
+| Панель управления | `/`        | все авторизованные |
+| Медиа        | `/admin/media` | admin, manager    |
+| Уведомления  | `/admin/notifications` | admin, manager, user |
+| Пользователи | `/admin/users` | admin             |
+| Роли         | `/admin/roles` | admin             |
+| Боты         | `/admin/bots`  | admin             |
+
+Меню отдаётся с бэкенда (`/api/v1/admin/menu`) в зависимости от ролей пользователя.
+
+### Первый вход
+
+1. Выполните `php artisan user:create` (см. [Установка](#установка)).
+2. Откройте `/admin`, введите email и пароль созданного пользователя.
+
+### Сборка админки
+
+```bash
+npm run build
+```
+
+Точка входа — `resources/js/admin.js`. Собранные файлы попадают в `public/build/`. Иконки для раздела «Медиа» лежат в `public/system/` (folder.png, basket.png, document.png, video.png, music.png, no-image.png, no-user.jpg).
+
+---
+
+## Скрипты
+
+### npm (корень проекта)
+
+| Команда              | Описание |
+|----------------------|----------|
+| `npm run build`      | Сборка Laravel Vite (CSS, app.js, admin.js) |
+| `npm run dev`        | Vite dev-сервер для Laravel assets |
+| `npm run build:spa`  | Сборка React SPA в `frontend/` и копирование в `public/` |
+
+### Artisan
+
+| Команда                | Описание |
+|------------------------|----------|
+| `php artisan migrate`  | Выполнить миграции |
+| `php artisan user:create` | Создать пользователя (в т.ч. админа) |
+| `php artisan storage:link` | Симлинк `public/storage` → `storage/app/public` (если нужен) |
+
+---
+
+## Конфигурация
+
+- **Медиа:** `config/media.php` — лимиты размера, MIME-типы, пагинация.
+- **Telegram:** `config/telegram.php` — настройки ботов (при использовании раздела «Боты» и webhook).
+
+Переменные окружения (по необходимости): `MEDIA_MAX_SIZE_KB`, `MEDIA_ALLOW_ALL_TYPES`, а также стандартные Laravel и БД.
+
+---
+
+## Лицензия
+
+Проект может содержать код Laravel и других компонентов под лицензией MIT. См. соответствующие файлы и пакеты.

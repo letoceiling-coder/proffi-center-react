@@ -104,7 +104,10 @@ export default function GotovyePotolkiPage() {
             В каталоге представлены готовые натяжные потолки с фиксированными размерами и ценами. Выберите категорию и оформите заказ.
           </p>
           <CategoryTabs categories={gotovyeCategories} basePath={BASE_PATH} />
-          <div className="row">
+          <div
+            className="row gotovye-cards-wrap"
+            key={`${activeCategory}-${page}`}
+          >
             {items.map((item) => (
               <ProductCard key={item.id} item={item} />
             ))}
