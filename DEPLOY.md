@@ -4,6 +4,34 @@
 
 ---
 
+## 0) Команда `php artisan deploy`
+
+Полный деплой одной командой (локально):
+
+1. **Коммит и push** — все изменения коммитятся и отправляются в git.
+2. **По SSH на сервер** — обновление из git, `composer install`, миграции, `npm install` и сборка админки (root) и фронта (`frontend/`), сброс кэша Laravel.
+
+**Настройка в .env:**
+
+- `DEPLOY_SSH_HOST` — хост сервера (например `89.169.39.244`).
+- `DEPLOY_SSH_USER` — пользователь SSH (по умолчанию `root`).
+- `DEPLOY_SERVER_PATH` — путь к проекту на сервере (по умолчанию `/var/www/proffi-center`).
+- `DEPLOY_BRANCH` — ветка (по умолчанию `main`).
+
+**Запуск:**
+
+```bash
+php artisan deploy                    # коммит, push, обновление на сервере
+php artisan deploy --message="fix"    # свой текст коммита
+php artisan deploy --server-only     # только команды на сервере (без git)
+php artisan deploy --no-commit        # не пушить (только коммит локально + сервер)
+php artisan deploy --dry-run          # показать команды, не выполнять
+```
+
+Требуется доступ по SSH без пароля (ключ). На сервере должны быть установлены git, PHP, Composer, Node.js, npm.
+
+---
+
 ## 1) Backend
 
 ### .env (production)

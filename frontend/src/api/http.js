@@ -90,4 +90,28 @@ export async function postJSON(path, body = {}, params = {}) {
   return data;
 }
 
+/**
+ * POST FormData (для загрузки файлов). Host добавляется в URL query.
+ */
+export async function postFormData(path, formData, params = {}) {
+  const url = buildURL(path, params);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60000);
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+    body: formData,
+    signal: controller.signal,
+  });
+  clearTimeout(timeoutId);
+  const data = await response.json().catch(() => null);
+  if (!response.ok) {
+    const err = new Error(data?.message || `HTTP ${response.status}`);
+    err.status = response.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
 export { getHost, buildURL };

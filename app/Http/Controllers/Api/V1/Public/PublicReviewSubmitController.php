@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Api\V1\Public;
 
+use App\Models\CmsMedia;
+use App\Models\CmsMediaFile;
 use App\Models\Review;
 use App\Models\TelegramFormSubscriber;
 use App\Services\SiteResolverService;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Публичная отправка отзыва (без авторизации).
- * Создаётся со статусом pending, уведомление в Telegram с кнопками Подтвердить/Отказать.
+ * Создаётся со статусом pending, уведомление в Telegram с кнопками и фото (если загружены).
  */
 class PublicReviewSubmitController extends PublicApiController
 {
@@ -22,6 +25,7 @@ class PublicReviewSubmitController extends PublicApiController
 
     /**
      * POST /api/v1/reviews/submit
+     * Body: multipart — author_name, text, phone?, city_slug?, photos[] (файлы) или JSON — author_name, text, phone?, city_slug?
      */
     public function store(Request $request): JsonResponse
     {
@@ -30,6 +34,8 @@ class PublicReviewSubmitController extends PublicApiController
             'text' => 'required|string|max:10000',
             'phone' => 'nullable|string|max:50',
             'city_slug' => 'nullable|string|max:50',
+            'photos' => 'nullable|array',
+            'photos.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:10240',
         ]);
 
         $host = $this->getHost($request);
@@ -45,6 +51,31 @@ class PublicReviewSubmitController extends PublicApiController
             'published_at' => null,
         ]);
 
+        $photoUrls = [];
+        $photoFiles = $request->file('photos');
+        if (is_array($photoFiles)) {
+            $order = 0;
+            foreach ($photoFiles as $file) {
+                if (! $file || ! $file->isValid()) {
+                    continue;
+                }
+                $path = $file->store('review_uploads/' . $review->id, 'public');
+                if ($path) {
+                    $media = CmsMedia::create(['name' => $file->getClientOriginalName(), 'alt' => null, 'caption' => null]);
+                    CmsMediaFile::create([
+                        'media_id' => $media->id,
+                        'disk' => 'public',
+                        'path' => $path,
+                        'variant' => null,
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                    ]);
+                    $review->media()->attach($media->id, ['order' => $order++]);
+                    $photoUrls[] = Storage::disk('public')->url($path);
+                }
+            }
+        }
+
         $cityName = $site->city?->name ?? 'Не указан';
         $regionName = $site->city?->region?->name ?? '';
         $text = "📝 Новый отзыв (на модерации)\n";
@@ -54,10 +85,13 @@ class PublicReviewSubmitController extends PublicApiController
             $text .= "📞 {$review->phone}\n";
         }
         $text .= "💬 " . mb_substr($review->text, 0, 500) . (mb_strlen($review->text) > 500 ? '…' : '');
+        if (count($photoUrls) > 0) {
+            $text .= "\n📷 Фото: " . count($photoUrls);
+        }
 
         $token = config('telegram.bot_token');
         $chatIds = TelegramFormSubscriber::allChatIds();
-        if (!empty($token) && $chatIds !== []) {
+        if (! empty($token) && $chatIds !== []) {
             $replyMarkup = [
                 'inline_keyboard' => [
                     [
@@ -68,6 +102,9 @@ class PublicReviewSubmitController extends PublicApiController
             ];
             foreach ($chatIds as $chatId) {
                 $this->telegram->sendMessage($token, $chatId, $text, ['reply_markup' => $replyMarkup]);
+                foreach ($photoUrls as $url) {
+                    $this->telegram->sendPhoto($token, $chatId, $url);
+                }
             }
         }
 

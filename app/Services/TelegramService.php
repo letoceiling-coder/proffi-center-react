@@ -174,6 +174,31 @@ class TelegramService
         }
     }
 
+    /**
+     * Отправить фото в чат (URL или file_id).
+     */
+    public function sendPhoto(string $token, int|string $chatId, string $photoUrlOrFileId, ?string $caption = null): array
+    {
+        try {
+            $params = ['chat_id' => $chatId, 'photo' => $photoUrlOrFileId];
+            if ($caption !== null && $caption !== '') {
+                $params['caption'] = mb_substr($caption, 0, 1024);
+            }
+            $response = Http::timeout(15)->post($this->apiBaseUrl . $token . '/sendPhoto', $params);
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['ok'] ?? false) {
+                    return ['success' => true, 'data' => $data['result'] ?? []];
+                }
+                return ['success' => false, 'message' => $data['description'] ?? 'Не удалось отправить фото'];
+            }
+            return ['success' => false, 'message' => 'Ошибка подключения к Telegram API'];
+        } catch (\Exception $e) {
+            Log::error('Telegram sendPhoto error: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function answerCallbackQuery(string $token, string $callbackQueryId, array $options = []): array
     {
         try {
