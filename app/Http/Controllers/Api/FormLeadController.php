@@ -58,16 +58,22 @@ class FormLeadController extends PublicApiController
 
         $token = config('telegram.bot_token');
         $chatIds = TelegramFormSubscriber::allChatIds();
+        if ($chatIds === []) {
+            $fallbackChatId = $this->telegram->getFormsChatId();
+            if ($fallbackChatId !== null && $fallbackChatId !== '') {
+                $chatIds = [$fallbackChatId];
+            }
+        }
 
         if ($token === null || $token === '') {
-            \Illuminate\Support\Facades\Log::warning('Form lead: TELEGRAM_BOT_TOKEN не задан');
+            \Illuminate\Support\Facades\Log::error('[Forms] Причина 503: TELEGRAM_BOT_TOKEN не задан в .env. Добавьте TELEGRAM_BOT_TOKEN в .env.');
             return response()->json([
                 'message' => 'Сервис заявок временно недоступен. Попробуйте позже или позвоните нам.',
             ], 503);
         }
 
         if ($chatIds === []) {
-            \Illuminate\Support\Facades\Log::warning('Form lead: нет подписчиков. Напишите боту в Telegram /start, чтобы получать заявки.');
+            \Illuminate\Support\Facades\Log::error('[Forms] Причина 503: нет получателей заявок. Напишите боту в Telegram /start ИЛИ укажите TELEGRAM_CHAT_ID в .env.');
             return response()->json([
                 'message' => 'Сервис заявок временно недоступен. Попробуйте позже или позвоните нам.',
             ], 503);
