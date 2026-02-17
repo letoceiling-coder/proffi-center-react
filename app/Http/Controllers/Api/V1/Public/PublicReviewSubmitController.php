@@ -25,19 +25,20 @@ class PublicReviewSubmitController extends PublicApiController
 
     /**
      * POST /api/v1/reviews/submit
-     * Body: multipart — author_name, text, phone?, city_slug?, photos[] (файлы) или JSON — author_name, text, phone?, city_slug?
+     * Body: multipart — author_name, text, phone, city_slug?, photos[] (файлы) или JSON — author_name, text, phone, city_slug?
      */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'author_name' => 'required|string|max:255',
             'text' => 'required|string|min:100|max:10000',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'required|string|max:50',
             'city_slug' => 'nullable|string|max:50',
             'photos' => 'nullable|array',
             'photos.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:10240',
         ], [
             'text.min' => 'Текст отзыва должен быть не менее 100 символов.',
+            'phone.required' => 'Укажите телефон.',
         ]);
 
         $host = $this->getHost($request);
@@ -48,12 +49,12 @@ class PublicReviewSubmitController extends PublicApiController
             'site_id' => $site->id,
             'author_name' => $validated['author_name'],
             'text' => $validated['text'],
-            'phone' => $validated['phone'] ?? null,
+            'phone' => $validated['phone'],
             'status' => 'pending',
             'published_at' => null,
         ]);
 
-        $photoUrls = [];
+        $photoPaths = [];
         $photoFiles = $request->file('photos');
         if (is_array($photoFiles)) {
             $order = 0;
@@ -73,7 +74,7 @@ class PublicReviewSubmitController extends PublicApiController
                         'size' => $file->getSize(),
                     ]);
                     $review->media()->attach($media->id, ['order' => $order++]);
-                    $photoUrls[] = Storage::disk('public')->url($path);
+                    $photoPaths[] = Storage::disk('public')->path($path);
                 }
             }
         }
@@ -87,8 +88,8 @@ class PublicReviewSubmitController extends PublicApiController
             $text .= "📞 {$review->phone}\n";
         }
         $text .= "💬 " . mb_substr($review->text, 0, 500) . (mb_strlen($review->text) > 500 ? '…' : '');
-        if (count($photoUrls) > 0) {
-            $text .= "\n📷 Фото: " . count($photoUrls);
+        if (count($photoPaths) > 0) {
+            $text .= "\n📷 Фото: " . count($photoPaths);
         }
 
         $token = config('telegram.bot_token');
@@ -104,8 +105,8 @@ class PublicReviewSubmitController extends PublicApiController
             ];
             foreach ($chatIds as $chatId) {
                 $this->telegram->sendMessage($token, $chatId, $text, ['reply_markup' => $replyMarkup]);
-                foreach ($photoUrls as $url) {
-                    $this->telegram->sendPhoto($token, $chatId, $url);
+                foreach ($photoPaths as $localPath) {
+                    $this->telegram->sendPhotoByPath($token, $chatId, $localPath);
                 }
             }
         }

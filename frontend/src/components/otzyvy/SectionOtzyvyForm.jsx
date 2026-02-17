@@ -6,7 +6,7 @@ import { useState, useRef } from 'react';
 import { useSite } from '../../context/SiteContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitReview } from '../../api/public.js';
-import { normalizePhone } from '../../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../../utils/formValidation.js';
 import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 const ACCEPT_IMAGES = '.gif,.jpg,.jpeg,.png,.webp';
@@ -36,6 +36,15 @@ export default function SectionOtzyvyForm({ legalLink }) {
       show('Текст отзыва должен быть не менее 100 символов', 'error');
       return;
     }
+    const trimmedPhone = phone?.trim() || '';
+    if (!trimmedPhone) {
+      show('Укажите телефон', 'error');
+      return;
+    }
+    if (!isPhoneValid(phone)) {
+      show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
+      return;
+    }
     if (sending) return;
     setSending(true);
     try {
@@ -44,7 +53,7 @@ export default function SectionOtzyvyForm({ legalLink }) {
       await submitReview({
         author_name: trimmedName,
         text: trimmedText,
-        phone: phone ? normalizePhone(phone) || phone.trim() : undefined,
+        phone: normalizePhone(phone) || trimmedPhone,
         city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined,
         photos,
       });

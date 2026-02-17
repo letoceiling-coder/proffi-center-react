@@ -199,6 +199,36 @@ class TelegramService
         }
     }
 
+    /**
+     * Отправить фото в чат из локального файла (multipart) — для отзывов с загрузкой, чтобы бот получал фото без публичного URL.
+     */
+    public function sendPhotoByPath(string $token, int|string $chatId, string $localFilePath, ?string $caption = null): array
+    {
+        try {
+            if (! is_readable($localFilePath)) {
+                Log::warning('Telegram sendPhotoByPath: file not readable: ' . $localFilePath);
+                return ['success' => false, 'message' => 'Файл недоступен'];
+            }
+            $response = Http::timeout(30)
+                ->attach('photo', file_get_contents($localFilePath), basename($localFilePath))
+                ->post($this->apiBaseUrl . $token . '/sendPhoto', [
+                    'chat_id' => $chatId,
+                    'caption' => $caption !== null && $caption !== '' ? mb_substr($caption, 0, 1024) : null,
+                ]);
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['ok'] ?? false) {
+                    return ['success' => true, 'data' => $data['result'] ?? []];
+                }
+                return ['success' => false, 'message' => $data['description'] ?? 'Не удалось отправить фото'];
+            }
+            return ['success' => false, 'message' => 'Ошибка подключения к Telegram API'];
+        } catch (\Exception $e) {
+            Log::error('Telegram sendPhotoByPath error: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function answerCallbackQuery(string $token, string $callbackQueryId, array $options = []): array
     {
         try {
