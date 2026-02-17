@@ -14,7 +14,7 @@ import VozvratPage from './pages/VozvratPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CeilingCategoryPage from './pages/CeilingCategoryPage'
 import RoomPage from './pages/RoomPage'
-import ApiPageBySlugPage from './pages/ApiPageBySlugPage'
+import PageBySlugSwitch from './pages/PageBySlugSwitch'
 import ApiServicePage from './pages/ApiServicePage'
 import ApiProductCategoryPage from './pages/ApiProductCategoryPage'
 import ApiProductPage from './pages/ApiProductPage'
@@ -67,8 +67,7 @@ function App() {
             <Route path="/potolki-na-kuhnju" element={<RoomPage />} />
             <Route path="/potolki-v-detskuju" element={<RoomPage />} />
             <Route path="/potolki-v-vannuju" element={<RoomPage />} />
-            <Route path="/:slug" element={<ApiPageBySlugPage />} />
-            <Route path="/:ceilingCategorySlug" element={<CeilingCategoryPage />} />
+            <Route path="/:slug" element={<PageBySlugSwitch />} />
           </Routes>
         </RouteTransition>
       </RedirectCheck>

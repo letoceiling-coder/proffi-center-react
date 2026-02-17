@@ -28,7 +28,6 @@ return [
         'git reset --hard origin/{branch}',
         'composer install --no-dev --optimize-autoloader',
         'php artisan migrate --force',
-        'php artisan db:seed --class=VidyPotolkovPagesSeeder --force',
         'npm install --legacy-peer-deps',
         'npm run build',
         'cd frontend && npm install --legacy-peer-deps && npm run build && cd ..',

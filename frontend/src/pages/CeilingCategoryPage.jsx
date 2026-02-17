@@ -35,16 +35,17 @@ import {
   footerData,
 } from '../data/mockPageData';
 
-export default function CeilingCategoryPage() {
+export default function CeilingCategoryPage({ slugOverride }) {
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
   const [navMobileOpen, setNavMobileOpen] = useState(false);
 
   const { ceilingCategorySlug } = useParams();
-  const category = getCeilingCategoryBySlug(ceilingCategorySlug);
+  const ceilingCategorySlugResolved = slugOverride ?? ceilingCategorySlug;
+  const category = getCeilingCategoryBySlug(ceilingCategorySlugResolved);
 
-  if (!ceilingCategorySlug || !CEILING_CATEGORY_SLUGS.includes(ceilingCategorySlug) || !category) {
+  if (!ceilingCategorySlugResolved || !CEILING_CATEGORY_SLUGS.includes(ceilingCategorySlugResolved) || !category) {
     return <Navigate to="/" replace />;
   }
 
