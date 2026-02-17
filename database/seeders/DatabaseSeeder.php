@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(BootstrapCmsSeeder::class);
         $this->call(BootstrapContentSeeder::class);
         $this->call(PotolkiPoKomnatamSeeder::class);
+        $this->call(VidyPotolkovPagesSeeder::class);
 
         $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
