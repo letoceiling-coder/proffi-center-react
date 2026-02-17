@@ -59,7 +59,9 @@ class FormLeadController extends PublicApiController
                 'has_token' => !empty($token),
                 'has_chat_id' => !empty($chatId),
             ]);
-            return response()->json(['message' => 'Заявка принята'], 201);
+            return response()->json([
+                'message' => 'Сервис заявок временно недоступен. Попробуйте позже или позвоните нам.',
+            ], 503);
         }
 
         $result = $this->telegram->sendMessage($token, $chatId, $text);
@@ -67,6 +69,9 @@ class FormLeadController extends PublicApiController
             \Illuminate\Support\Facades\Log::error('Form lead: Telegram send failed', [
                 'message' => $result['message'] ?? 'unknown',
             ]);
+            return response()->json([
+                'message' => 'Не удалось отправить заявку. Попробуйте позже или позвоните нам.',
+            ], 503);
         }
 
         return response()->json(['message' => 'Заявка принята'], 201);
