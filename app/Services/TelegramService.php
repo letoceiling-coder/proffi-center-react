@@ -112,6 +112,27 @@ class TelegramService
         }
     }
 
+    /**
+     * Получить последние обновления (для извлечения chat_id после /start).
+     */
+    public function getUpdates(string $token, array $options = []): array
+    {
+        try {
+            $response = Http::timeout(10)->get($this->apiBaseUrl . $token . '/getUpdates', $options);
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['ok'] ?? false) {
+                    return ['success' => true, 'result' => $data['result'] ?? []];
+                }
+                return ['success' => false, 'message' => $data['description'] ?? 'Не удалось получить обновления'];
+            }
+            return ['success' => false, 'message' => 'Ошибка подключения к Telegram API'];
+        } catch (\Exception $e) {
+            Log::error('Telegram getUpdates error: ' . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
     public function deleteWebhook(string $token, bool $dropPendingUpdates = false): array
     {
         try {
