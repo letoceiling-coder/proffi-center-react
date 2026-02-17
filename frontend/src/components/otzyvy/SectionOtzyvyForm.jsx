@@ -103,8 +103,6 @@ export default function SectionOtzyvyForm({ legalLink }) {
             <span>Загрузить файл&hellip;</span>
           </label>
         </div>
-        <div className="blue_btn">
-          <a href="#" onClick={handleSubmit}>{sending ? 'Отправка…' : 'Отправить'}</a>
         </div>
       </form>
       <div className="prav-info">

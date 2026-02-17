@@ -82,7 +82,7 @@ export default function OKompaniiPage() {
 
       <div className="probel" />
 
-      <SectionAbout data={pageData} carouselItems={oKompaniiAboutCarousel} />
+      <SectionAbout data={oKompaniiPageData} carouselItems={oKompaniiAboutCarousel} />
       <SectionZakazalo data={oKompaniiZakazaloData} />
       <SectionReviews items={reviewsData} />
       <SectionGallery items={galleryData} />

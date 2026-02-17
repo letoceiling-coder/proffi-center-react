@@ -105,7 +105,7 @@ export default function GdeZakazatPage() {
         mapAddress={pageData.mapAddress}
         mapPhone={pageData.mapPhone}
         mapMarker={pageData.mapMarker}
-        address={addressForSchema}
+        address={siteConfig.address}
       />
       <SectionForm5min data={form5minData} />
       <SectionZamer items={zamerBlocks} />

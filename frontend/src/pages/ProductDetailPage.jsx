@@ -88,7 +88,6 @@ export default function ProductDetailPage() {
         max={product.calcMax}
         pricePerM2={product.pricePerM2}
         phone={(contacts?.phone ?? siteConfig.phone) ? formatPhoneDisplay(contacts?.phone ?? siteConfig.phone) : ''}
-        phoneLabel={product.calcPhoneLabel}
       />
       <SectionFormLowPrice data={product.formLowPrice} onSubmit={handleLowPriceSubmit} />
       <SectionZamer items={product.zamer} />

@@ -10,6 +10,7 @@ use App\Services\SiteResolverService;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -94,7 +95,18 @@ class PublicReviewSubmitController extends PublicApiController
 
         $token = config('telegram.bot_token');
         $chatIds = TelegramFormSubscriber::allChatIds();
-        if (! empty($token) && $chatIds !== []) {
+        if ($chatIds === []) {
+            $fallbackChatId = $this->telegram->getFormsChatId();
+            if ($fallbackChatId !== null && $fallbackChatId !== '') {
+                $chatIds = [$fallbackChatId];
+            }
+        }
+
+        if (empty($token)) {
+            Log::error('[Reviews] Уведомление в Telegram не отправлено: TELEGRAM_BOT_TOKEN не задан в .env. Отзыв id=' . $review->id . ' сохранён.');
+        } elseif ($chatIds === []) {
+            Log::error('[Reviews] Уведомление в Telegram не отправлено: нет получателей. Напишите боту /start или укажите TELEGRAM_CHAT_ID в .env. Отзыв id=' . $review->id . ' сохранён.');
+        } else {
             $replyMarkup = [
                 'inline_keyboard' => [
                     [
@@ -104,9 +116,15 @@ class PublicReviewSubmitController extends PublicApiController
                 ],
             ];
             foreach ($chatIds as $chatId) {
-                $this->telegram->sendMessage($token, $chatId, $text, ['reply_markup' => $replyMarkup]);
+                $msgResult = $this->telegram->sendMessage($token, $chatId, $text, ['reply_markup' => $replyMarkup]);
+                if (! ($msgResult['success'] ?? false)) {
+                    Log::warning('[Reviews] sendMessage в chat_id ' . $chatId . ' не удался', ['message' => $msgResult['message'] ?? 'unknown']);
+                }
                 foreach ($photoPaths as $localPath) {
-                    $this->telegram->sendPhotoByPath($token, $chatId, $localPath);
+                    $photoResult = $this->telegram->sendPhotoByPath($token, $chatId, $localPath);
+                    if (! ($photoResult['success'] ?? false)) {
+                        Log::warning('[Reviews] sendPhotoByPath в chat_id ' . $chatId . ' не удался', ['path' => $localPath, 'message' => $photoResult['message'] ?? 'unknown']);
+                    }
                 }
             }
         }
