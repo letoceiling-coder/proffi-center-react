@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { useSite } from '../context/SiteContext.jsx';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -19,6 +21,7 @@ import SectionGallery from '../components/sections/SectionGallery';
 import SectionReviews from '../components/sections/SectionReviews';
 import FooterMenu from '../components/FooterMenu';
 import Footer from '../components/Footer';
+import { getRegionPrepositional } from '../utils/regionDisplay.js';
 import {
   simpleTextIntro,
   simpleTextBlocks,
@@ -35,13 +38,45 @@ import {
   reviewsData,
   footerMenuData,
   footerData,
+  bannerData as defaultBannerData,
 } from '../data/mockPageData';
 
+function buildIntroContent(cityPrepositional, regionDisplay) {
+  const city = cityPrepositional || 'Анапе';
+  const region = regionDisplay || 'Анапском районе';
+  return {
+    h1: `Натяжные потолки в ${city}`,
+    content: `«Proffi Center» – это компания, которая устанавливает натяжные потолки в ${city} с 2013 года! Собственное производство позволяет обеспечить выгодные условия покупки по самым низким ценам. Использование только лучших материалов, комплектующих и профессиональный монтаж потолков гарантируют высокое качество предоставляемых услуг и срок службы более 20 лет!
+
+Основанная в 2013 году компания Proffi Center осуществляет деятельность в сфере ремонтно-отделочных работ вот уже более 13 лет. Ключевым направлением организации является установка натяжных потолков в ${city} и ${region}, услуги по дополнительным работам, розничная и оптовая продажа сопутствующих материалов. Постоянно развиваясь, улучшая обслуживание и качество на всех этапах работ, мы готовы Вам предложить лучшие варианты стилистической концепции, оптимальные отделочные материалы для Вашего помещения, монтаж натяжных потолков с гарантией качества и самой доступной ценой в ${city} и ${region}. Используемый нами материал соответствует всем санитарным требованиям, правилам пожарной безопасности, безопасен для здоровья человека и имеет все необходимые сертификаты. Собственное производство позволяет минимизировать издержки, тем самым гарантировать самые привлекательные цены. Натяжные потолки напрямую от производителя всегда дешевле!`,
+  };
+}
+
 export default function MainPage() {
+  const { site, seoSettings, isLoading } = useSite();
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
   const [navMobileOpen, setNavMobileOpen] = useState(false);
+
+  const cityName = site?.city?.name;
+  const cityPrepositional = site?.city?.name_prepositional ?? cityName ?? 'Анапе';
+  const regionName = site?.region?.name;
+  const regionDisplay = getRegionPrepositional(regionName) || regionName || 'Анапском районе';
+  /** Пока сайт не загружен — не показываем город в контенте (избегаем «Анапа» на поддомене Москвы) */
+  const introData = isLoading
+    ? { h1: 'Натяжные потолки', content: null }
+    : (site?.city
+      ? buildIntroContent(cityPrepositional, regionDisplay)
+      : { h1: simpleTextIntro.h1, content: simpleTextIntro.content });
+  /** Баннер: «За» статично, не привязано к городу */
+  const bannerData = site?.city
+    ? { ...defaultBannerData, title: 'Натяжной потолок', titleSuffix: 'за' }
+    : defaultBannerData;
+
+  const pageTitle = cityName
+    ? `Натяжные потолки в ${cityName} — Proffi Center`
+    : (seoSettings?.default_title_suffix ? `Натяжные потолки${seoSettings.default_title_suffix}` : null);
 
   const openCallback = () => {
     setPopupCallback(true);
@@ -57,6 +92,11 @@ export default function MainPage() {
 
   return (
     <PreLoader>
+      {pageTitle && (
+        <Helmet>
+          <title>{pageTitle}</title>
+        </Helmet>
+      )}
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
 
@@ -84,8 +124,8 @@ export default function MainPage() {
 
       <div className="probel" />
 
-      <SectionBanner onZamerClick={openCallback} />
-      <SectionSimpleText h1={simpleTextIntro.h1} content={simpleTextIntro.content} />
+      <SectionBanner data={bannerData} onZamerClick={openCallback} />
+      <SectionSimpleText h1={introData.h1} content={introData.content} />
 
       <SectionLinks items={linkBlocks} />
 

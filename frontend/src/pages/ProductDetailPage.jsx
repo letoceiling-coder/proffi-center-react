@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
+import { useSite } from '../context/SiteContext.jsx';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -22,6 +23,7 @@ import { getProductBySlug } from '../data/productDetailData';
 import { footerMenuData, footerData, siteConfig } from '../data/mockPageData';
 
 export default function ProductDetailPage() {
+  const { contacts } = useSite();
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
@@ -85,7 +87,7 @@ export default function ProductDetailPage() {
         min={product.calcMin}
         max={product.calcMax}
         pricePerM2={product.pricePerM2}
-        phone={siteConfig.phone}
+        phone={(contacts?.phone ?? siteConfig.phone) ? formatPhoneDisplay(contacts?.phone ?? siteConfig.phone) : ''}
         phoneLabel={product.calcPhoneLabel}
       />
       <SectionFormLowPrice data={product.formLowPrice} onSubmit={handleLowPriceSubmit} />

@@ -1,17 +1,50 @@
 /**
  * Форма «Оставьте отзыв» (s24 .zakaz_vp).
- * Разметка 1 в 1 как в шаблоне natyazhnyye-potolki-otzyvy.html.
+ * Валидация: имя и текст обязательны. Отправка в API, отзыв на модерации (Telegram).
  */
 import { useState } from 'react';
+import { useSite } from '../../context/SiteContext.jsx';
+import { submitReview } from '../../api/public.js';
 
 export default function SectionOtzyvyForm({ legalLink }) {
+  const { site } = useSite();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    // TODO: отправка на API
+    setError('');
+    const trimmedName = name?.trim() || '';
+    const trimmedText = text?.trim() || '';
+    if (!trimmedName) {
+      setError('Укажите имя');
+      return;
+    }
+    if (!trimmedText) {
+      setError('Напишите отзыв');
+      return;
+    }
+    if (sending) return;
+    setSending(true);
+    try {
+      await submitReview({
+        author_name: trimmedName,
+        text: trimmedText,
+        phone: phone?.trim() || undefined,
+        city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined,
+      });
+      setSent(true);
+      setName('');
+      setPhone('');
+      setText('');
+    } catch (err) {
+      setError(err?.message || 'Не удалось отправить');
+    }
+    setSending(false);
   };
 
   const openLegal = (e) => {
@@ -48,7 +81,7 @@ export default function SectionOtzyvyForm({ legalLink }) {
           </label>
         </div>
         <div className="blue_btn">
-          <a href="#" onClick={handleSubmit}>Отправить</a>
+          <a href="#" onClick={handleSubmit}>{sending ? 'Отправка…' : 'Отправить'}</a>
         </div>
       </form>
       <div className="prav-info">

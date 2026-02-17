@@ -8,7 +8,9 @@
 export function getMapAddress(config) {
   if (!config?.address) return '';
   const { locality, street } = config.address;
-  return `${locality} ул.${street.replace(/,/g, ' ')}`;
+  if (!locality && !street) return '';
+  const streetPart = street ? ` ул.${String(street).replace(/,/g, ' ')}` : '';
+  return `${locality || ''}${streetPart}`.trim();
 }
 
 /** Полный адрес строкой для баллуна маркера (город, улица, индекс) */

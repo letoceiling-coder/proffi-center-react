@@ -1,17 +1,47 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Menu from './Menu';
-import { siteConfig, cities, menuItems } from '../data/mockPageData';
+import { useSite } from '../context/SiteContext.jsx';
+import { useMenu } from '../context/MenuContext.jsx';
+import { getCitySites } from '../api/public.js';
+import { formatPhoneDisplay, formatPhoneHref } from '../utils/phoneFormat.js';
+import { siteConfig, cities as defaultCities, menuItems } from '../data/mockPageData';
 
 const SCROLL_THRESHOLD_ON = 120;
 const SCROLL_THRESHOLD_OFF = 70;
 const MOBILE_BREAKPOINT = 992;
 
 export default function Header({ onCallClick, onZamerClick }) {
+  const { site, contacts, isMain, setSelectedCitySlug } = useSite();
+  const { headerMenu } = useMenu();
   const [menuOpen, setMenuOpen] = useState(false);
   const [popUpFixed, setPopUpFixed] = useState(false);
+  const [cities, setCities] = useState(defaultCities);
   const rafRef = useRef(null);
   const lastFixedRef = useRef(false);
+
+  const phoneRaw = contacts?.phone ?? siteConfig.phone;
+  const phone = phoneRaw ? formatPhoneDisplay(phoneRaw) : '';
+  const phoneHref = phoneRaw ? formatPhoneHref(phoneRaw) : '';
+  const city = site?.city?.name ?? contacts?.address_locality ?? siteConfig.city;
+  const addressLocality = contacts?.address_locality ?? siteConfig.address.locality;
+  const addressStreet = contacts?.address_street ?? siteConfig.address.street;
+  /** Не подставлять индекс другого города: для городских сайтов только из контактов */
+  const addressPostalCode = site?.city
+    ? (contacts?.address_postal_code ?? '')
+    : (contacts?.address_postal_code ?? siteConfig.address.postalCode);
+  /** Для городских сайтов — «г. Город», для основного — из конфига */
+  const citySuffix = site?.city ? `г. ${city}` : (siteConfig.citySuffix ?? '');
+  const menuItemsToUse = (headerMenu?.length ? headerMenu : menuItems);
+
+  useEffect(() => {
+    getCitySites()
+      .then((res) => {
+        const list = res?.data?.cities;
+        if (Array.isArray(list) && list.length > 0) setCities(list);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
@@ -57,22 +87,6 @@ export default function Header({ onCallClick, onZamerClick }) {
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
 
-  useEffect(() => {
-    const setNewblockHeight = () => {
-      const h = window.innerHeight - 100;
-      document.querySelectorAll('.newblock').forEach((el) => {
-        el.style.height = `${h}px`;
-      });
-    };
-    setNewblockHeight();
-    window.addEventListener('resize', setNewblockHeight);
-    window.addEventListener('load', setNewblockHeight);
-    return () => {
-      window.removeEventListener('resize', setNewblockHeight);
-      window.removeEventListener('load', setNewblockHeight);
-    };
-  }, []);
-
   const handleCallClick = (e) => {
     e?.preventDefault?.();
     e?.stopPropagation?.();
@@ -83,14 +97,14 @@ export default function Header({ onCallClick, onZamerClick }) {
     <>
       <div className={`section s_top ${popUpFixed ? 'pop_up_block fixed' : ''}`}>
         <div className="container" itemScope itemType="http://schema.org/PostalAddress">
-          <meta itemProp="addressLocality" content={siteConfig.address.locality} />
-          <meta itemProp="streetAddress" content={siteConfig.address.street} />
-          <meta itemProp="postalCode" content={siteConfig.address.postalCode} />
+          <meta itemProp="addressLocality" content={addressLocality} />
+          <meta itemProp="streetAddress" content={addressStreet} />
+          {addressPostalCode && <meta itemProp="postalCode" content={addressPostalCode} />}
           <div className="row">
             <div className="col-sm-12 clearfix padding0">
               <div className="col-sm-6 col-md-4 col-xs-6 logo">
                 <Link to="/">
-                  <img itemProp="image" src={siteConfig.logo} alt={siteConfig.logoAlt} />
+                  <img itemProp="image" src={contacts?.logo_url || siteConfig.logo} alt={siteConfig.logoAlt} />
                 </Link>
               </div>
               <div className="col-sm-6 col-md-8 col-xs-6">
@@ -98,26 +112,32 @@ export default function Header({ onCallClick, onZamerClick }) {
                   <div className="col-lg-3 hidden-md hidden-sm hidden-xs">
                     <div
                       className="moscow"
-                      data-town={siteConfig.city}
+                      data-town={city}
                       style={{
                         background: "rgba(0,0,0,0) url('/images/m_gerb.png') no-repeat scroll left top",
                       }}
                     >
-                      {siteConfig.city}&nbsp;&#9660;
+                      {city}&nbsp;&#9660;
                       <br />
                       <span className="under">- - - - - - - - - -</span>
-                      <div className="newblock">
+                      <div className="newblock newblock--compact">
                         <ul>
                           {cities.map((c) => (
                             <li key={c.slug}>
                               <div>
-                                <a href={c.href}>{c.name}</a>
+                                {isMain ? (
+                                  <button type="button" className="newblock-city-btn" onClick={() => setSelectedCitySlug(c.slug)}>
+                                    {c.name}
+                                  </button>
+                                ) : (
+                                  <a href={c.href}>{c.name}</a>
+                                )}
                               </div>
                             </li>
                           ))}
                         </ul>
                       </div>
-                      <div className="rasprod_moscow">{siteConfig.citySuffix}</div>
+                      <div className="rasprod_moscow">{citySuffix}</div>
                     </div>
                   </div>
                   <div className="col-lg-3 hidden-md hidden-sm hidden-xs">
@@ -132,8 +152,8 @@ export default function Header({ onCallClick, onZamerClick }) {
                   <div className="hidden-sm col-md-12 col-lg-6 hidden-xs">
                     <div className="tel">
                       <p>
-                        <a className="comagic_phone" itemProp="telephone" href={`tel:${siteConfig.phone.replace(/\s/g, '')}`} style={{ textDecoration: 'none' }}>
-                          {siteConfig.phone}
+                        <a className="comagic_phone" itemProp="telephone" href={phoneHref ? `tel:${phoneHref}` : '#'} style={{ textDecoration: 'none' }}>
+                          {phone || siteConfig.phone}
                         </a>
                       </p>
                       <button type="button" className="call" onClick={handleCallClick}>
@@ -158,15 +178,15 @@ export default function Header({ onCallClick, onZamerClick }) {
               <div className="b_line">
                 <div className="menu_place clearfix">
                   <div className="tel">
-                    <a className="comagic_phone" href={`tel:${siteConfig.phone.replace(/\s/g, '')}`} style={{ textDecoration: 'none' }}>
-                      {siteConfig.phone}
+                    <a className="comagic_phone" href={`tel:${(phone || '').replace(/\s/g, '')}`} style={{ textDecoration: 'none' }}>
+                      {phone}
                     </a>
                   </div>
                   <button type="button" className="call" onClick={handleCallClick}>
                     Вам перезвонить?
                   </button>
                   <div className="trubka">
-                    <a href={`tel:${siteConfig.phone.replace(/\s/g, '')}`}>
+                    <a href={phoneHref ? `tel:${phoneHref}` : '#'}>
                       <img src="/images/trubka.png" alt="" />
                     </a>
                   </div>

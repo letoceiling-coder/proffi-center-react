@@ -45,12 +45,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/telegram/webhook/{id}', [BotController::class, 'handleWebhook']);
+Route::post('/telegram/forms-webhook', [\App\Http\Controllers\Api\FormsWebhookController::class, 'handle']);
 
 Route::prefix('v1')->group(function () {
     Route::get('/ping', fn () => response()->json(['message' => 'API v1 ok', 'timestamp' => now()->toIso8601String()]));
 
     // Public API (no auth)
     Route::get('/site/resolve', [PublicSiteController::class, 'resolve']);
+    Route::get('/site/by-city/{slug}', [PublicSiteController::class, 'byCity'])->where('slug', '[a-z0-9-]+');
+    Route::get('/city-sites', [PublicSiteController::class, 'citySites']);
+    Route::post('/forms/lead', [\App\Http\Controllers\Api\FormLeadController::class, 'store']);
+    Route::post('/reviews/submit', [\App\Http\Controllers\Api\V1\Public\PublicReviewSubmitController::class, 'store']);
     Route::get('/menu/{key}', [PublicMenuController::class, 'show'])->where('key', 'header|footer');
     Route::get('/page/{slug}', [PublicPageController::class, 'show']);
     Route::get('/service/{slug}', [PublicServiceController::class, 'show']);

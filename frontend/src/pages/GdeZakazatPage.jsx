@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -10,6 +10,7 @@ import SectionForm5min from '../components/sections/SectionForm5min';
 import SectionZamer from '../components/sections/SectionZamer';
 import FooterMenu from '../components/FooterMenu';
 import Footer from '../components/Footer';
+import { useSite } from '../context/SiteContext.jsx';
 import { getGdeZakazatPageData } from '../data/gdeZakazatData';
 import {
   siteConfig,
@@ -20,6 +21,7 @@ import {
 } from '../data/mockPageData';
 
 export default function GdeZakazatPage() {
+  const { site, contacts } = useSite();
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
@@ -29,7 +31,38 @@ export default function GdeZakazatPage() {
   const closeCallback = () => setPopupCallback(false);
   const onCallbackSuccess = () => setPopupSpasibo(true);
 
-  const pageData = getGdeZakazatPageData(siteConfig);
+  /** Для городских сайтов не подставляем почтовый индекс другого города */
+  const postalForSite = site?.city
+    ? (contacts?.address_postal_code ?? '')
+    : (contacts?.address_postal_code ?? siteConfig.address.postalCode);
+
+  const contactsConfig = useMemo(() => {
+    if (!site && !contacts) return siteConfig;
+    return {
+      ...siteConfig,
+      address: contacts
+        ? {
+            locality: contacts.address_locality ?? siteConfig.address.locality,
+            street: contacts.address_street ?? siteConfig.address.street,
+            postalCode: postalForSite,
+          }
+        : siteConfig.address,
+      city: site?.city?.name ?? siteConfig.city,
+      region: site?.region?.name ?? '',
+      workTime: contacts?.work_time ?? siteConfig.workTime,
+      phone: contacts?.phone ?? siteConfig.phone,
+      companyName: contacts?.company_name ?? siteConfig.companyName,
+    };
+  }, [site, contacts, postalForSite]);
+
+  const pageData = getGdeZakazatPageData(contactsConfig);
+  const addressForSchema = contacts
+    ? {
+        locality: contacts.address_locality ?? siteConfig.address.locality,
+        street: contacts.address_street ?? siteConfig.address.street,
+        postalCode: postalForSite,
+      }
+    : siteConfig.address;
 
   return (
     <PreLoader>
@@ -72,7 +105,7 @@ export default function GdeZakazatPage() {
         mapAddress={pageData.mapAddress}
         mapPhone={pageData.mapPhone}
         mapMarker={pageData.mapMarker}
-        address={siteConfig.address}
+        address={addressForSchema}
       />
       <SectionForm5min data={form5minData} />
       <SectionZamer items={zamerBlocks} />

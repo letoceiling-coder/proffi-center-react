@@ -209,9 +209,11 @@ tr:nth-child(even), .calc-price thead tr, .calc-price tbody tr:nth-child(even) {
     padding-top: 10px;
     padding-bottom: 10px;
     z-index: 2;
-    text-align:center;
-
-    overflow: auto;
+    text-align: center;
+    height: auto;
+    min-height: 0;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 .newblock ul a{
     color:#fff;

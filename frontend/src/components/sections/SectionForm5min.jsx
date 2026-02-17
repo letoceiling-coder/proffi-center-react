@@ -1,12 +1,42 @@
 import { useState } from 'react';
+import { useSite } from '../../context/SiteContext.jsx';
+import { useNotification } from '../../context/NotificationContext.jsx';
+import { submitLead } from '../../api/public.js';
+import { isPhoneValid } from '../../utils/formValidation.js';
 
 export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
+  const { site, selectedCitySlug } = useSite();
+  const { show } = useNotification();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    onSubmit?.({ name, phone });
+    if (sending) return;
+    if (!phone?.trim()) {
+      show('Укажите телефон', 'error');
+      return;
+    }
+    if (!isPhoneValid(phone)) {
+      show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
+      return;
+    }
+    const payload = { type: 'form_5min', phone: phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    if (onSubmit) {
+      onSubmit({ name, phone });
+      return;
+    }
+    setSending(true);
+    try {
+      await submitLead(payload);
+      setName('');
+      setPhone('');
+      show('Заявка отправлена. Мы перезвоним вам.', 'success');
+    } catch (err) {
+      show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');
+    }
+    setSending(false);
   };
 
   const openLegal = (e) => {

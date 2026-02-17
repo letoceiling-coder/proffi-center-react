@@ -38,7 +38,7 @@ class ReviewController extends Controller
             'text' => 'required|string|max:10000',
             'phone' => 'nullable|string|max:50',
             'published_at' => 'nullable|date',
-            'status' => 'nullable|in:draft,published,hidden',
+            'status' => 'nullable|in:draft,pending,published,hidden',
         ]);
         $validated['status'] = $validated['status'] ?? 'draft';
         $review = Review::create($validated);
@@ -60,7 +60,7 @@ class ReviewController extends Controller
             'text' => 'required|string|max:10000',
             'phone' => 'nullable|string|max:50',
             'published_at' => 'nullable|date',
-            'status' => 'nullable|in:draft,published,hidden',
+            'status' => 'nullable|in:draft,pending,published,hidden',
         ]);
         $review->update($validated);
         $review->load('site');

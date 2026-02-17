@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -11,14 +11,36 @@ import SectionReviews from '../components/sections/SectionReviews';
 import SectionGallery from '../components/sections/SectionGallery';
 import FooterMenu from '../components/FooterMenu';
 import Footer from '../components/Footer';
+import { useSite } from '../context/SiteContext.jsx';
+import { getRegionPrepositional } from '../utils/regionDisplay.js';
 import { oKompaniiPageData, oKompaniiAboutCarousel, oKompaniiZakazaloData } from '../data/oKompaniiData';
 import { reviewsData, galleryData, footerMenuData, footerData } from '../data/mockPageData';
 
+function buildOKompaniiParagraphs(cityPrepositional, regionDisplay) {
+  const city = cityPrepositional || 'Анапе';
+  const region = regionDisplay || 'Анапском районе';
+  return [
+    `«Proffi Center» – это компания, которая устанавливает натяжные потолки в ${city} с 2013 года! Собственное производство позволяет обеспечить выгодные условия покупки по самым низким ценам. Использование только лучших материалов, комплектующих и профессиональный монтаж потолков гарантируют высокое качество предоставляемых услуг и срок службы более 20 лет!`,
+    `Основанная в 2013 году компания Proffi Center осуществляет деятельность в сфере ремонтно-отделочных работ вот уже более 13 лет. Ключевым направлением организации является установка натяжных потолков в ${city} и ${region}, услуги по дополнительным работам, розничная и оптовая продажа сопутствующих материалов. Постоянно развиваясь, улучшая обслуживание и качество на всех этапах работ, мы готовы Вам предложить лучшие варианты стилистической концепции, оптимальные отделочные материалы для Вашего помещения, монтаж натяжных потолков с гарантией качества и самой доступной ценой в ${city} и ${region}. Используемый нами материал соответствует всем санитарным требованиям, правилам пожарной безопасности, безопасен для здоровья человека и имеет все необходимые сертификаты. Собственное производство позволяет минимизировать издержки, тем самым гарантировать самые привлекательные цены. Натяжные потолки напрямую от производителя всегда дешевле!`,
+  ];
+}
+
 export default function OKompaniiPage() {
+  const { site } = useSite();
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
   const [navMobileOpen, setNavMobileOpen] = useState(false);
+
+  const cityPrepositional = site?.city?.name_prepositional ?? site?.city?.name ?? 'Анапе';
+  const regionDisplay = getRegionPrepositional(site?.region?.name) || site?.region?.name || 'Анапском районе';
+  const pageData = useMemo(
+    () =>
+      site?.city
+        ? { ...oKompaniiPageData, paragraphs: buildOKompaniiParagraphs(cityPrepositional, regionDisplay) }
+        : oKompaniiPageData,
+    [site?.city, cityPrepositional, regionDisplay]
+  );
 
   const openCallback = () => setPopupCallback(true);
   const closeCallback = () => setPopupCallback(false);
@@ -60,7 +82,7 @@ export default function OKompaniiPage() {
 
       <div className="probel" />
 
-      <SectionAbout data={oKompaniiPageData} carouselItems={oKompaniiAboutCarousel} />
+      <SectionAbout data={pageData} carouselItems={oKompaniiAboutCarousel} />
       <SectionZakazalo data={oKompaniiZakazaloData} />
       <SectionReviews items={reviewsData} />
       <SectionGallery items={galleryData} />

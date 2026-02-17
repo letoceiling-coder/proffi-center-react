@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useSite } from '../../context/SiteContext.jsx';
+import { formatPhoneDisplay } from '../../utils/phoneFormat.js';
 import { calcIntroData } from '../../data/kalkuljatorData';
 import { siteConfig } from '../../data/mockPageData';
 
@@ -9,6 +11,9 @@ function formatPromoDate() {
 }
 
 export default function SectionCalcIntro() {
+  const { contacts } = useSite();
+  const rawPhone = contacts?.phone ?? siteConfig.phone;
+  const phone = rawPhone ? formatPhoneDisplay(rawPhone) : (siteConfig.phone || '');
   const data = calcIntroData;
   return (
     <div className="section s_rsto">
@@ -17,7 +22,7 @@ export default function SectionCalcIntro() {
           <div className="col-sm-12 clearfix">
             <h1 className="">{data.title}</h1>
             <p className="light">
-              {data.description} <span className="comagic_phone">{siteConfig.phone}</span>.
+              {data.description} <span className="comagic_phone">{phone}</span>.
             </p>
             <div className="sk_block">
               <div className="l1">Немецкое полотно<br />по цене российского</div>

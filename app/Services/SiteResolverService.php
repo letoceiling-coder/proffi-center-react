@@ -7,6 +7,23 @@ use App\Models\Site;
 final class SiteResolverService
 {
     /**
+     * Резолв сайта по host и опционально по city_slug (для основного домена без редиректа).
+     */
+    public function resolve(string $host, ?string $citySlug = null): Site
+    {
+        $host = $this->normalizeHost($host);
+        if ($citySlug !== null && $citySlug !== '') {
+            $site = Site::whereNotNull('city_id')
+                ->whereHas('city', fn ($q) => $q->where('slug', $citySlug))
+                ->first();
+            if ($site) {
+                return $site;
+            }
+        }
+        return $this->resolveByHost($host);
+    }
+
+    /**
      * Резолв сайта по host (domain).
      * Сначала ищем по domain = host, иначе fallback на root site (is_primary=1).
      */

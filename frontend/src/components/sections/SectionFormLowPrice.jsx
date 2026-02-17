@@ -1,19 +1,50 @@
 import { useState } from 'react';
 import FlipClockCountdown from '@leenguyen/react-flip-clock-countdown';
 import '@leenguyen/react-flip-clock-countdown/dist/index.css';
+import { useSite } from '../../context/SiteContext.jsx';
+import { useNotification } from '../../context/NotificationContext.jsx';
+import { submitLead } from '../../api/public.js';
+import { isPhoneValid } from '../../utils/formValidation.js';
 
 export default function SectionFormLowPrice({ data, onSubmit }) {
+  const { site, selectedCitySlug } = useSite();
+  const { show } = useNotification();
   const { title, countdownLabel, countdownEnd, legalLink } = data || {};
   const [phone, setPhone] = useState('');
+  const [sending, setSending] = useState(false);
 
   const openLegal = (e) => {
     e.preventDefault();
     window.open(legalLink, '_blank', 'width=500,height=500');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit?.({ phone });
+    setError('');
+    setSuccess(false);
+    if (sending) return;
+    if (!phone?.trim()) {
+      setError('Укажите телефон');
+      return;
+    }
+    if (!isPhoneValid(phone)) {
+      setError('Введите корректный номер телефона (не менее 10 цифр)');
+      return;
+    }
+    const payload = { type: 'low_price', phone: phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    if (onSubmit) {
+      onSubmit({ phone });
+      return;
+    }
+    setSending(true);
+    try {
+      await submitLead(payload);
+      setPhone('');
+      setSuccess(true);
+    } catch (err) {
+      setError(err?.message || 'Не удалось отправить. Попробуйте позже.');
+    }
+    setSending(false);
   };
 
   const targetTime = countdownEnd ? new Date(countdownEnd).getTime() : null;
@@ -73,7 +104,7 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
             <div className="col-md-3  clearfix">
               <div className="blue_btn">
                 <a id="low_sand" href="#" onClick={handleSubmit}>
-                  Отправить заявку
+                  {sending ? 'Отправка…' : 'Отправить заявку'}
                 </a>
               </div>
             </div>

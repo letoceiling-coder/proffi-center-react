@@ -51,26 +51,11 @@ export const siteConfig = {
   bannerPrice: 205,
 };
 
+/** Города с поддоменами (только Анапа, Ставрополь, Москва). Можно заменить на данные из API /api/v1/city-sites */
 export const cities = [
-  { name: 'Витязево', slug: 'vityazevo', href: 'https://vityazevo.proffi-center.ru' },
-  { name: 'Дивноморское', slug: 'divnomorskoe', href: 'https://divnomorskoe.proffi-center.ru' },
-  { name: 'Джемете', slug: 'dzhemete', href: 'https://dzhemete.proffi-center.ru' },
-  { name: 'Геленджик', slug: 'gelendzhik', href: 'https://gelendzhik.proffi-center.ru' },
-  { name: 'Кабардинка', slug: 'kabardinka', href: 'https://kabardinka.proffi-center.ru' },
-  { name: 'Лермонтово', slug: 'lermontovo', href: 'https://lermontovo.proffi-center.ru' },
-  { name: 'Новороссийск', slug: 'novorossiysk', href: 'https://novorossiysk.proffi-center.ru' },
-  { name: 'Ольгинка', slug: 'olginka', href: 'https://olginka.proffi-center.ru' },
-  { name: 'Сукко', slug: 'sukko', href: 'https://sukko.proffi-center.ru' },
-  { name: 'Супсех', slug: 'supseh', href: 'https://supseh.proffi-center.ru' },
-  { name: 'Туапсе', slug: 'tuapse', href: 'https://tuapse.proffi-center.ru' },
-  { name: 'Архипо-Осиповка', slug: 'arkhipo-osipovka', href: 'https://arkhipo-osipovka.proffi-center.ru' },
-  { name: 'Благовещенская', slug: 'blagoveshchenskaya', href: 'https://blagoveshchenskaya.proffi-center.ru' },
-  { name: 'Светлоград', slug: 'svetlograd', href: 'https://svetlograd.proffi-center.ru' },
-  { name: 'Утриш', slug: 'utrish', href: 'https://utrish.proffi-center.ru' },
-  { name: 'Ставрополь', slug: 'stavropol', href: 'https://stavropol.proffi-center.ru' },
-  { name: 'Тамань', slug: 'taman', href: 'https://taman.proffi-center.ru' },
-  { name: 'Темрюк', slug: 'temryuk', href: 'https://temryuk.proffi-center.ru' },
   { name: 'Анапа', slug: 'anapa', href: 'https://anapa.proffi-center.ru' },
+  { name: 'Ставрополь', slug: 'stavropol', href: 'https://stavropol.proffi-center.ru' },
+  { name: 'Москва', slug: 'moscow', href: 'https://moscow.proffi-center.ru' },
 ];
 
 export const menuItems = [
@@ -327,6 +312,7 @@ export const footerData = {
   email: siteConfig.email,
   siteUrl: siteConfig.siteUrl,
   copyright: 'Proffi Center',
+  copyrightYear: 2021,
   legalLink: siteConfig.legalLink,
 };
 

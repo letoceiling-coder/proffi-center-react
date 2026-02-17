@@ -1,18 +1,41 @@
 import { useState } from 'react';
 import { popupCallbackData } from '../data/mockPageData';
+import { useSite } from '../context/SiteContext.jsx';
+import { submitLead } from '../api/public.js';
+import { isPhoneValid } from '../utils/formValidation.js';
 
 export default function PopupCallback({ isOpen, onClose, onSuccess }) {
+  const { site, selectedCitySlug } = useSite();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    onSuccess?.();
-    setName('');
-    setPhone('');
-    onClose();
+    setError('');
+    if (sending) return;
+    if (!phone?.trim()) {
+      setError('Укажите телефон');
+      return;
+    }
+    if (!isPhoneValid(phone)) {
+      setError('Введите корректный номер (не менее 10 цифр)');
+      return;
+    }
+    setSending(true);
+    try {
+      await submitLead({ type: 'callback', phone: phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      onSuccess?.();
+      setName('');
+      setPhone('');
+      onClose();
+    } catch (err) {
+      setError(err?.message || 'Не удалось отправить. Попробуйте позже.');
+    }
+    setSending(false);
   };
 
   const openLegal = (e) => {
@@ -21,7 +44,7 @@ export default function PopupCallback({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div id="popup1" className="popup1" style={{ display: 'block' }}>
+    <div id="popup1" className="popup1" style={{ display: 'block', zIndex: 10001, position: 'fixed' }}>
       <div className="f-close" onClick={onClose} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClose()} aria-label="Закрыть" />
       <div className="header">{popupCallbackData.title}</div>
       <div className="header_sub" />
@@ -37,7 +60,7 @@ export default function PopupCallback({ isOpen, onClose, onSuccess }) {
           </div>
         </div>
         <div className="blue_btn">
-          <a href="#" id="callback-send1" onClick={(e) => { e.preventDefault(); handleSubmit(e); }}>Жду звонка</a>
+          <a href="#" id="callback-send1" onClick={(e) => { e.preventDefault(); handleSubmit(e); }}>{sending ? 'Отправка…' : 'Жду звонка'}</a>
         </div>
       </form>
       <div className="prav-info clearfix">

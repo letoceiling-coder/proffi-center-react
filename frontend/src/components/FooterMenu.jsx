@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useMenu } from '../context/MenuContext.jsx';
+import { footerMenuData as defaultItems } from '../data/mockPageData';
 
-export default function FooterMenu({ items = [] }) {
+export default function FooterMenu({ items: itemsProp }) {
+  const { footerMenu } = useMenu();
+  const items = itemsProp ?? (footerMenu?.length ? footerMenu : defaultItems);
   return (
     <div className="section s23">
       <div className="container">

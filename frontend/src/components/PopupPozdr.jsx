@@ -1,16 +1,39 @@
 import { useState } from 'react';
 import { popupPozdrData } from '../data/mockPageData';
+import { useSite } from '../context/SiteContext.jsx';
+import { submitLead } from '../api/public.js';
+import { isPhoneValid } from '../utils/formValidation.js';
 
 export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
+  const { site, selectedCitySlug } = useSite();
   const [phone, setPhone] = useState('');
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    onSuccess?.();
-    setPhone('');
-    onClose();
+    setError('');
+    if (sending) return;
+    if (!phone?.trim()) {
+      setError('Укажите телефон');
+      return;
+    }
+    if (!isPhoneValid(phone)) {
+      setError('Введите корректный номер (не менее 10 цифр)');
+      return;
+    }
+    setSending(true);
+    try {
+      await submitLead({ type: 'pozdravlenie', phone: phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      onSuccess?.();
+      setPhone('');
+      onClose();
+    } catch (err) {
+      setError(err?.message || 'Не удалось отправить. Попробуйте позже.');
+    }
+    setSending(false);
   };
 
   const openLegal = (e) => {
@@ -30,7 +53,7 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
           </div>
         </div>
         <div className="blue_btn">
-          <a href="#" id="callback-pozdr" onClick={(e) => { e.preventDefault(); handleSubmit(e); }}>Отправить</a>
+          <a href="#" id="callback-pozdr" onClick={(e) => { e.preventDefault(); handleSubmit(e); }}>{sending ? 'Отправка…' : 'Отправить'}</a>
         </div>
       </form>
       <div className="prav-info clearfix">
