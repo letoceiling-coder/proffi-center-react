@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Models\TelegramFormSubscriber;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Webhook для бота заявок (токен из .env TELEGRAM_BOT_TOKEN).
- * Обрабатывает /start и callback_query для модерации отзывов.
+ * При /start — сохраняем пользователя в telegram_form_subscribers (ему будут приходить заявки с форм).
+ * Обрабатывает callback_query для модерации отзывов.
  */
 class FormsWebhookController extends Controller
 {
@@ -53,11 +55,18 @@ class FormsWebhookController extends Controller
         }
 
         if ($text === '/start' || str_starts_with($text, '/start')) {
-            $this->telegram->setFormsChatIdFromStart($chatId);
-            $username = $message['from']['username'] ?? $message['from']['first_name'] ?? 'гость';
-            $firstName = $message['from']['first_name'] ?? '';
-            $display = $firstName ?: ($username !== 'гость' ? '@' . $username : 'гость');
-            $welcome = "👋 Привет, " . $display . "!\n\nЯ бот для получения заявок с сайта proffi-center.ru.\nЭтот чат зарегистрирован: сюда будут приходить все заявки с форм и отзывы на модерацию.";
+            $from = $message['from'] ?? [];
+            TelegramFormSubscriber::firstOrCreate(
+                ['chat_id' => (string) $chatId],
+                [
+                    'username' => $from['username'] ?? null,
+                    'first_name' => $from['first_name'] ?? null,
+                ]
+            );
+            $firstName = $from['first_name'] ?? '';
+            $username = $from['username'] ?? '';
+            $display = $firstName ?: ($username ? '@' . $username : 'гость');
+            $welcome = "👋 Привет, " . $display . "!\n\nЯ бот для получения заявок с сайта proffi-center.ru.\nВы подписаны: сюда будут приходить все заявки с форм и отзывы на модерацию.";
             $this->telegram->sendMessage($token, $chatId, $welcome);
         }
     }

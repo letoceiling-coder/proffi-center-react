@@ -2,7 +2,7 @@
 
 return [
     'bot_token' => env('TELEGRAM_BOT_TOKEN'),
-    /** ID чата/группы, куда бот отправляет заявки с форм (только из .env, не в git). */
+    /** Не используется: заявки уходят всем из telegram_form_subscribers (кто написал боту /start). */
     'forms_chat_id' => env('TELEGRAM_CHAT_ID'),
     'webhook_url' => env('TELEGRAM_WEBHOOK_URL', env('APP_URL') . '/api/telegram/webhook'),
     'webhook' => [

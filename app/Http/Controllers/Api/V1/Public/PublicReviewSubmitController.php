@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Models\Review;
+use App\Models\TelegramFormSubscriber;
 use App\Services\SiteResolverService;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
@@ -55,18 +56,19 @@ class PublicReviewSubmitController extends PublicApiController
         $text .= "💬 " . mb_substr($review->text, 0, 500) . (mb_strlen($review->text) > 500 ? '…' : '');
 
         $token = config('telegram.bot_token');
-        $chatId = $this->telegram->getFormsChatId();
-        if (!empty($token) && $chatId !== null && $chatId !== '') {
-            $this->telegram->sendMessage($token, $chatId, $text, [
-                'reply_markup' => [
-                    'inline_keyboard' => [
-                        [
-                            ['text' => '✅ Подтвердить', 'callback_data' => 'review_approve_' . $review->id],
-                            ['text' => '❌ Отказать', 'callback_data' => 'review_reject_' . $review->id],
-                        ],
+        $chatIds = TelegramFormSubscriber::allChatIds();
+        if (!empty($token) && $chatIds !== []) {
+            $replyMarkup = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => '✅ Подтвердить', 'callback_data' => 'review_approve_' . $review->id],
+                        ['text' => '❌ Отказать', 'callback_data' => 'review_reject_' . $review->id],
                     ],
                 ],
-            ]);
+            ];
+            foreach ($chatIds as $chatId) {
+                $this->telegram->sendMessage($token, $chatId, $text, ['reply_markup' => $replyMarkup]);
+            }
         }
 
         return response()->json(['message' => 'Отзыв отправлен на модерацию', 'data' => ['id' => $review->id]], 201);
