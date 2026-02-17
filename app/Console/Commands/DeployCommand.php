@@ -83,20 +83,19 @@ class DeployCommand extends Command
         $fullCommand = "ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 {$sshTarget} " . escapeshellarg($serverScript);
 
         $this->info('Сервер: обновление и сборка...');
-        $process = Process::fromShellCommandline($fullCommand)->setTimeout(600);
-        $result = $process->run();
+        $result = Process::timeout(600)->run($fullCommand);
 
         if ($result->successful()) {
             $this->info('Деплой завершён.');
-            if (trim($process->output())) {
-                $this->line($process->output());
+            if (trim($result->output())) {
+                $this->line($result->output());
             }
             return self::SUCCESS;
         }
 
         $this->error('Ошибка на сервере:');
-        $this->line($process->output());
-        $this->line($process->errorOutput());
+        $this->line($result->output());
+        $this->line($result->errorOutput());
         return self::FAILURE;
     }
 }
