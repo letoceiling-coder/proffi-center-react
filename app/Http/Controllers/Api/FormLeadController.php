@@ -55,7 +55,7 @@ class FormLeadController extends PublicApiController
         $token = config('telegram.bot_token');
         $chatId = $this->telegram->getFormsChatId();
         if ($token === null || $token === '' || $chatId === null || $chatId === '') {
-            \Illuminate\Support\Facades\Log::warning('Form lead: TELEGRAM_BOT_TOKEN or chat ID not set (напишите боту /start в Telegram)', [
+            \Illuminate\Support\Facades\Log::warning('Form lead: chat_id не задан. Заявки не уходят в бот. Исправление: задать TELEGRAM_CHAT_ID в .env или выполнить: php artisan telegram:set-forms-chat-id <CHAT_ID> (подробнее: php artisan telegram:forms-status)', [
                 'has_token' => !empty($token),
                 'has_chat_id' => !empty($chatId),
             ]);

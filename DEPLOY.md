@@ -16,8 +16,10 @@
 - При использовании Sanctum для админки: `SANCTUM_STATEFUL_DOMAINS=your-domain.com` (при необходимости)
 - **Telegram (заявки с форм):**
   - `TELEGRAM_BOT_TOKEN` — токен бота от @BotFather (обязателен).
-  - `TELEGRAM_CHAT_ID` — опционален: если не задан, chat ID создаётся при команде **/start** в боте. Кто первым напишет боту `/start` в личку или в группе — тот чат и будет получать заявки (ID сохраняется в `storage/app/telegram_forms_chat_id.txt`). При необходимости можно задать `TELEGRAM_CHAT_ID` в `.env` вручную.
-  - После изменения `.env`: `php artisan config:clear` (или заново `php artisan config:cache`).
+  - `TELEGRAM_CHAT_ID` — **обязателен для работы заявок.** Без него API возвращает 503 «Сервис заявок временно недоступен».
+  - **Как получить chat_id:** 1) Напишите вашему боту в Telegram команду `/start`. 2) Откройте в браузере (подставьте токен): `https://api.telegram.org/bot<ТОКЕН>/getUpdates` — в ответе найдите `"chat":{"id":123456789}` (для группы id вида `-1001234567890`). 3) В `.env` на сервере задайте `TELEGRAM_CHAT_ID=123456789` (без кавычек). Альтернатива: на сервере выполнить `php artisan telegram:set-forms-chat-id 123456789` (создаётся файл `storage/app/telegram_forms_chat_id.txt`).
+  - После изменения `.env`: `php artisan config:clear && php artisan config:cache`.
+  - Сервер должен иметь доступ в интернет к `api.telegram.org` (порт 443); иначе отправка в бот не сработает.
 
 ### Команды (по порядку)
 
