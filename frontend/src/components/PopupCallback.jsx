@@ -32,7 +32,6 @@ export default function PopupCallback({ isOpen, onClose, onSuccess }) {
       show('Заявка отправлена. Мы перезвоним вам.', 'success');
       setName('');
       setPhone('');
-      onSuccess?.();
       onClose();
     } catch (err) {
       show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');

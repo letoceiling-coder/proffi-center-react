@@ -30,7 +30,6 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
       await submitLead({ type: 'pozdravlenie', phone: normalizePhone(phone) || phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
       show('Заявка отправлена. Мы перезвоним вам.', 'success');
       setPhone('');
-      onSuccess?.();
       onClose();
     } catch (err) {
       show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');
