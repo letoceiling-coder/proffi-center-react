@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useSite } from '../../context/SiteContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitLead } from '../../api/public.js';
-import { isPhoneValid } from '../../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../../utils/formValidation.js';
+import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
   const { site, selectedCitySlug } = useSite();
@@ -22,7 +23,7 @@ export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
       show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
       return;
     }
-    const payload = { type: 'form_5min', phone: phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    const payload = { type: 'form_5min', phone: normalizePhone(phone) || phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
     if (onSubmit) {
       onSubmit({ name, phone });
       return;
@@ -58,7 +59,7 @@ export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
               </div>
               <div className="razmetka1">
                 <div className="low_tel">
-                  <input className="v_tel" type="text" placeholder="Телефон" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                  <input className="v_tel" type="tel" inputMode="numeric" placeholder="8 (999) 123-45-67" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} />
                 </div>
               </div>
               <div className="razmetka1_1">

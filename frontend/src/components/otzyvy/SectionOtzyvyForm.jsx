@@ -4,28 +4,29 @@
  */
 import { useState } from 'react';
 import { useSite } from '../../context/SiteContext.jsx';
+import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitReview } from '../../api/public.js';
+import { normalizePhone } from '../../utils/formValidation.js';
+import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 export default function SectionOtzyvyForm({ legalLink }) {
-  const { site } = useSite();
+  const { site, selectedCitySlug } = useSite();
+  const { show } = useNotification();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    setError('');
     const trimmedName = name?.trim() || '';
     const trimmedText = text?.trim() || '';
     if (!trimmedName) {
-      setError('Укажите имя');
+      show('Укажите имя', 'error');
       return;
     }
     if (!trimmedText) {
-      setError('Напишите отзыв');
+      show('Напишите отзыв', 'error');
       return;
     }
     if (sending) return;
@@ -34,15 +35,15 @@ export default function SectionOtzyvyForm({ legalLink }) {
       await submitReview({
         author_name: trimmedName,
         text: trimmedText,
-        phone: phone?.trim() || undefined,
+        phone: phone ? normalizePhone(phone) || phone.trim() : undefined,
         city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined,
       });
-      setSent(true);
+      show('Спасибо! Отзыв отправлен на модерацию.', 'success');
       setName('');
       setPhone('');
       setText('');
     } catch (err) {
-      setError(err?.message || 'Не удалось отправить');
+      show(err?.message || 'Не удалось отправить', 'error');
     }
     setSending(false);
   };
@@ -63,7 +64,7 @@ export default function SectionOtzyvyForm({ legalLink }) {
         </div>
         <div className="razmetka1">
           <div className="low_tel">
-            <input className="v_tel" type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Телефон" />
+            <input className="v_tel" type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} placeholder="8 (999) 123-45-67" />
           </div>
         </div>
         <div className="razmetka1">

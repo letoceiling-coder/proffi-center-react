@@ -1,37 +1,39 @@
 import { useState } from 'react';
 import { popupPozdrData } from '../data/mockPageData';
 import { useSite } from '../context/SiteContext.jsx';
+import { useNotification } from '../context/NotificationContext.jsx';
 import { submitLead } from '../api/public.js';
-import { isPhoneValid } from '../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../utils/formValidation.js';
+import { formatPhoneInput } from '../utils/phoneFormat.js';
 
 export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
   const { site, selectedCitySlug } = useSite();
+  const { show } = useNotification();
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
-    setError('');
     if (sending) return;
     if (!phone?.trim()) {
-      setError('Укажите телефон');
+      show('Укажите телефон', 'error');
       return;
     }
     if (!isPhoneValid(phone)) {
-      setError('Введите корректный номер (не менее 10 цифр)');
+      show('Введите корректный номер (не менее 10 цифр)', 'error');
       return;
     }
     setSending(true);
     try {
-      await submitLead({ type: 'pozdravlenie', phone: phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
-      onSuccess?.();
+      await submitLead({ type: 'pozdravlenie', phone: normalizePhone(phone) || phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      show('Заявка отправлена. Мы перезвоним вам.', 'success');
       setPhone('');
+      onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err?.message || 'Не удалось отправить. Попробуйте позже.');
+      show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');
     }
     setSending(false);
   };
@@ -42,14 +44,14 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div id="pozdr" className="pozdr">
+    <div id="pozdr" className="pozdr" style={{ display: 'block', zIndex: 10001, position: 'fixed' }}>
       <div className="f-close" onClick={onClose} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onClose()} aria-label="Закрыть" />
       <div className="header">{popupPozdrData.title}</div>
       <div className="header_sub" dangerouslySetInnerHTML={{ __html: popupPozdrData.content }} />
       <form onSubmit={handleSubmit}>
         <div className="razmetka1">
           <div className="low_tel">
-            <input className="pozdr_tel" type="text" placeholder="Телефон" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <input className="pozdr_tel" type="tel" inputMode="numeric" placeholder="8 (999) 123-45-67" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} />
           </div>
         </div>
         <div className="blue_btn">

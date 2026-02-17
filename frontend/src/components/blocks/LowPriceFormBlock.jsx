@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useSite } from '../../context/SiteContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitLead } from '../../api/public.js';
-import { isPhoneValid } from '../../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../../utils/formValidation.js';
+import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 export default function LowPriceFormBlock({ data }) {
   const { enabled } = data;
@@ -45,9 +46,10 @@ export default function LowPriceFormBlock({ data }) {
             <form onSubmit={handleSubmit} className="form_low_price">
               <input
                 type="tel"
-                placeholder="Телефон"
+                inputMode="numeric"
+                placeholder="8 (999) 123-45-67"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
               />
               <button type="submit">{sending ? 'Отправка…' : 'Отправить'}</button>
             </form>

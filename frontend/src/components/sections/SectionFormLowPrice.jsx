@@ -4,7 +4,8 @@ import '@leenguyen/react-flip-clock-countdown/dist/index.css';
 import { useSite } from '../../context/SiteContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitLead } from '../../api/public.js';
-import { isPhoneValid } from '../../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../../utils/formValidation.js';
+import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 export default function SectionFormLowPrice({ data, onSubmit }) {
   const { site, selectedCitySlug } = useSite();
@@ -20,18 +21,16 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess(false);
     if (sending) return;
     if (!phone?.trim()) {
-      setError('Укажите телефон');
+      show('Укажите телефон', 'error');
       return;
     }
     if (!isPhoneValid(phone)) {
-      setError('Введите корректный номер телефона (не менее 10 цифр)');
+      show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
       return;
     }
-    const payload = { type: 'low_price', phone: phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    const payload = { type: 'low_price', phone: normalizePhone(phone) || phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
     if (onSubmit) {
       onSubmit({ phone });
       return;
@@ -40,9 +39,9 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
     try {
       await submitLead(payload);
       setPhone('');
-      setSuccess(true);
+      show('Заявка отправлена. Мы перезвоним вам.', 'success');
     } catch (err) {
-      setError(err?.message || 'Не удалось отправить. Попробуйте позже.');
+      show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');
     }
     setSending(false);
   };
@@ -97,7 +96,7 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
             </div>
             <div className="col-md-5  clearfix">
               <div className="low_tel">
-                <input id="low_tel" type="text" placeholder="Телефон" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <input id="low_tel" type="tel" inputMode="numeric" placeholder="8 (999) 123-45-67" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} />
               </div>
             </div>
 

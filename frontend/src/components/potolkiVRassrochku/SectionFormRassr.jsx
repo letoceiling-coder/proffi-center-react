@@ -7,7 +7,8 @@ import { useState } from 'react';
 import { useSite } from '../../context/SiteContext.jsx';
 import { useNotification } from '../../context/NotificationContext.jsx';
 import { submitLead } from '../../api/public.js';
-import { isPhoneValid } from '../../utils/formValidation.js';
+import { isPhoneValid, normalizePhone } from '../../utils/formValidation.js';
+import { formatPhoneInput } from '../../utils/phoneFormat.js';
 
 export default function SectionFormRassr({ data = {}, onSubmit }) {
   const { site, selectedCitySlug } = useSite();
@@ -68,10 +69,11 @@ export default function SectionFormRassr({ data = {}, onSubmit }) {
                 <div className="low_tel">
                   <input
                     className="r_tel"
-                    type="text"
+                    type="tel"
+                    inputMode="numeric"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Телефон"
+                    onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
+                    placeholder="8 (999) 123-45-67"
                   />
                 </div>
               </div>
