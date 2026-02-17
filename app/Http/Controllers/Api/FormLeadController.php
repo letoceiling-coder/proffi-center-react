@@ -29,8 +29,11 @@ class FormLeadController extends PublicApiController
         $validated = $request->validate([
             'type' => 'required|string|in:callback,low_price,form_5min,rassrochka,pozdravlenie',
             'phone' => 'required|string|max:50',
-            'name' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
             'message' => 'nullable|string|max:5000',
+        ], [
+            'name.required' => 'Укажите имя.',
+            'phone.required' => 'Укажите телефон.',
         ]);
 
         $host = $request->query('host') ?: $request->header('X-Forwarded-Host') ?: $request->getHost() ?: '';

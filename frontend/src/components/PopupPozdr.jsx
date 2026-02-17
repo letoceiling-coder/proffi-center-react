@@ -9,6 +9,7 @@ import { formatPhoneInput } from '../utils/phoneFormat.js';
 export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
   const { site, selectedCitySlug } = useSite();
   const { show } = useNotification();
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
 
@@ -17,6 +18,10 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
     if (sending) return;
+    if (!name?.trim()) {
+      show('Укажите имя', 'error');
+      return;
+    }
     if (!phone?.trim()) {
       show('Укажите телефон', 'error');
       return;
@@ -27,8 +32,9 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
     }
     setSending(true);
     try {
-      await submitLead({ type: 'pozdravlenie', phone: normalizePhone(phone) || phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      await submitLead({ type: 'pozdravlenie', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
       show('Заявка отправлена. Мы перезвоним вам.', 'success');
+      setName('');
       setPhone('');
       onClose();
     } catch (err) {
@@ -48,6 +54,11 @@ export default function PopupPozdr({ isOpen, onClose, onSuccess }) {
       <div className="header">{popupPozdrData.title}</div>
       <div className="header_sub" dangerouslySetInnerHTML={{ __html: popupPozdrData.content }} />
       <form onSubmit={handleSubmit}>
+        <div className="razmetka1">
+          <div className="low_name">
+            <input className="pozdr_name" type="text" placeholder="Ваше имя" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+        </div>
         <div className="razmetka1">
           <div className="low_tel">
             <input className="pozdr_tel" type="tel" inputMode="numeric" placeholder="8 (999) 123-45-67" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} />

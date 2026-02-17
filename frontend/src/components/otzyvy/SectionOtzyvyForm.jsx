@@ -32,6 +32,10 @@ export default function SectionOtzyvyForm({ legalLink }) {
       show('Напишите отзыв', 'error');
       return;
     }
+    if (trimmedText.length < 100) {
+      show('Текст отзыва должен быть не менее 100 символов', 'error');
+      return;
+    }
     if (sending) return;
     setSending(true);
     try {
@@ -78,7 +82,7 @@ export default function SectionOtzyvyForm({ legalLink }) {
         </div>
         <div className="razmetka1">
           <div className="low_text">
-            <textarea className="v_text" placeholder="Отзыв" value={text} onChange={(e) => setText(e.target.value)} />
+            <textarea className="v_text" placeholder="Отзыв (не менее 100 символов)" value={text} onChange={(e) => setText(e.target.value)} minLength={100} />
           </div>
         </div>
         <div className="box">

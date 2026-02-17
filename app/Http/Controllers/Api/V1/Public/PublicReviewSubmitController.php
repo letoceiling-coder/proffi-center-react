@@ -31,11 +31,13 @@ class PublicReviewSubmitController extends PublicApiController
     {
         $validated = $request->validate([
             'author_name' => 'required|string|max:255',
-            'text' => 'required|string|max:10000',
+            'text' => 'required|string|min:100|max:10000',
             'phone' => 'nullable|string|max:50',
             'city_slug' => 'nullable|string|max:50',
             'photos' => 'nullable|array',
             'photos.*' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:10240',
+        ], [
+            'text.min' => 'Текст отзыва должен быть не менее 100 символов.',
         ]);
 
         $host = $this->getHost($request);

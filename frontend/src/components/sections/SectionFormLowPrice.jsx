@@ -11,6 +11,7 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
   const { site, selectedCitySlug } = useSite();
   const { show } = useNotification();
   const { title, countdownLabel, countdownEnd, legalLink } = data || {};
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
 
@@ -22,6 +23,10 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (sending) return;
+    if (!name?.trim()) {
+      show('Укажите имя', 'error');
+      return;
+    }
     if (!phone?.trim()) {
       show('Укажите телефон', 'error');
       return;
@@ -30,14 +35,15 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
       show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
       return;
     }
-    const payload = { type: 'low_price', phone: normalizePhone(phone) || phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    const payload = { type: 'low_price', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
     if (onSubmit) {
-      onSubmit({ phone });
+      onSubmit({ name, phone });
       return;
     }
     setSending(true);
     try {
       await submitLead(payload);
+      setName('');
       setPhone('');
       show('Заявка отправлена. Мы перезвоним вам.', 'success');
     } catch (err) {
@@ -93,6 +99,11 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
             </div>
             <div className="clearfix"></div>
             <div className="col-md-2  clearfix">
+            </div>
+            <div className="col-md-3  clearfix">
+              <div className="low_name">
+                <input id="low_name" type="text" placeholder="Ваше имя" value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
             </div>
             <div className="col-md-5  clearfix">
               <div className="low_tel">

@@ -15,6 +15,10 @@ export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
     if (sending) return;
+    if (!name?.trim()) {
+      show('Укажите имя', 'error');
+      return;
+    }
     if (!phone?.trim()) {
       show('Укажите телефон', 'error');
       return;
@@ -23,7 +27,7 @@ export default function SectionForm5min({ data, onSubmit, id: sectionId }) {
       show('Введите корректный номер телефона (не менее 10 цифр)', 'error');
       return;
     }
-    const payload = { type: 'form_5min', phone: normalizePhone(phone) || phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
+    const payload = { type: 'form_5min', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
     if (onSubmit) {
       onSubmit({ name, phone });
       return;

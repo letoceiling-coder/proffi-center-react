@@ -18,6 +18,10 @@ export default function PopupCallback({ isOpen, onClose, onSuccess }) {
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
     if (sending) return;
+    if (!name?.trim()) {
+      show('Укажите имя', 'error');
+      return;
+    }
     if (!phone?.trim()) {
       show('Укажите телефон', 'error');
       return;
@@ -28,7 +32,7 @@ export default function PopupCallback({ isOpen, onClose, onSuccess }) {
     }
     setSending(true);
     try {
-      await submitLead({ type: 'callback', phone: normalizePhone(phone) || phone.trim(), name: name?.trim() || undefined, city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      await submitLead({ type: 'callback', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
       show('Заявка отправлена. Мы перезвоним вам.', 'success');
       setName('');
       setPhone('');

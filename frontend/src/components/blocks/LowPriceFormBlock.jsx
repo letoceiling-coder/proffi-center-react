@@ -9,6 +9,7 @@ export default function LowPriceFormBlock({ data }) {
   const { enabled } = data;
   const { site, selectedCitySlug } = useSite();
   const { show } = useNotification();
+  const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
   const legalLink = '/images/prav-info.pdf';
@@ -18,6 +19,10 @@ export default function LowPriceFormBlock({ data }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (sending) return;
+    if (!name?.trim()) {
+      show('Укажите имя', 'error');
+      return;
+    }
     if (!phone?.trim()) {
       show('Укажите телефон', 'error');
       return;
@@ -28,7 +33,8 @@ export default function LowPriceFormBlock({ data }) {
     }
     setSending(true);
     try {
-      await submitLead({ type: 'low_price', phone: phone.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      await submitLead({ type: 'low_price', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined });
+      setName('');
       setPhone('');
       show('Заявка отправлена.', 'success');
     } catch (err) {
@@ -44,6 +50,12 @@ export default function LowPriceFormBlock({ data }) {
           <div className="col-sm-12">
             <h3 style={{ color: '#000' }}>Заказать по самой низкой цене</h3>
             <form onSubmit={handleSubmit} className="form_low_price">
+              <input
+                type="text"
+                placeholder="Ваше имя"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
               <input
                 type="tel"
                 inputMode="numeric"
