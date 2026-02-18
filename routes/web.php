@@ -1,6 +1,16 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Public\RobotsController;
+use App\Http\Controllers\Api\V1\Public\SitemapController;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| SEO: robots.txt и sitemap.xml в корне сайта (для индексации)
+|--------------------------------------------------------------------------
+*/
+Route::get('robots.txt', [RobotsController::class, 'index']);
+Route::get('sitemap.xml', [SitemapController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

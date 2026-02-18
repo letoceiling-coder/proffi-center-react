@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
+import { getStaticMeta } from '../seo/routes';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -22,9 +26,14 @@ export default function VozvratPage() {
   const onCallbackSuccess = () => setPopupSpasibo(true);
 
   const pageData = getVozvratPageData(siteConfig);
+  const pathname = useLocation().pathname;
+  const staticMeta = getStaticMeta(pathname);
+  const breadcrumb = breadcrumbList(getBaseUrl(), [{ name: 'Главная', url: '/' }, { name: staticMeta?.title?.replace(' — Proffi Center', '') || 'Возврат' }]);
 
   return (
     <PreLoader>
+      <Seo pathname={pathname} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
       <NavMobile isOpen={navMobileOpen} onClose={() => setNavMobileOpen(false)} />

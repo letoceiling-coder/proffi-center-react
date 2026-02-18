@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
+import { getStaticMeta } from '../seo/routes';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -45,6 +49,8 @@ export default function AktsiyaPage() {
 
   return (
     <PreLoader>
+      <Seo pathname={pathname} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
       <NavMobile isOpen={navMobileOpen} onClose={() => setNavMobileOpen(false)} />

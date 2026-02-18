@@ -22,6 +22,31 @@ class SitemapController extends PublicApiController
         $baseUrl = $this->baseUrl($site);
 
         $urls = [];
+        // Статические страницы SPA (frontend)
+        $staticPaths = [
+            '/',
+            '/gotovye-potolki',
+            '/natjazhnye-potolki-kalkuljator',
+            '/skidki-na-potolki',
+            '/aktsiya',
+            '/o-kompanii',
+            '/natyazhnyye-potolki-otzyvy',
+            '/gde-zakazat-potolki',
+            '/dogovor',
+            '/potolki-v-rassrochku',
+            '/vozvrat',
+            '/catalog',
+            '/potolki-v-prihozhuju',
+            '/potolki-v-gostinuju',
+            '/potolki-v-spalnju',
+            '/potolki-na-kuhnju',
+            '/potolki-v-detskuju',
+            '/potolki-v-vannuju',
+        ];
+        foreach ($staticPaths as $path) {
+            $urls[] = $baseUrl . ($path === '/' ? '/' : $path);
+        }
+
         Page::published()->where('site_id', $site->id)->get()->each(function (Page $p) use ($baseUrl, &$urls) {
             $urls[] = $baseUrl . '/' . ltrim($p->slug, '/');
         });

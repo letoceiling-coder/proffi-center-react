@@ -8,7 +8,8 @@ import PopupCallback from '../components/PopupCallback';
 import PopupSpasibo from '../components/PopupSpasibo';
 import PopupPozdr from '../components/PopupPozdr';
 import PreLoader from '../components/PreLoader';
-import ContentMeta from '../components/ContentMeta';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 import SectionPVid from '../components/ceilingCategory/SectionPVid';
 import SectionSimpleText from '../components/sections/SectionSimpleText';
 import SectionMinicalc from '../components/sections/SectionMinicalc';
@@ -65,16 +66,13 @@ export default function RoomPage() {
     ? pageData.gallery
     : galleryData;
 
+  const baseUrl = getBaseUrl();
+  const breadcrumb = breadcrumbList(baseUrl, [{ name: 'Главная', url: '/' }, { name: pageData.title }]);
+
   return (
     <PreLoader>
-      <ContentMeta
-        meta={{
-          seo: {
-            title: pageData.meta?.title,
-            description: pageData.meta?.description,
-          },
-        }}
-      />
+      <Seo title={pageData.meta?.title} description={pageData.meta?.description} pathname={location.pathname} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
       <NavMobile isOpen={navMobileOpen} onClose={() => setNavMobileOpen(false)} />

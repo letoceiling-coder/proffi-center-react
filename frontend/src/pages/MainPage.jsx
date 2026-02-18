@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useSite } from '../context/SiteContext.jsx';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { organization, webSite } from '../seo/jsonld';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -90,13 +91,13 @@ export default function MainPage() {
     setPopupSpasibo(true);
   };
 
+  const baseUrl = getBaseUrl();
+  const siteName = seoSettings?.site_name || site?.name || 'Proffi Center';
+
   return (
     <PreLoader>
-      {pageTitle && (
-        <Helmet>
-          <title>{pageTitle}</title>
-        </Helmet>
-      )}
+      <Seo pathname="/" title={pageTitle || undefined} siteName={siteName} />
+      <JsonLd scripts={[organization(baseUrl, { name: siteName, phone: site?.contacts?.[0]?.phone, email: site?.contacts?.[0]?.email }), webSite(baseUrl, siteName)]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
 

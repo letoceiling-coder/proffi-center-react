@@ -4,9 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FooterMenu from '../components/FooterMenu';
 import BlockRenderer from '../components/blocks/BlockRenderer';
-import ContentMeta from '../components/ContentMeta';
 import PreLoader from '../components/PreLoader';
 import { getService } from '../api/public.js';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 
 export default function ApiServicePage() {
   const { slug } = useParams();
@@ -52,13 +53,18 @@ export default function ApiServicePage() {
   }
 
   const { title, blocks = [], media } = state.data;
+  const h1 = state.meta?.seo?.h1 || title;
+  const baseUrl = getBaseUrl();
+  const schema = state.meta?.schema ?? [];
+  const breadcrumb = breadcrumbList(baseUrl, [{ name: 'Главная', url: '/' }, { name: 'Услуги', url: '/uslugi' }, { name: h1 }]);
 
   return (
     <PreLoader>
-      <ContentMeta meta={state.meta} />
+      <Seo meta={state.meta} />
+      <JsonLd scripts={[...schema, breadcrumb]} />
       <Header />
       <main className="content-by-slug">
-        <div className="section"><div className="container"><h1>{state.meta?.seo?.h1 || title}</h1></div></div>
+        <div className="section"><div className="container"><h1>{h1}</h1></div></div>
         {media?.cover?.url && (
           <div className="section">
             <div className="container">

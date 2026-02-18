@@ -16,7 +16,9 @@ class RobotsController extends PublicApiController
     {
         $site = $this->resolveSite($request);
         $seo = $site->seoSetting;
+        $baseUrl = $request->getSchemeAndHttpHost();
         $body = "User-agent: *\nAllow: /\n";
+        $body .= "\nSitemap: " . $baseUrl . "/sitemap.xml\n";
         if ($seo && $seo->robots_txt_append) {
             $body .= "\n" . trim($seo->robots_txt_append) . "\n";
         }

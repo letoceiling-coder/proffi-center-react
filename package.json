@@ -7,7 +7,9 @@
         "dev": "vite",
         "fetch-ceiling": "node scripts/fetch-ceiling-pages.js",
         "download-ceiling-images": "node scripts/download-ceiling-images.js",
-        "build:spa": "npm run build --prefix frontend && node scripts/copy-spa-build.js"
+        "build:spa": "npm run build --prefix frontend && node scripts/copy-spa-build.js",
+        "seo:audit": "node tools/seo-audit/run.mjs --base=http://127.0.0.1:8000",
+        "seo:audit:prod": "node tools/seo-audit/run.mjs --base=https://proffi-center.ru"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

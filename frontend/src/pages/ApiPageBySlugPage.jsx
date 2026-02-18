@@ -4,9 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FooterMenu from '../components/FooterMenu';
 import BlockRenderer from '../components/blocks/BlockRenderer';
-import ContentMeta from '../components/ContentMeta';
 import PreLoader from '../components/PreLoader';
 import { getPage } from '../api/public.js';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 
 export default function ApiPageBySlugPage() {
   const { slug } = useParams();
@@ -53,10 +54,14 @@ export default function ApiPageBySlugPage() {
 
   const { title, blocks = [], media } = state.data;
   const seo = state.meta?.seo;
+  const baseUrl = getBaseUrl();
+  const schema = state.meta?.schema ?? [];
+  const breadcrumb = breadcrumbList(baseUrl, [{ name: 'Главная', url: '/' }, { name: seo?.h1 || title }]);
 
   return (
     <PreLoader>
-      <ContentMeta meta={state.meta} />
+      <Seo meta={state.meta} />
+      <JsonLd scripts={[...schema, breadcrumb]} />
       <Header />
       <main className="content-by-slug">
         {seo?.h1 && <div className="section"><div className="container"><h1>{seo.h1}</h1></div></div>}

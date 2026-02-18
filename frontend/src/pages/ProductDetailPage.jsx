@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, useLocation, Navigate } from 'react-router-dom';
 import { useSite } from '../context/SiteContext.jsx';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -42,9 +44,14 @@ export default function ProductDetailPage() {
 
   const handleLowPriceSubmit = () => { /* TODO: API */ };
   const handleForm5minSubmit = () => { /* TODO: API */ };
+  const pathname = useLocation().pathname;
+  const baseUrl = getBaseUrl();
+  const breadcrumb = breadcrumbList(baseUrl, [{ name: 'Главная', url: '/' }, { name: 'Готовые потолки', url: '/gotovye-potolki' }, { name: product.title }]);
 
   return (
     <PreLoader>
+      <Seo pathname={pathname} title={product.title + ' — Proffi Center'} description={product.subtitle || undefined} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
 

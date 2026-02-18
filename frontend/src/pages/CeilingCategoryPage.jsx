@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, useLocation, Navigate } from 'react-router-dom';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';
@@ -53,9 +55,13 @@ export default function CeilingCategoryPage({ slugOverride }) {
   const closeCallback = () => setPopupCallback(false);
   const onCallbackSuccess = () => setPopupSpasibo(true);
   const phone = siteConfig?.phone || '';
+  const pathname = useLocation().pathname;
+  const breadcrumb = breadcrumbList(getBaseUrl(), [{ name: 'Главная', url: '/' }, { name: category.title }]);
 
   return (
     <PreLoader>
+      <Seo pathname={pathname} title={category.title + ' — Proffi Center'} description={category.metaDescription || undefined} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
       <NavMobile isOpen={navMobileOpen} onClose={() => setNavMobileOpen(false)} />

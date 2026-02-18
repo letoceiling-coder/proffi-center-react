@@ -3,9 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import FooterMenu from '../components/FooterMenu';
-import ContentMeta from '../components/ContentMeta';
 import PreLoader from '../components/PreLoader';
 import { getProductCategory } from '../api/public.js';
+import { Seo, JsonLd, getBaseUrl } from '../seo';
+import { breadcrumbList } from '../seo/jsonld';
 
 export default function ApiProductCategoryPage({ slugOverride = null }) {
   const { slug: slugParam } = useParams();
@@ -52,10 +53,15 @@ export default function ApiProductCategoryPage({ slugOverride = null }) {
   }
 
   const { title, media } = state.data;
+  const h1 = state.meta?.seo?.h1 || title;
+  const baseUrl = getBaseUrl();
+  const schema = state.meta?.schema ?? [];
+  const breadcrumb = breadcrumbList(baseUrl, [{ name: 'Главная', url: '/' }, { name: 'Каталог', url: '/catalog' }, { name: h1 }]);
 
   return (
     <PreLoader>
-      <ContentMeta meta={state.meta} />
+      <Seo meta={state.meta} />
+      <JsonLd scripts={[...schema, breadcrumb]} />
       <Header />
       <main className="content-by-slug">
         <div className="section"><div className="container"><h1>{state.meta?.seo?.h1 || title}</h1></div></div>

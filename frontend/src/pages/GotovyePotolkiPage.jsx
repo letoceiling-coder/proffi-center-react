@@ -44,6 +44,9 @@ export default function GotovyePotolkiPage() {
   const closeCallback = () => setPopupCallback(false);
   const onCallbackSuccess = () => setPopupSpasibo(true);
 
+  const staticMeta = getStaticMeta(pathname);
+  const breadcrumb = breadcrumbList(getBaseUrl(), [{ name: 'Главная', url: '/' }, { name: staticMeta?.title?.replace(' — Proffi Center', '') || 'Готовые потолки' }]);
+
   const filtered = activeCategory
     ? gotovyeProductsMock.filter((p) => p.categorySlug === activeCategory)
     : gotovyeProductsMock;
@@ -62,6 +65,8 @@ export default function GotovyePotolkiPage() {
 
   return (
     <PreLoader>
+      <Seo pathname={pathname} />
+      <JsonLd scripts={[breadcrumb]} />
       <div className="toptop" />
       <Header onCallClick={openCallback} onZamerClick={openCallback} />
 
