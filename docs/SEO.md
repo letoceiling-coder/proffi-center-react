@@ -33,6 +33,8 @@
 
 - Сайт для robots/sitemap определяется по host запроса (как и для Public API): `X-Forwarded-Host` или Host.
 
+- **Микроразметка в исходном HTML (для валидаторов и ботов без JS):** в `resources/views/spa.blade.php` для каждого ответа сервера выводятся мета и JSON-LD (title, description, canonical, robots, OpenGraph, Twitter Card, схемы Organization, WebSite, BreadcrumbList). Это нужно, чтобы валидатор микроразметки Яндекса и подобные инструменты видели разметку уже в исходном HTML, без выполнения JavaScript. После загрузки SPA React (Helmet) при необходимости обновляет мета для текущей страницы.
+
 ### Канонический домен (www / non-www, http → https)
 
 - **Не реализовано в коде приложения.** Рекомендуется настроить на уровне веб-сервера (nginx/apache) или reverse proxy:
