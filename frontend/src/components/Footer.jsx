@@ -1,6 +1,6 @@
 import { useSite } from '../context/SiteContext.jsx';
 import { useMenu } from '../context/MenuContext.jsx';
-import { formatPhoneDisplay } from '../utils/phoneFormat.js';
+import { formatPhoneDisplay, formatPhoneHref } from '../utils/phoneFormat.js';
 import { footerData as defaultFooterData } from '../data/mockPageData';
 
 export default function Footer({ data: dataProp }) {
@@ -16,7 +16,12 @@ export default function Footer({ data: dataProp }) {
   };
   const data = dataProp ?? fromApi ?? defaultFooterData;
   if (!data) return null;
-  const { discountText, phone, email, siteUrl, copyright, copyrightYear, legalLink } = data;
+  const { discountText, email, siteUrl, copyright, copyrightYear, legalLink } = data;
+
+  /* Телефон города из контактов (как в шапке), иначе из data */
+  const phoneRaw = contacts?.phone;
+  const displayPhone = phoneRaw ? formatPhoneDisplay(phoneRaw) : (data.phone || '');
+  const phoneHref = phoneRaw ? formatPhoneHref(phoneRaw) : (String(data.phone || '').replace(/\D/g, ''));
 
   const openLegal = (e) => {
     e?.preventDefault?.();
@@ -30,7 +35,10 @@ export default function Footer({ data: dataProp }) {
           <div className="col-md-12 clearfix">
             <div className="footer black center">
               <div className="black d1">
-                {discountText} <span className="comagic_phone">{phone}</span>
+                {discountText}{' '}
+                <a className="comagic_phone" itemProp="telephone" href={phoneHref ? `tel:${phoneHref}` : '#'} style={{ textDecoration: 'none' }}>
+                  {displayPhone}
+                </a>
               </div>
               <div className="black d2">
                 <div itemProp="email">{email}</div>

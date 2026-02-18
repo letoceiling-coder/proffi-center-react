@@ -312,7 +312,6 @@ export const footerData = {
   email: siteConfig.email,
   siteUrl: siteConfig.siteUrl,
   copyright: 'Proffi Center',
-  copyrightYear: 2021,
   legalLink: siteConfig.legalLink,
 };
 
