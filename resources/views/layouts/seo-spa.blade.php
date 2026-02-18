@@ -67,12 +67,13 @@
     <!-- /Yandex.Metrika counter -->
 </head>
 <body>
-    @if($seoBodyContent)
-    <div class="seo-minimal-content container" style="padding: 2rem 1rem; font-family: sans-serif;">
-        {!! $seoBodyContent !!}
+    <div id="root">
+        @if($seoBodyContent)
+        <div class="seo-minimal-content container" style="padding: 2rem 1rem; font-family: sans-serif;">
+            {!! $seoBodyContent !!}
+        </div>
+        @endif
     </div>
-    @endif
-    <div id="root"></div>
     @if($jsFile)
     <script type="module" crossorigin src="{{ asset('build/assets/' . $jsFile) }}"></script>
     @endif
