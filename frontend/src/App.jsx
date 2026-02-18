@@ -19,6 +19,7 @@ import ApiServicePage from './pages/ApiServicePage'
 import ApiProductCategoryPage from './pages/ApiProductCategoryPage'
 import ApiProductPage from './pages/ApiProductPage'
 import OKompaniiPage from './pages/OKompaniiPage'
+import DolyamiPage from './pages/DolyamiPage'
 import CitySelectPopup from './components/CitySelectPopup'
 import './App.css'
 

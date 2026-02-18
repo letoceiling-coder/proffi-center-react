@@ -27,7 +27,6 @@ export default function DolyamiPage() {
   const [faqOpenIndex, setFaqOpenIndex] = useState(null);
 
   const pathname = useLocation().pathname;
-  const staticMeta = getStaticMeta(pathname);
   const breadcrumb = breadcrumbList(getBaseUrl(), [
     { name: 'Главная', url: '/' },
     { name: 'Оплата Долями', url: '/dolyami' },
