@@ -198,11 +198,27 @@ body.menu-open {
   margin-left: 0;
   margin-right: 0;
   flex-shrink: 0;
+  /* Иконки как раньше: фоновая картинка слева */
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+  min-height: 50px;
+  height: 50px;
+}
+.s_form_lowprice_form_row .low_name {
+  background-image: url("/images/name2.png");
+  min-width: 200px;
+}
+.s_form_lowprice_form_row .low_tel {
+  background-image: url("/images/tel2.png");
+  min-width: 200px;
 }
 .s_form_lowprice_form_row .low_name input,
 .s_form_lowprice_form_row .low_tel input {
   width: 180px;
   box-sizing: border-box;
+  margin-left: 50px;
+  margin-top: 0;
 }
 .s_form_lowprice_form_row .blue_btn {
   flex-shrink: 0;

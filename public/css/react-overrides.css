@@ -198,11 +198,27 @@ body.menu-open {
   margin-left: 0;
   margin-right: 0;
   flex-shrink: 0;
+  /* Иконки как раньше: фоновая картинка слева */
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+  min-height: 50px;
+  height: 50px;
+}
+.s_form_lowprice_form_row .low_name {
+  background-image: url("/images/name2.png");
+  min-width: 200px;
+}
+.s_form_lowprice_form_row .low_tel {
+  background-image: url("/images/tel2.png");
+  min-width: 200px;
 }
 .s_form_lowprice_form_row .low_name input,
 .s_form_lowprice_form_row .low_tel input {
   width: 180px;
   box-sizing: border-box;
+  margin-left: 50px;
+  margin-top: 0;
 }
 .s_form_lowprice_form_row .blue_btn {
   flex-shrink: 0;
@@ -220,10 +236,15 @@ body.menu-open {
     justify-content: center;
     gap: 12px;
   }
+  .s_form_lowprice_form_row .low_name,
+  .s_form_lowprice_form_row .low_tel {
+    min-width: 180px;
+  }
   .s_form_lowprice_form_row .low_name input,
   .s_form_lowprice_form_row .low_tel input {
     width: 140px;
     min-width: 120px;
+    margin-left: 45px;
   }
 }
 @media (max-width: 480px) {
@@ -231,11 +252,16 @@ body.menu-open {
     flex-direction: column;
     align-items: center;
   }
+  .s_form_lowprice_form_row .low_name,
+  .s_form_lowprice_form_row .low_tel {
+    min-width: 260px;
+  }
   .s_form_lowprice_form_row .low_name input,
   .s_form_lowprice_form_row .low_tel input {
     width: 100%;
     min-width: 0;
-    max-width: 260px;
+    max-width: 210px;
+    margin-left: 45px;
   }
 }
 
