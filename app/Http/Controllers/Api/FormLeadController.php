@@ -8,6 +8,7 @@ use App\Services\SiteResolverService;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Публичная отправка заявок с форм в Telegram.
@@ -43,6 +44,12 @@ class FormLeadController extends PublicApiController
         $cityName = $site->city?->name ?? 'Не указан';
         $regionName = $site->city?->region?->name ?? '';
 
+        Log::info('[Forms] Заявка получена', [
+            'type' => $validated['type'],
+            'host' => $host,
+            'city' => $cityName,
+        ]);
+
         $lines = [
             '📋 Заявка: ' . $this->typeLabel($validated['type']),
             '🌐 Город/регион: ' . $cityName . ($regionName ? ' (' . $regionName . ')' : ''),
@@ -58,45 +65,54 @@ class FormLeadController extends PublicApiController
 
         $token = config('telegram.bot_token');
         $chatIds = TelegramFormSubscriber::allChatIds();
+        $source = 'subscribers';
         if ($chatIds === []) {
             $fallbackChatId = $this->telegram->getFormsChatId();
             if ($fallbackChatId !== null && $fallbackChatId !== '') {
                 $chatIds = [$fallbackChatId];
+                $source = 'TELEGRAM_CHAT_ID / file';
             }
         }
 
         if ($token === null || $token === '') {
-            \Illuminate\Support\Facades\Log::error('[Forms] Причина 503: TELEGRAM_BOT_TOKEN не задан в .env. Добавьте TELEGRAM_BOT_TOKEN в .env.');
+            Log::error('[Forms] 503: TELEGRAM_BOT_TOKEN не задан в .env. Добавьте TELEGRAM_BOT_TOKEN.');
             return response()->json([
                 'message' => 'Сервис заявок временно недоступен. Попробуйте позже или позвоните нам.',
             ], 503);
         }
 
         if ($chatIds === []) {
-            \Illuminate\Support\Facades\Log::error('[Forms] Причина 503: нет получателей заявок. Напишите боту в Telegram /start ИЛИ укажите TELEGRAM_CHAT_ID в .env.');
+            Log::error('[Forms] 503: Нет получателей. Напишите боту в Telegram /start ИЛИ укажите TELEGRAM_CHAT_ID в .env. Таблица telegram_form_subscribers пуста.');
             return response()->json([
                 'message' => 'Сервис заявок временно недоступен. Попробуйте позже или позвоните нам.',
             ], 503);
         }
 
+        Log::info('[Forms] Отправка в Telegram', ['recipients' => count($chatIds), 'source' => $source]);
+
         $sent = 0;
+        $lastError = null;
         foreach ($chatIds as $chatId) {
             $result = $this->telegram->sendMessage($token, $chatId, $text);
             if ($result['success'] ?? false) {
                 $sent++;
             } else {
-                \Illuminate\Support\Facades\Log::warning('Form lead: не удалось отправить в chat_id ' . $chatId, [
-                    'message' => $result['message'] ?? 'unknown',
+                $lastError = $result['message'] ?? 'unknown';
+                Log::warning('[Forms] Не удалось отправить в Telegram', [
+                    'chat_id' => $chatId,
+                    'telegram_error' => $lastError,
                 ]);
             }
         }
 
         if ($sent === 0) {
+            Log::error('[Forms] 503: Ни одному получателю не доставлено. Последняя ошибка Telegram: ' . ($lastError ?? '—'));
             return response()->json([
                 'message' => 'Не удалось отправить заявку. Попробуйте позже или позвоните нам.',
             ], 503);
         }
 
+        Log::info('[Forms] Заявка отправлена в Telegram', ['sent_to' => $sent]);
         return response()->json(['message' => 'Заявка принята'], 201);
     }
 

@@ -165,8 +165,17 @@ class TelegramService
                 if ($data['ok'] ?? false) {
                     return ['success' => true, 'data' => $data['result'] ?? []];
                 }
-                return ['success' => false, 'message' => $data['description'] ?? 'Не удалось отправить сообщение'];
+                $description = $data['description'] ?? 'Не удалось отправить сообщение';
+                Log::warning('Telegram sendMessage API error', [
+                    'description' => $description,
+                    'response' => $data,
+                ]);
+                return ['success' => false, 'message' => $description];
             }
+            Log::warning('Telegram sendMessage HTTP error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
             return ['success' => false, 'message' => 'Ошибка подключения к Telegram API'];
         } catch (\Exception $e) {
             Log::error('Telegram sendMessage error: ' . $e->getMessage());

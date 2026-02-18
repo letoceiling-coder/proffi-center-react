@@ -48,6 +48,7 @@ php artisan deploy --dry-run          # показать команды, не в
   - Зарегистрируйте webhook: `php artisan telegram:register-forms-webhook`. После этого при /start пользователь добавляется в подписчики.
   - Проверка: `php artisan telegram:forms-status` — покажет число подписчиков.
   - Сервер должен иметь доступ к `api.telegram.org` (443).
+  - **Если заявки не приходят в бот** — смотрите логи: `storage/logs/laravel.log`. Сообщения с префиксом `[Forms]`: «Заявка получена» (запрос дошёл), «503: TELEGRAM_BOT_TOKEN не задан», «503: Нет получателей» (никто не писал боту /start или не задан TELEGRAM_CHAT_ID), «Не удалось отправить в Telegram» (ошибка API Telegram: chat not found, bot blocked и т.д.). На сервере выполните: `php artisan telegram:forms-status` — если подписчиков 0, напишите боту в Telegram **/start** и повторите команду.
 
 ### Команды (по порядку)
 

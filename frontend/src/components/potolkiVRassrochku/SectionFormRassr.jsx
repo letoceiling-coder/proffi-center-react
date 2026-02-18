@@ -34,16 +34,16 @@ export default function SectionFormRassr({ data = {}, onSubmit }) {
       return;
     }
     const payload = { type: 'rassrochka', phone: normalizePhone(phone) || phone.trim(), name: name.trim(), city_slug: site?.city?.slug ?? selectedCitySlug ?? undefined };
-    if (onSubmit) {
-      onSubmit({ name, phone });
-      return;
-    }
     setSending(true);
     try {
       await submitLead(payload);
       setName('');
       setPhone('');
-      show('Заявка отправлена. Мы перезвоним вам.', 'success');
+      if (onSubmit) {
+        onSubmit({ name, phone });
+      } else {
+        show('Заявка отправлена. Мы перезвоним вам.', 'success');
+      }
     } catch (err) {
       show(err?.message || 'Не удалось отправить. Попробуйте позже.', 'error');
     }
@@ -83,7 +83,12 @@ export default function SectionFormRassr({ data = {}, onSubmit }) {
               </div>
               <div className="razmetka1_1">
                 <div className="blue_btn">
-                  <a href="#" id="zakaz_rassr" onClick={handleSubmit}>
+                  <a
+                    href="#"
+                    id="zakaz_rassr"
+                    role="button"
+                    onClick={(e) => { e.preventDefault(); handleSubmit(e); }}
+                  >
                     {sending ? 'Отправка…' : buttonText}
                   </a>
                 </div>
