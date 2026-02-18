@@ -9,6 +9,7 @@ import PopupSpasibo from '../components/PopupSpasibo';
 import PopupPozdr from '../components/PopupPozdr';
 import PreLoader from '../components/PreLoader';
 import SectionBanner from '../components/sections/SectionBanner';
+import SectionDolyamiInformer from '../components/dolyami/SectionDolyamiInformer';
 import SectionSimpleText from '../components/sections/SectionSimpleText';
 import SectionLinks from '../components/sections/SectionLinks';
 import SectionFormLowPrice from '../components/sections/SectionFormLowPrice';
