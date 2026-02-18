@@ -154,10 +154,32 @@ server {
 
 ---
 
-## 4) Проверки после деплоя
+## 4) 500 Server Error — просмотр логов
+
+Если главная или другие страницы отдают 500:
+
+1. **Логи Laravel** (на сервере):
+   ```bash
+   tail -100 /var/www/proffi-center/storage/logs/laravel.log
+   ```
+   В конце файла будет стек последней ошибки (например, из шаблона `spa.blade.php` или конфига).
+
+2. **Сброс кэша представлений** (часто помогает после правок в blade):
+   ```bash
+   cd /var/www/proffi-center
+   php artisan view:clear
+   php artisan config:clear
+   ```
+
+3. **Проверка .env:** убедитесь, что заданы `APP_URL=https://proffi-center.ru` (без слэша в конце), `APP_KEY`, параметры БД.
+
+---
+
+## 5) Проверки после деплоя
 
 | Проверка | URL / Действие |
 |----------|----------------|
+| Главная (нет 500) | Открыть `https://your-domain.com/` |
 | Админка | Открыть `https://your-domain.com/admin` — форма входа |
 | API site resolve | `GET https://your-domain.com/api/v1/site/resolve?host=your-domain.com` → 200, JSON с `site` |
 | Фронт (SPA) | Открыть `https://your-domain.com/` — главная, меню, без белого экрана |

@@ -5,8 +5,9 @@
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @php
-        $appUrl = rtrim(config('app.url', 'https://proffi-center.ru'), '/');
-        $canonical = $appUrl . (request()->path() === '/' ? '/' : '/' . request()->path());
+        $appUrl = rtrim((string) (config('app.url') ?? 'https://proffi-center.ru'), '/');
+        $path = request()->path();
+        $canonical = $appUrl . '/' . ($path !== '' ? $path : '');
         $title = 'Натяжные потолки в Анапе — Proffi Center';
         $description = 'Установка натяжных потолков в Анапе. Собственное производство, низкие цены, гарантия качества. Закажите замер бесплатно.';
         $ogImage = $appUrl . '/favicon.svg';
