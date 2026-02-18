@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Menu from './Menu';
 import { useSite } from '../context/SiteContext.jsx';
@@ -7,18 +7,11 @@ import { getCitySites } from '../api/public.js';
 import { formatPhoneDisplay, formatPhoneHref } from '../utils/phoneFormat.js';
 import { siteConfig, cities as defaultCities, menuItems } from '../data/mockPageData';
 
-const SCROLL_THRESHOLD_ON = 120;
-const SCROLL_THRESHOLD_OFF = 70;
-const MOBILE_BREAKPOINT = 992;
-
 export default function Header({ onCallClick, onZamerClick }) {
   const { site, contacts, isMain, setSelectedCitySlug } = useSite();
   const { headerMenu } = useMenu();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [popUpFixed, setPopUpFixed] = useState(false);
   const [cities, setCities] = useState(defaultCities);
-  const rafRef = useRef(null);
-  const lastFixedRef = useRef(false);
 
   const phoneRaw = contacts?.phone ?? siteConfig.phone;
   const phone = phoneRaw ? formatPhoneDisplay(phoneRaw) : '';
@@ -44,57 +37,10 @@ export default function Header({ onCallClick, onZamerClick }) {
   }, []);
 
   useEffect(() => {
-    const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
-
-    const handler = () => {
-      if (!isMobile()) return;
-      if (rafRef.current != null) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = null;
-        const y = window.scrollY;
-        let next = lastFixedRef.current;
-        if (next) {
-          if (y <= SCROLL_THRESHOLD_OFF) next = false;
-        } else {
-          if (y >= SCROLL_THRESHOLD_ON) next = true;
-        }
-        if (next !== lastFixedRef.current) {
-          lastFixedRef.current = next;
-          setPopUpFixed(next);
-        }
-      });
-    };
-
-    const onResize = () => {
-      if (!isMobile()) {
-        lastFixedRef.current = false;
-        setPopUpFixed(false);
-      }
-    };
-
-    window.addEventListener('scroll', handler, { passive: true });
-    window.addEventListener('resize', onResize);
-    return () => {
-      window.removeEventListener('scroll', handler);
-      window.removeEventListener('resize', onResize);
-      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  useEffect(() => {
     if (menuOpen) document.body.classList.add('menu-open');
     else document.body.classList.remove('menu-open');
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
-
-  useEffect(() => {
-    if (popUpFixed && window.innerWidth <= MOBILE_BREAKPOINT) {
-      document.body.classList.add('header-fixed-mobile');
-    } else {
-      document.body.classList.remove('header-fixed-mobile');
-    }
-    return () => document.body.classList.remove('header-fixed-mobile');
-  }, [popUpFixed]);
 
   const handleCallClick = (e) => {
     e?.preventDefault?.();
@@ -104,7 +50,7 @@ export default function Header({ onCallClick, onZamerClick }) {
 
   return (
     <>
-      <div className={`section s_top ${popUpFixed ? 'pop_up_block fixed' : ''}`}>
+      <div className="section s_top">
         <div className="container" itemScope itemType="http://schema.org/PostalAddress">
           <meta itemProp="addressLocality" content={addressLocality} />
           <meta itemProp="streetAddress" content={addressStreet} />
