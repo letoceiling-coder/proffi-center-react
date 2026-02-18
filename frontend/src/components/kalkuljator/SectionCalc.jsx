@@ -121,7 +121,7 @@ export default function SectionCalc() {
                   <div className="counter_itog_txt">Наша цена:</div>
                   <div className="counter_itog"> <span>{ourPrice}</span> руб.</div>
                   <div className="buy_rassr">
-                    <Link to="/potolki-v-rassrochku">купить<br />в рассрочку</Link>
+                    <Link to="/dolyami">купить<br />в рассрочку</Link>
                   </div>
                 </div>
               </div>

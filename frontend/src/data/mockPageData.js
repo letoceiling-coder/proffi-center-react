@@ -266,7 +266,7 @@ export const s30Data = {
     '100% одобрение кредита банком',
   ],
   btnText: 'Узнать подробности',
-  btnHref: '/potolki-v-rassrochku',
+  btnHref: '/dolyami',
 };
 
 export const galleryData = [

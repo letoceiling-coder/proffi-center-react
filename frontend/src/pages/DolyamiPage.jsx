@@ -73,9 +73,9 @@ export default function DolyamiPage() {
           <div className="row">
             <div className="col-sm-12">
               <h1 className="dolyami-hero-h1">Оплата Долями от Т-Банка</h1>
-              <p className="dolyami-hero-desc">
-                Разделите сумму заказа на 4 платежа без переплат. Первый платёж — сразу, остальные каждые 2 недели. Оформление за несколько минут.
-              </p>
+                <p className="dolyami-hero-desc">
+                  4 платежа за 6 недель: первый — сразу, остальные три — каждые 2 недели. Сервис оплаты частями, без кредитного договора. Возможен сервисный сбор. Подробности на dolyame.ru.
+                </p>
               <Link to="/natjazhnye-potolki-kalkuljator" className="dolyami-hero-cta">
                 Рассчитать стоимость
               </Link>

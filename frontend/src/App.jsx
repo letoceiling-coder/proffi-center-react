@@ -9,7 +9,6 @@ import AktsiyaPage from './pages/AktsiyaPage'
 import OtzyvyPage from './pages/OtzyvyPage'
 import GdeZakazatPage from './pages/GdeZakazatPage'
 import DogovorPage from './pages/DogovorPage'
-import PotolkiVRassrochkuPage from './pages/PotolkiVRassrochkuPage'
 import VozvratPage from './pages/VozvratPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import CeilingCategoryPage from './pages/CeilingCategoryPage'
@@ -55,7 +54,6 @@ function App() {
             <Route path="/natyazhnyye-potolki-otzyvy" element={<OtzyvyPage />} />
             <Route path="/gde-zakazat-potolki" element={<GdeZakazatPage />} />
             <Route path="/dogovor" element={<DogovorPage />} />
-            <Route path="/potolki-v-rassrochku" element={<PotolkiVRassrochkuPage />} />
             <Route path="/dolyami" element={<DolyamiPage />} />
             <Route path="/vozvrat" element={<VozvratPage />} />
             <Route path="/uslugi/:slug" element={<ApiServicePage />} />
