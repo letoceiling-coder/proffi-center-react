@@ -170,6 +170,9 @@ export default function DolyamiPage() {
             <div className="col-sm-12">
               <h2 className="dolyami-section-title">Официальные материалы</h2>
               <div className="dolyami-official-block">
+                <div className="dolyami-official-brand">
+                  <img src="/images/dolyami/logo.svg" alt="Долями" width="140" height="42" />
+                </div>
                 <p className="dolyami-official-text">
                   Подробная информация о сервисе «Долями», условиях и тарифах — на официальном сайте Т-Банка.
                 </p>
@@ -179,7 +182,7 @@ export default function DolyamiPage() {
                   rel="noopener noreferrer"
                   className="dolyami-official-link"
                 >
-                  dolyame.ru
+                  dolyame.ru →
                 </a>
               </div>
             </div>

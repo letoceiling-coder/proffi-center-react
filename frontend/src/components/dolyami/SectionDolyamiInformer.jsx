@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 
+/** Логотип Долями: заменить на официальный из dolyame.ru/brand/ при наличии */
+const DOLYAMI_LOGO = '/images/dolyami/logo.svg';
+
 /** Обязательный юридический дисклеймер по требованиям Т-Банка / Долями для партнёров */
 const LEGAL_DISCLAIMER = 'Кредитный продукт «Долями» предоставляется АО «Тинькофф Банк». Подробная информация на dolyame.ru. Не является офертой.';
 
@@ -16,6 +19,9 @@ export default function SectionDolyamiInformer() {
         <div className="row">
           <div className="col-sm-12">
             <div className="dolyami-informer-card">
+              <div className="dolyami-informer-brand">
+                <img src={DOLYAMI_LOGO} alt="Долями от Т-Банка" className="dolyami-informer-logo" width="160" height="48" loading="lazy" />
+              </div>
               <div className="dolyami-informer-content">
                 <h2 className="dolyami-informer-title">Оплата Долями от Т-Банка</h2>
                 <p className="dolyami-informer-subtitle">Разделите сумму на 4 платежа</p>
