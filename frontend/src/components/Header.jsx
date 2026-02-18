@@ -45,17 +45,28 @@ export default function Header({ onCallClick, onZamerClick }) {
 
   useEffect(() => {
     const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
-    if (isMobile()) {
-      lastFixedRef.current = false;
-      setPopUpFixed(false);
-    }
 
     const handler = () => {
       if (!isMobile()) return;
+      if (rafRef.current != null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        const y = window.scrollY;
+        let next = lastFixedRef.current;
+        if (next) {
+          if (y <= SCROLL_THRESHOLD_OFF) next = false;
+        } else {
+          if (y >= SCROLL_THRESHOLD_ON) next = true;
+        }
+        if (next !== lastFixedRef.current) {
+          lastFixedRef.current = next;
+          setPopUpFixed(next);
+        }
+      });
     };
 
     const onResize = () => {
-      if (isMobile()) {
+      if (!isMobile()) {
         lastFixedRef.current = false;
         setPopUpFixed(false);
       }
@@ -75,6 +86,15 @@ export default function Header({ onCallClick, onZamerClick }) {
     else document.body.classList.remove('menu-open');
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (popUpFixed && window.innerWidth <= MOBILE_BREAKPOINT) {
+      document.body.classList.add('header-fixed-mobile');
+    } else {
+      document.body.classList.remove('header-fixed-mobile');
+    }
+    return () => document.body.classList.remove('header-fixed-mobile');
+  }, [popUpFixed]);
 
   const handleCallClick = (e) => {
     e?.preventDefault?.();

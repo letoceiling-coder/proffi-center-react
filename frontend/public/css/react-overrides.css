@@ -65,15 +65,23 @@ body.menu-open {
     opacity: 1 !important;
   }
 }
-/* На мобильных шапка в потоке страницы — при скролле вид не меняется, контент не перекрывается */
+/* На мобильных: без скролла — шапка в потоке; при скролле — фиксируем сверху и даём отступ контенту */
 @media (max-width: 992px) {
-  .s_top,
-  .s_top.pop_up_block,
-  .s_top.pop_up_block.fixed {
+  .s_top {
     position: relative !important;
     top: auto !important;
-    left: auto !important;
-    right: auto !important;
+  }
+  .s_top.pop_up_block.fixed {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000;
+    transition: top 0.2s ease-out;
+    will-change: top;
+  }
+  body.header-fixed-mobile {
+    padding-top: 85px !important;
   }
   .s_top.pop_up_block,
   .s_top.pop_up_block.fixed {
