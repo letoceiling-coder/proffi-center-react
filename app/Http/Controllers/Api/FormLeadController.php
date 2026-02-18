@@ -90,6 +90,7 @@ class FormLeadController extends PublicApiController
 
         Log::info('[Forms] Отправка в Telegram', ['recipients' => count($chatIds), 'source' => $source]);
 
+        $total = count($chatIds);
         $sent = 0;
         $lastError = null;
         foreach ($chatIds as $chatId) {
@@ -105,14 +106,21 @@ class FormLeadController extends PublicApiController
             }
         }
 
+        // Успех только если сообщение доставлено всем подписчикам (бот подтвердил отправку).
         if ($sent === 0) {
             Log::error('[Forms] 503: Ни одному получателю не доставлено. Последняя ошибка Telegram: ' . ($lastError ?? '—'));
             return response()->json([
                 'message' => 'Не удалось отправить заявку. Попробуйте позже или позвоните нам.',
             ], 503);
         }
+        if ($sent < $total) {
+            Log::error('[Forms] 503: Доставлено не всем', ['sent' => $sent, 'total' => $total, 'last_error' => $lastError]);
+            return response()->json([
+                'message' => 'Заявка не доставлена всем получателям. Попробуйте позже или позвоните нам.',
+            ], 503);
+        }
 
-        Log::info('[Forms] Заявка отправлена в Telegram', ['sent_to' => $sent]);
+        Log::info('[Forms] Заявка доставлена в Telegram всем получателям', ['sent_to' => $sent]);
         return response()->json(['message' => 'Заявка принята'], 201);
     }
 
