@@ -302,7 +302,6 @@ export const reviewsData = [
 export const footerMenuData = [
   { title: 'Расчет онлайн', href: '/natjazhnye-potolki-kalkuljator' },
   { title: 'Как сэкономить', href: '/skidki-na-potolki' },
-  { title: 'Купить в рассрочку', href: '/potolki-v-rassrochku' },
   { title: 'Оплата Долями', href: '/dolyami' },
   { title: 'Возврат товара', href: '/vozvrat' },
 ];
