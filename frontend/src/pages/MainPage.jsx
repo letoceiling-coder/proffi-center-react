@@ -126,6 +126,7 @@ export default function MainPage() {
       <div className="probel" />
 
       <SectionBanner data={bannerData} onZamerClick={openCallback} />
+      <SectionDolyamiInformer />
       <SectionSimpleText h1={introData.h1} content={introData.content} />
 
       <SectionLinks items={linkBlocks} />

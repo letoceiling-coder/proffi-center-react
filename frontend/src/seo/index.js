@@ -1,5 +1,5 @@
 export { default as Seo } from './Seo';
-export { default as JsonLd } from './JsonLd';
+export { default as JsonLd } from './JsonLd.jsx';
 export { getCanonicalUrl } from './Seo';
 export { getStaticMeta, STATIC_ROUTE_META } from './routes';
 export * from './jsonld';

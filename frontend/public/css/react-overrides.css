@@ -370,3 +370,291 @@ body.menu-open {
   padding: 0;
 }
 
+/* Информер «Оплата Долями» на главной — карточка в стиле сайта */
+.section-dolyami-informer {
+  padding: 28px 0 36px;
+  background: #f5f5f5;
+}
+.dolyami-informer-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 28px 32px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.dolyami-informer-title {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 22px;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+.dolyami-informer-subtitle {
+  font-family: "RobotoRegular", "Roboto", sans-serif;
+  font-size: 17px;
+  color: #444;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+.dolyami-informer-list {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+}
+.dolyami-informer-list li {
+  position: relative;
+  padding-left: 22px;
+  margin-bottom: 10px;
+  font-family: "RobotoRegular", "Roboto", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+.dolyami-informer-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  background: #2861dc;
+  border-radius: 50%;
+}
+.dolyami-informer-btn {
+  display: inline-block;
+  background: #2861dc;
+  color: #fff !important;
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.dolyami-informer-btn:hover {
+  background: #1a4bb8;
+  color: #fff;
+}
+.dolyami-informer-legal {
+  margin: 20px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #666;
+}
+@media (max-width: 768px) {
+  .section-dolyami-informer { padding: 20px 0 28px; }
+  .dolyami-informer-card { padding: 22px 20px; margin: 0 12px; max-width: none; }
+  .dolyami-informer-title { font-size: 20px; }
+  .dolyami-informer-subtitle { font-size: 16px; margin-bottom: 16px; }
+  .dolyami-informer-list { margin-bottom: 20px; }
+  .dolyami-informer-btn { display: block; text-align: center; margin-top: 8px; }
+  .dolyami-informer-legal { margin-top: 16px; font-size: 11px; }
+}
+
+/* Страница /dolyami — секции в стиле сайта */
+.dolyami-hero {
+  padding: 48px 0 56px;
+  background: #fff;
+}
+.dolyami-hero-h1 {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 28px;
+  color: #1a1a1a;
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+.dolyami-hero-desc {
+  font-family: "RobotoRegular", "Roboto", sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #444;
+  margin: 0 0 24px;
+  max-width: 640px;
+}
+.dolyami-hero-cta {
+  display: inline-block;
+  background: #2861dc;
+  color: #fff !important;
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.dolyami-hero-cta:hover { background: #1a4bb8; color: #fff; }
+
+.dolyami-section-title {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 24px;
+  color: #1a1a1a;
+  margin: 0 0 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #2861dc;
+}
+
+.dolyami-how { padding: 40px 0 48px; background: #f5f5f5; }
+.dolyami-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  justify-content: space-between;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.dolyami-stepper-item {
+  position: relative;
+  flex: 1 1 25%;
+  min-width: 140px;
+  padding-bottom: 24px;
+}
+.dolyami-stepper-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2861dc;
+  color: #fff;
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.dolyami-stepper-title {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+.dolyami-stepper-desc {
+  font-size: 14px;
+  color: #555;
+  margin: 0;
+  line-height: 1.4;
+}
+.dolyami-stepper-line {
+  position: absolute;
+  top: 20px;
+  left: calc(50% + 28px);
+  width: calc(100% - 56px);
+  height: 2px;
+  background: #ccc;
+  pointer-events: none;
+}
+@media (max-width: 768px) {
+  .dolyami-stepper { flex-direction: column; }
+  .dolyami-stepper-line { display: none; }
+  .dolyami-stepper-item { flex: 1 1 auto; min-width: 0; }
+}
+
+.dolyami-advantages { padding: 40px 0 48px; background: #fff; }
+.dolyami-adv-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.dolyami-adv-card {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 24px;
+  border: 1px solid #eee;
+}
+.dolyami-adv-card-title {
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 18px;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+}
+.dolyami-adv-card-text {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #555;
+  margin: 0;
+}
+@media (max-width: 768px) {
+  .dolyami-adv-cards { grid-template-columns: 1fr; }
+}
+
+.dolyami-faq { padding: 40px 0 48px; background: #f5f5f5; }
+.dolyami-accordion { max-width: 640px; margin: 0 auto; }
+.dolyami-accordion-item {
+  background: #fff;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+.dolyami-accordion-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  font-family: "RobotoCondensedBold", "Roboto", sans-serif;
+  font-size: 16px;
+  color: #1a1a1a;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.dolyami-accordion-head:hover { background: #f9f9f9; }
+.dolyami-accordion-icon {
+  font-size: 20px;
+  color: #2861dc;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.dolyami-accordion-body {
+  padding: 0 20px 16px;
+}
+.dolyami-accordion-body p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #555;
+}
+.dolyami-accordion-body[hidden] { display: none; }
+
+.dolyami-official { padding: 40px 0 48px; background: #fff; }
+.dolyami-official-block {
+  max-width: 560px;
+  padding: 24px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+.dolyami-official-text {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #444;
+}
+.dolyami-official-link {
+  color: #2861dc;
+  font-weight: 600;
+  text-decoration: none;
+}
+.dolyami-official-link:hover { text-decoration: underline; }
+
+.dolyami-legal { padding: 40px 0 48px; background: #f5f5f5; }
+.dolyami-legal-block {
+  max-width: 720px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+.dolyami-legal-block p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #555;
+}
+

@@ -55,6 +55,7 @@ function App() {
             <Route path="/gde-zakazat-potolki" element={<GdeZakazatPage />} />
             <Route path="/dogovor" element={<DogovorPage />} />
             <Route path="/potolki-v-rassrochku" element={<PotolkiVRassrochkuPage />} />
+            <Route path="/dolyami" element={<DolyamiPage />} />
             <Route path="/vozvrat" element={<VozvratPage />} />
             <Route path="/uslugi/:slug" element={<ApiServicePage />} />
             <Route path="/catalog" element={<ApiProductCategoryPage slugOverride="catalog" />} />

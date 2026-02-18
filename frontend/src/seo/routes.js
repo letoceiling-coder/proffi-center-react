@@ -48,6 +48,10 @@ export const STATIC_ROUTE_META = {
     title: 'Натяжные потолки в рассрочку — Proffi Center',
     description: 'Рассрочка без переплат на установку натяжных потолков.',
   },
+  '/dolyami': {
+    title: 'Оплата Долями от Т-Банка — Proffi Center',
+    description: 'Оплата натяжных потолков Долями: 4 платежа без переплат. Оформление за минуты. Условия на dolyame.ru.',
+  },
   '/vozvrat': {
     title: 'Возврат и обмен — Proffi Center',
     description: 'Условия возврата и обмена товаров.',

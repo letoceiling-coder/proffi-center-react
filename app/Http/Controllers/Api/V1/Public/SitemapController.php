@@ -34,6 +34,7 @@ class SitemapController extends PublicApiController
             '/gde-zakazat-potolki',
             '/dogovor',
             '/potolki-v-rassrochku',
+            '/dolyami',
             '/vozvrat',
             '/catalog',
             '/potolki-v-prihozhuju',
