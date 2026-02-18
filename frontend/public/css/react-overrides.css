@@ -179,80 +179,14 @@ body.menu-open {
   --fcc-separator-size: 8px;
 }
 
-/* s_form_lowprice: заголовок и форма по центру */
+/* s_form_lowprice: заголовок по центру, форма как в zakaz_5min (razmetka1 в одну строку) */
 .s_form_lowprice h3 {
   text-align: center;
 }
-.s_form_lowprice_form_row {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  gap: 16px 20px;
-  max-width: 600px;
-  margin: 24px auto 0;
-}
-.s_form_lowprice_form_row .low_name,
-.s_form_lowprice_form_row .low_tel {
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: 0;
-  flex-shrink: 0;
-  /* Иконки как раньше: фоновая картинка слева */
-  background-repeat: no-repeat;
-  background-position: left center;
-  background-size: contain;
-  min-height: 50px;
-  height: 50px;
-}
-.s_form_lowprice_form_row .low_name {
-  background-image: url("/images/name2.png");
-  min-width: 200px;
-}
-.s_form_lowprice_form_row .low_tel {
-  background-image: url("/images/tel2.png");
-  min-width: 200px;
-}
-.s_form_lowprice_form_row .low_name input,
-.s_form_lowprice_form_row .low_tel input {
-  width: 180px;
-  box-sizing: border-box;
-  margin-left: 50px;
-  margin-top: 0;
-}
-.s_form_lowprice_form_row .blue_btn {
-  flex-shrink: 0;
-}
-.s_form_lowprice_legal {
-  max-width: 560px;
-  margin: 16px auto 0;
+.s_form_lowprice .zakaz_lowprice {
+  padding-top: 30px;
+  padding-left: 15px;
   text-align: center;
-  padding: 0 15px;
-}
-@media (max-width: 768px) {
-  .s_form_lowprice_form_row {
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
-    gap: 12px;
-  }
-  .s_form_lowprice_form_row .low_name input,
-  .s_form_lowprice_form_row .low_tel input {
-    width: 140px;
-    min-width: 120px;
-  }
-}
-@media (max-width: 480px) {
-  .s_form_lowprice_form_row {
-    flex-direction: column;
-    align-items: center;
-  }
-  .s_form_lowprice_form_row .low_name input,
-  .s_form_lowprice_form_row .low_tel input {
-    width: 100%;
-    min-width: 0;
-    max-width: 260px;
-  }
 }
 
 /* s_simple_text: современный вид в духе основного дизайна */
