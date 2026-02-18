@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
 
     // Public API (no auth)
     Route::get('/site/resolve', [PublicSiteController::class, 'resolve']);
+    Route::get('/site/suggest-city', [PublicSiteController::class, 'suggestCity']);
     Route::get('/site/by-city/{slug}', [PublicSiteController::class, 'byCity'])->where('slug', '[a-z0-9-]+');
     Route::get('/city-sites', [PublicSiteController::class, 'citySites']);
     Route::post('/forms/lead', [\App\Http\Controllers\Api\FormLeadController::class, 'store']);

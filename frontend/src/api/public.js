@@ -46,6 +46,13 @@ export function getCitySites() {
 }
 
 /**
+ * Предложенный город по IP (для основного домена). Возвращает { data: { city_slug?: string } }.
+ */
+export function suggestCity() {
+  return getJSON(`${prefix}/site/suggest-city`);
+}
+
+/**
  * Данные сайта по slug города (для основного домена без редиректа).
  */
 export function getSiteByCity(slug) {

@@ -27,7 +27,7 @@ export default function SectionBanner({ data = bannerData, onZamerClick }) {
                   {data.price}
                   <span>{data.priceUnit}</span>
                 </div>
-                <div className="tolko" id="tolko">{data.saleLabel || saleLabel}</div>
+                <div className="tolko" id="tolko">{saleLabel}</div>
               </div>
               <div className="i_zamer">
                 <a href="#" onClick={(e) => { e.preventDefault(); onZamerClick?.(); }} role="button">

@@ -9,7 +9,7 @@ import { getCitySites } from '../api/public.js';
 const POPUP_SEEN_KEY = 'city_popup_seen';
 
 export default function CitySelectPopup() {
-  const { isMain, setSelectedCitySlug } = useSite();
+  const { isMain, setSelectedCitySlug, geoCitySlug, isLoading } = useSite();
   const [show, setShow] = useState(false);
   const [cities, setCities] = useState([
     { name: 'Анапа', slug: 'anapa' },
@@ -18,8 +18,9 @@ export default function CitySelectPopup() {
   ]);
 
   useEffect(() => {
-    if (!isMain || typeof window === 'undefined') return;
+    if (!isMain || typeof window === 'undefined' || isLoading) return;
     if (window.localStorage?.getItem(POPUP_SEEN_KEY)) return;
+    if (geoCitySlug) return;
     setShow(true);
     getCitySites().then((res) => {
       const list = res?.data?.cities;
@@ -57,7 +58,7 @@ export default function CitySelectPopup() {
         boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
       }}>
         <p style={{ margin: '0 0 16px', fontSize: 18 }}>Выберите город</p>
-        <p style={{ margin: '0 0 20px', fontSize: 14, color: '#666' }}>По умолчанию: Анапа. Телефоны и адреса будут подставлены для выбранного города.</p>
+        <p style={{ margin: '0 0 20px', fontSize: 14, color: '#666' }}>Не удалось определить ваш регион. Телефоны и адреса будут подставлены для выбранного города.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {cities.map((c) => (
             <button

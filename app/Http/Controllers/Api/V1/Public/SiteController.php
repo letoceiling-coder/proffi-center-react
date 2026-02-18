@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1\Public;
 
+use App\Models\City;
 use App\Models\Site;
 use App\Services\SiteResolverService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class SiteController extends PublicApiController
 {
@@ -120,5 +123,56 @@ class SiteController extends PublicApiController
         ];
 
         return response()->json(['data' => $data]);
+    }
+
+    /**
+     * GET /api/v1/site/suggest-city
+     * Определение города по IP пользователя (для основного домена).
+     * Возвращает { city_slug: string } если город найден в БД, иначе {}.
+     */
+    public function suggestCity(Request $request): JsonResponse
+    {
+        $ip = $request->ip();
+        if (!$ip || $ip === '127.0.0.1' || $ip === '::1') {
+            return response()->json(['data' => []]);
+        }
+
+        try {
+            $response = Http::timeout(3)->get('http://ip-api.com/json/' . urlencode($ip), [
+                'fields' => 'city,regionName',
+                'lang' => 'ru',
+            ]);
+            if (!$response->successful()) {
+                return response()->json(['data' => []]);
+            }
+            $body = $response->json();
+            $cityName = $body['city'] ?? $body['regionName'] ?? null;
+            if (!$cityName || !is_string($cityName)) {
+                return response()->json(['data' => []]);
+            }
+            $cityName = trim($cityName);
+            $city = City::query()
+                ->whereHas('sites')
+                ->where(function ($q) use ($cityName) {
+                    $q->where('name', $cityName)
+                        ->orWhere('name_prepositional', $cityName)
+                        ->orWhere('slug', Str::slug($cityName));
+                })
+                ->first();
+            if ($city) {
+                return response()->json(['data' => ['city_slug' => $city->slug]]);
+            }
+            $slug = Str::slug($cityName);
+            if ($slug !== '') {
+                $cityBySlug = City::query()->whereHas('sites')->where('slug', $slug)->first();
+                if ($cityBySlug) {
+                    return response()->json(['data' => ['city_slug' => $cityBySlug->slug]]);
+                }
+            }
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return response()->json(['data' => []]);
     }
 }

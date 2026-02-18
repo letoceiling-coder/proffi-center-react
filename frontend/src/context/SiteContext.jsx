@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { siteResolve, getSiteByCity, getHost } from '../api/public.js';
+import { siteResolve, getSiteByCity, suggestCity, getHost } from '../api/public.js';
 
 const STORAGE_KEY = 'selected_city_slug';
 const DEFAULT_CITY = 'anapa';
@@ -28,6 +28,7 @@ export function SiteProvider({ children }) {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [geoCitySlug, setGeoCitySlug] = useState(null);
 
   const setSelectedCitySlug = useCallback((slug) => {
     const s = slug || DEFAULT_CITY;
@@ -51,6 +52,36 @@ export function SiteProvider({ children }) {
       setIsLoading(false);
     };
 
+    const runMainDomain = (siteData, contactsData) => {
+      suggestCity()
+        .then((geoRes) => {
+          if (cancelled) return;
+          const suggestedSlug = geoRes?.data?.city_slug;
+          const slugToUse = suggestedSlug || slug;
+          if (suggestedSlug) {
+            setSelectedCitySlugState(suggestedSlug);
+            try { window.localStorage?.setItem(STORAGE_KEY, suggestedSlug); } catch (_) {}
+            setGeoCitySlug(suggestedSlug);
+          } else {
+            setGeoCitySlug(null);
+          }
+          return getSiteByCity(slugToUse).then((r) => {
+            if (cancelled) return;
+            const s = r?.data?.site;
+            finish(s || siteData, s?.contacts ?? contactsData);
+          });
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setGeoCitySlug(null);
+          return getSiteByCity(slug).then((r) => {
+            if (cancelled) return;
+            const s = r?.data?.site;
+            finish(s || siteData, s?.contacts ?? contactsData);
+          });
+        });
+    };
+
     siteResolve()
       .then((res) => {
         if (cancelled) return;
@@ -59,11 +90,7 @@ export function SiteProvider({ children }) {
         const contactsData = d?.site?.contacts ?? null;
         if (d?.seo_settings) setSeoSettings(d.seo_settings);
         if (isMain) {
-          return getSiteByCity(slug).then((r) => {
-            if (cancelled) return;
-            const s = r?.data?.site;
-            finish(s || siteData, s?.contacts ?? contactsData);
-          });
+          return runMainDomain(siteData, contactsData);
         }
         finish(siteData, contactsData);
       })
@@ -96,8 +123,8 @@ export function SiteProvider({ children }) {
 
   const isMain = isMainDomain(getHost());
   const value = useMemo(
-    () => ({ site, contacts, seoSettings, isLoading, error, selectedCitySlug, setSelectedCitySlug, isMain }),
-    [site, contacts, seoSettings, isLoading, error, selectedCitySlug, setSelectedCitySlug, isMain]
+    () => ({ site, contacts, seoSettings, isLoading, error, selectedCitySlug, setSelectedCitySlug, isMain, geoCitySlug }),
+    [site, contacts, seoSettings, isLoading, error, selectedCitySlug, setSelectedCitySlug, isMain, geoCitySlug]
   );
 
   return (
