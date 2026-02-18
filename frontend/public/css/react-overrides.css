@@ -185,10 +185,10 @@ body.menu-open {
 }
 .s_form_lowprice_form_row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  align-items: flex-start;
-  gap: 16px 24px;
+  align-items: center;
+  gap: 16px 20px;
   max-width: 600px;
   margin: 24px auto 0;
 }
@@ -197,11 +197,11 @@ body.menu-open {
   margin-top: 0;
   margin-left: 0;
   margin-right: 0;
+  flex-shrink: 0;
 }
 .s_form_lowprice_form_row .low_name input,
 .s_form_lowprice_form_row .low_tel input {
-  width: 200px;
-  max-width: 100%;
+  width: 180px;
   box-sizing: border-box;
 }
 .s_form_lowprice_form_row .blue_btn {
@@ -215,14 +215,27 @@ body.menu-open {
 }
 @media (max-width: 768px) {
   .s_form_lowprice_form_row {
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
     gap: 12px;
   }
   .s_form_lowprice_form_row .low_name input,
   .s_form_lowprice_form_row .low_tel input {
+    width: 140px;
+    min-width: 120px;
+  }
+}
+@media (max-width: 480px) {
+  .s_form_lowprice_form_row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .s_form_lowprice_form_row .low_name input,
+  .s_form_lowprice_form_row .low_tel input {
     width: 100%;
-    min-width: 220px;
+    min-width: 0;
+    max-width: 260px;
   }
 }
 
