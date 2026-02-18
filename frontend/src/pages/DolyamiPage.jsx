@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Seo, JsonLd, getBaseUrl } from '../seo';
 import { breadcrumbList } from '../seo/jsonld';
 import Header from '../components/Header';
@@ -67,24 +67,7 @@ export default function DolyamiPage() {
 
       <div className="probel" />
 
-      {/* A) Hero */}
-      <section className="section dolyami-hero">
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-12">
-              <h1 className="dolyami-hero-h1">Оплата Долями от Т-Банка</h1>
-                <p className="dolyami-hero-desc">
-                  4 платежа за 6 недель: первый — сразу, остальные три — каждые 2 недели. Сервис оплаты частями, без кредитного договора. Возможен сервисный сбор. Подробности на dolyame.ru.
-                </p>
-              <Link to="/natjazhnye-potolki-kalkuljator" className="dolyami-hero-cta">
-                Рассчитать стоимость
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* B) Как работает — 4 платежа */}
+      {/* Как работает — 4 платежа */}
       <section className="section dolyami-how">
         <div className="container">
           <div className="row">
