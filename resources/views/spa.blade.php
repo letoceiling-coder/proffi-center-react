@@ -26,9 +26,9 @@
     <meta name="twitter:title" content="{{ $title }}" />
     <meta name="twitter:description" content="{{ $description }}" />
     <meta name="twitter:image" content="{{ $ogImage }}" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Proffi Center","url":"{{ $appUrl }}"}</script>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Proffi Center","url":"{{ $appUrl }}"}</script>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Главная","item":"{{ $appUrl }}/"}]}</script>
+    <script type="application/ld+json">{"@@context":"https://schema.org","@@type":"Organization","name":"Proffi Center","url":"{{ $appUrl }}"}</script>
+    <script type="application/ld+json">{"@@context":"https://schema.org","@@type":"WebSite","name":"Proffi Center","url":"{{ $appUrl }}"}</script>
+    <script type="application/ld+json">{"@@context":"https://schema.org","@@type":"BreadcrumbList","itemListElement":[{"@@type":"ListItem","position":1,"name":"Главная","item":"{{ $appUrl }}/"}]}</script>
     <link rel="stylesheet" href="{{ asset('css/reset.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/bootstrap-grid-3.3.1.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/fonts-local.css') }}" />
