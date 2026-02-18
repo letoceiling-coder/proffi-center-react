@@ -65,7 +65,7 @@ body.menu-open {
     opacity: 1 !important;
   }
 }
-/* На мобильных: без скролла — шапка в потоке; при скролле — фиксируем сверху и даём отступ контенту */
+/* На мобильных: без скролла — шапка в потоке; при скролле — фиксируем сверху, контент не заходит под шапку */
 @media (max-width: 992px) {
   .s_top {
     position: relative !important;
@@ -79,9 +79,15 @@ body.menu-open {
     z-index: 1000;
     transition: top 0.2s ease-out;
     will-change: top;
+    background: #fff !important;
   }
+  /* Отступ и спейсер: контент не заходит под фиксированную шапку при скролле */
   body.header-fixed-mobile {
-    padding-top: 85px !important;
+    padding-top: 110px !important;
+  }
+  body.header-fixed-mobile .probel {
+    min-height: 110px !important;
+    height: 110px !important;
   }
   .s_top.pop_up_block,
   .s_top.pop_up_block.fixed {
