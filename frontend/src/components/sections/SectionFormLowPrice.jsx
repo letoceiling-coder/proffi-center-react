@@ -97,32 +97,22 @@ export default function SectionFormLowPrice({ data, onSubmit }) {
                 )}
               </div>
             </div>
-            <div className="clearfix"></div>
-            <div className="col-md-2  clearfix">
-            </div>
-            <div className="col-md-3  clearfix">
+            <div className="s_form_lowprice_form_row clearfix">
               <div className="low_name">
                 <input id="low_name" type="text" placeholder="Ваше имя" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
-            </div>
-            <div className="col-md-5  clearfix">
               <div className="low_tel">
                 <input id="low_tel" type="tel" inputMode="numeric" placeholder="8 (999) 123-45-67" value={phone} onChange={(e) => setPhone(formatPhoneInput(e.target.value))} />
               </div>
-            </div>
-
-            <div className="col-md-3  clearfix">
               <div className="blue_btn">
-                <a id="low_sand" href="#" onClick={handleSubmit}>
+                <a id="low_sand" href="#" onClick={(e) => { e.preventDefault(); handleSubmit(e); }}>
                   {sending ? 'Отправка…' : 'Отправить заявку'}
                 </a>
               </div>
             </div>
-
           </div>
-
         </div>
-        <div className="prav-info">Вписывая телефон, вы подтверждаете свое совершеннолетие, соглашаетесь на обработку персональных данных в&nbsp;соответствии с
+        <div className="s_form_lowprice_legal prav-info">Вписывая телефон, вы подтверждаете свое совершеннолетие, соглашаетесь на обработку персональных данных в&nbsp;соответствии с
           <a href={legalLink} className="b-link" onClick={openLegal}>Правовой&nbsp;информацией</a>
         </div>
       </div>
