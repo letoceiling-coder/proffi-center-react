@@ -45,28 +45,17 @@ export default function Header({ onCallClick, onZamerClick }) {
 
   useEffect(() => {
     const isMobile = () => window.innerWidth <= MOBILE_BREAKPOINT;
+    if (isMobile()) {
+      lastFixedRef.current = false;
+      setPopUpFixed(false);
+    }
 
     const handler = () => {
       if (!isMobile()) return;
-      if (rafRef.current != null) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = null;
-        const y = window.scrollY;
-        let next = lastFixedRef.current;
-        if (next) {
-          if (y <= SCROLL_THRESHOLD_OFF) next = false;
-        } else {
-          if (y >= SCROLL_THRESHOLD_ON) next = true;
-        }
-        if (next !== lastFixedRef.current) {
-          lastFixedRef.current = next;
-          setPopUpFixed(next);
-        }
-      });
     };
 
     const onResize = () => {
-      if (!isMobile()) {
+      if (isMobile()) {
         lastFixedRef.current = false;
         setPopUpFixed(false);
       }
