@@ -1,88 +1,112 @@
-# SEO и микроразметка (Proffi Center React SPA)
+# SEO-архитектура (Яндекс / Google)
 
-## Что сделано
+Серверная выдача meta, canonical, Open Graph, JSON-LD и минимальный контент в HTML для индексации посадочных страниц без зависимости от JavaScript.
 
-### React (frontend)
+## Как проверить локально
 
-- **Единый SEO-слой**: модуль `frontend/src/seo/`:
-  - **Seo.jsx** — компонент для всех страниц: `<title>`, meta description, canonical, robots, OpenGraph (og:title, og:description, og:image, og:url, og:site_name), Twitter Card (twitter:card, title, description, image).
-  - **JsonLd.jsx** — вставка одного или нескольких `<script type="application/ld+json">`.
-  - **jsonld.js** — хелперы схем: Organization, LocalBusiness, WebSite, BreadcrumbList, Service, Article, FAQPage.
-  - **routes.js** — карта статических маршрутов: дефолтные title/description для страниц без slug из API (`STATIC_ROUTE_META`, `getStaticMeta(pathname)`).
+### robots.txt
 
-- **На каждой странице** используются `<Seo />` и при необходимости `<JsonLd />`:
-  - Главная: Seo + Organization + WebSite.
-  - Страницы из API (страница по slug, услуга, категория, товар): мета из ответа API (`meta.seo`), JSON-LD из `meta.schema` + BreadcrumbList.
-  - Статические (калькулятор, скидки, о компании, отзывы, контакты, договор, рассрочка, возврат, комнаты, категории потолков, товар из мока): мета из `routes.js` или явные props, BreadcrumbList на внутренних.
+```bash
+curl -s http://localhost/robots.txt
+```
 
-- **Канонический URL**: строится как `window.location.origin + pathname` (без query и UTM), если бэкенд не отдаёт `meta.seo.canonical`.
+Ожидается: `200`, тело содержит `User-agent: *`, `Allow: /`, `Sitemap: .../sitemap.xml`.
 
-- **Динамические мета**: приоритет — `seo_title` → `title`, `seo_description` → excerpt/short → дефолт из статической карты или компонента.
+### sitemap.xml
 
-### Laravel (инфраструктура)
+```bash
+curl -s http://localhost/sitemap.xml
+```
 
-- **GET /robots.txt** — отдаётся в корне сайта (маршрут в `routes/web.php`). Содержит:
-  - `User-agent: *`
-  - `Allow: /`
-  - `Sitemap: https://{текущий домен}/sitemap.xml`
-  - опционально дополнение из `seo_settings.robots_txt_append`.
+Ожидается: `200`, `Content-Type: application/xml`, валидный XML с `<urlset>`, список `<url><loc>...</loc></url>` (главная, услуги, страницы и т.д.).
 
-- **GET /sitemap.xml** — в корне сайта. Включает:
-  - статические URL SPA (главная, готовые потолки, калькулятор, скидки, акция, о компании, отзывы, контакты, договор, рассрочка, возврат, каталог, страницы по комнатам);
-  - URL из БД: страницы (Page), услуги (Service), категории товаров, товары (Product) для текущего сайта (разрешение по host запроса).
+### SEO-лендинг услуги
 
-- Сайт для robots/sitemap определяется по host запроса (как и для Public API): `X-Forwarded-Host` или Host.
+Подставьте реальный `slug` услуги из БД (published):
 
-- **Микроразметка в исходном HTML (для валидаторов и ботов без JS):** в `resources/views/spa.blade.php` для каждого ответа сервера выводятся мета и JSON-LD (title, description, canonical, robots, OpenGraph, Twitter Card, схемы Organization, WebSite, BreadcrumbList). Это нужно, чтобы валидатор микроразметки Яндекса и подобные инструменты видели разметку уже в исходном HTML, без выполнения JavaScript. После загрузки SPA React (Helmet) при необходимости обновляет мета для текущей страницы.
+```bash
+curl -s http://localhost/uslugi/natyazhnye-potolki
+```
 
-### Канонический домен (www / non-www, http → https)
+Проверьте в выводе:
 
-- **Не реализовано в коде приложения.** Рекомендуется настроить на уровне веб-сервера (nginx/apache) или reverse proxy:
-  - редирект с `http://` на `https://`;
-  - выбор одной формы домена (например только `https://proffi-center.ru` или только `https://www.proffi-center.ru`) и 301-редирект второй формы на выбранную.
-- После настройки канонический URL в мета и в sitemap будет совпадать с выбранным доменом, если фронт открыт по этому домену (и Laravel отдаёт тот же host в sitemap/robots).
+- `<title>...</title>`
+- `<meta name="description" content="...">`
+- `<link rel="canonical" href="...">`
+- `<meta property="og:title" ...>`, `og:description`, `og:url`, при наличии `og:image`
+- хотя бы один `<script type="application/ld+json">` (Organization, Service, BreadcrumbList)
 
-### SSR / пререндер (B3)
+### Главная и статические страницы
 
-- Не реализовано. Для гарантированного отображения сниппетов в Яндексе при необходимости можно:
-  - использовать Vite SSR для публичных роутов, или
-  - пререндер статических страниц на билде и отдавать готовый HTML.
-- Текущая схема (SPA + мета/JSON-LD через react-helmet-async) достаточна для индексации при корректной отдаче HTML (и при желании — пререндере или SSR позже).
+```bash
+curl -s http://localhost/
+curl -s http://localhost/o-kompanii
+curl -s http://localhost/uslugi
+```
+
+В каждом ответе должны быть title, description, canonical и JSON-LD.
 
 ---
 
-## Как проверять
+## Как добавить новую страницу в sitemap
 
-1. **View-source** любой страницы:
-   - в `<head>`: `<title>`, `<meta name="description">`, `<link rel="canonical">`, `<meta name="robots">`;
-   - OpenGraph: `og:title`, `og:description`, `og:image`, `og:url`;
-   - Twitter: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`;
-   - один или несколько `<script type="application/ld+json">` без синтаксических ошибок.
+1. **Страница из CMS (Page)**  
+   Публикуемые страницы подтягиваются в sitemap автоматически из `Page::published()` по `site_id`. Ничего править не нужно.
 
-2. **Валидаторы**:
-   - [Google Rich Results Test](https://search.google.com/test/rich-results) — проверка JSON-LD;
-   - [Яндекс Валидатор микроразметки](https://webmaster.yandex.ru/tools/microtest/).
+2. **Услуга (Service)**  
+   Аналогично: `Service::published()` по `site_id` — URL вида `/uslugi/{slug}`.
 
-3. **robots.txt**: открыть `https://{ваш-домен}/robots.txt` — должна быть строка `Sitemap: https://{ваш-домен}/sitemap.xml`.
+3. **Статический путь SPA**  
+   В `App\Http\Controllers\Api\V1\Public\SitemapController::index()` в массив `$staticPaths` добавьте путь, например:
 
-4. **sitemap.xml**: открыть `https://{ваш-домен}/sitemap.xml` — список URL с тем же доменом, включая статику и страницы/услуги/каталог из БД.
+   ```php
+   $staticPaths = [
+       '/',
+       '/uslugi',
+       '/o-kompanii',
+       // ...
+       '/novaya-stranitsa',
+   ];
+   ```
 
----
-
-## Где менять мета
-
-| Где | Что менять |
-|-----|------------|
-| **Статические страницы (без API)** | `frontend/src/seo/routes.js` — объект `STATIC_ROUTE_META`: ключ — pathname (например `'/o-kompanii'`), значение — `{ title, description }`. |
-| **Страницы из CMS (страница/услуга/товар/категория)** | В админке: SEO-поля сущности (seo_title, seo_description, og:image и т.п.). На бэкенде формирует `SeoResolver` и при необходимости `SchemaResolver`. |
-| **Имя сайта в мета** | По умолчанию «Proffi Center»; для главной передаётся из `SiteContext` / `seoSettings.site_name` в `<Seo siteName={...} />`. |
-| **Дополнение robots.txt** | Админка: настройки SEO сайта, поле `robots_txt_append`. |
-| **Список URL в sitemap** | Статические пути — в `App\Http\Controllers\Api\V1\Public\SitemapController` (массив `$staticPaths`). Динамические — из моделей Page, Service, ProductCategory, Product. |
+   Если для этого пути нужны свои SEO-мета на лендинге, добавьте запись в `ServerSeoService::STATIC_META` и в `ServerSeoService::getStaticPathKeys()` (ключ пути без ведущего слеша), а также зарегистрируйте маршрут в `routes/web.php` через SEO landing (статический путь уже покрыт маршрутом `{pathKey}` для ключей из `getStaticPathKeys()`).
 
 ---
 
-## Файлы
+## Как задать SEO-поля
 
-- **Frontend**: `frontend/src/seo/` (Seo.jsx, JsonLd.jsx, jsonld.js, routes.js, index.js); использование в страницах — `frontend/src/pages/*.jsx`.
-- **Laravel**: `app/Http/Controllers/Api/V1/Public/RobotsController.php`, `SitemapController.php`; маршруты — `routes/web.php` (robots.txt, sitemap.xml), `routes/api.php` (API v1 при необходимости).
-- **Резолверы мета/схем**: `app/Services/SeoResolver.php`, `app/Services/SchemaResolver.php`.
+- **Главная:** мета и JSON-LD собираются в `ServerSeoService::buildForHome(Site)` (город/контакты из `Site` / `SiteContact` / `City`).
+- **Услуга:** данные из модели `Service` и привязанных `SeoMeta` (CMS), сборка в `SeoResolver::resolveFor($service, $site)` и `ServerSeoService::buildForService($service, $site)`.
+- **Страница CMS:** то же через `Page` и `SeoResolver::resolveFor($page, $site)`, сборка в `ServerSeoService::buildForPage($page, $site)`.
+- **Статические пути:** заголовки и описание задаются в `App\Services\ServerSeoService::STATIC_META` (ключ — путь без слеша).
+
+Общий шаблон разметки (title, description, canonical, robots, og:*, json-ld) — в `resources/views/layouts/seo-spa.blade.php`; данные передаются через DTO `App\DataTransferObjects\SeoMeta`.
+
+---
+
+## Проверка на сервере
+
+После деплоя выполните:
+
+```bash
+# robots
+curl -sI https://proffi-center.ru/robots.txt
+curl -s https://proffi-center.ru/robots.txt | grep -i sitemap
+
+# sitemap
+curl -sI https://proffi-center.ru/sitemap.xml
+curl -s https://proffi-center.ru/sitemap.xml | head -50
+
+# лендинг услуги (подставьте актуальный slug)
+curl -s https://proffi-center.ru/uslugi/natyazhnye-potolki | grep -E '<title>|<meta name="description"|canonical|application/ld\+json'
+```
+
+Убедитесь, что в HTML ответах присутствуют нужные теги и что `robots.txt` ссылается на `https://proffi-center.ru/sitemap.xml`.
+
+## Нормализация URL
+
+В production для веб-маршрутов включён middleware `NormalizeSeoUrl`: редирект на схему и хост из `APP_URL` (например `https://proffi-center.ru`). То есть:
+- запросы по HTTP редиректятся на HTTPS;
+- запросы с другого хоста (например с www) редиректятся на канонический хост из `APP_URL`.
+
+На сервере задайте `APP_URL=https://proffi-center.ru`. Редиректы выполняются только при `APP_ENV=production`. Единый стиль слеша (с/без завершающего) при необходимости настраивается на уровне nginx.

@@ -14,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'noindex' => \App\Http\Middleware\NoindexRobotsHeader::class,
         ]);
+        $middleware->appendToGroup('api', [\App\Http\Middleware\NoindexRobotsHeader::class]);
+        $middleware->appendToGroup('web', [\App\Http\Middleware\NormalizeSeoUrl::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
