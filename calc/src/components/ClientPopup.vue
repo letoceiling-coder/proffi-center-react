@@ -1,12 +1,22 @@
 <template>
-  <!-- Оверлей без Teleport — первый ребёнок .content, поверх всего -->
+  <!-- Видимость и позиция через :style, чтобы попап гарантированно был поверх всего -->
   <div
-    v-show="!store.currentClient || store.showClientPopup"
     id="popup_client"
     class="client-popup-overlay"
     role="dialog"
     aria-modal="true"
     aria-labelledby="client-popup-title"
+    :style="{
+      display: overlayVisible ? 'flex' : 'none',
+      position: 'fixed',
+      inset: 0,
+      zIndex: 2147483647,
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'rgba(0,0,0,0.65)',
+      padding: '12px',
+      boxSizing: 'border-box'
+    }"
   >
     <div class="client-popup-box">
         <div v-if="step === 1">
@@ -151,7 +161,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { useAppStore } from '../stores/appStore'
 import { useClients } from '../composables/useClients'
@@ -177,8 +187,11 @@ const showNewAddressForm = ref(false)
 const newAddressText = ref('')
 const selectedRoomId = ref(null)
 const roomNote = ref('')
+const overlayVisible = ref(true)
 
 let addressSearchTimer = null
+
+watch(() => store.showClientPopup, (v) => { if (v) overlayVisible.value = true })
 
 const rooms = computed(() => store.rooms || [])
 const availableClients = computed(() => store.clientsList || [])
@@ -301,6 +314,7 @@ function confirmStep2() {
 }
 
 onMounted(async () => {
+  overlayVisible.value = true
   store.showClientPopup = true
   await store.fetchClients()
   if (store.currentClient?.id) {
