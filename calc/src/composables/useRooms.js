@@ -6,10 +6,10 @@ export function useRooms() {
 
   const getRooms = async () => {
     try {
-      // Запрос на тот же origin (нет Mixed Content). Laravel: POST /api/calc/rooms
+      // GET /api/calc/rooms — справочник типов помещений
       const base = typeof window !== 'undefined' ? (window.location.origin || '') : ''
       const url = base ? `${base}/api/calc/rooms` : '/api/calc/rooms'
-      const response = await axios.post(url, { success: 'getRooms' }, { withCredentials: true })
+      const response = await axios.get(url, { withCredentials: true })
       if (response.data) {
         rooms.value = response.data
       }

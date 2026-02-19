@@ -572,8 +572,8 @@ const confirmStep2 = () => {
   const addr = clientAddresses.value.find(a => a.id === Number(selectedAddressId.value)) ?? null
 
   store.setCurrentClient(selectedClientObj.value, addr?.id ?? null)
-  store.currentRoomId.value  = selectedRoomId.value
-  store.currentRoomNote.value = roomNote.value
+  store.currentRoomId   = selectedRoomId.value
+  store.currentRoomNote = roomNote.value
   store.saveDraftClient()
 
   showClientPopup.value = false

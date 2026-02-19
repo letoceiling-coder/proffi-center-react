@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import axios from 'axios'
 import { useRooms } from '../composables/useRooms'
 import { useSmeta } from '../composables/useSmeta'
@@ -215,9 +215,11 @@ function createAppStore() {
 }
 
 // ──── Singleton: один экземпляр на всё приложение ────
+// reactive() автоматически разворачивает вложенные refs:
+// store.rooms вернёт массив, store.currentClient вернёт объект/null, и т.д.
 let _instance = null
 
 export function useAppStore() {
-  if (!_instance) _instance = createAppStore()
+  if (!_instance) _instance = reactive(createAppStore())
   return _instance
 }
