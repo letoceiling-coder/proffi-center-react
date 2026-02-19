@@ -28,14 +28,22 @@ class NormalizeSeoUrl
             return $next($request);
         }
 
-        $currentHost = $request->getHost();
-        $currentScheme = $request->getScheme();
+        // Хост как у API: за прокси может приходить X-Forwarded-Host
+        $forwardedHost = $request->header('X-Forwarded-Host');
+        $currentHost = $forwardedHost
+            ? trim(explode(',', $forwardedHost)[0])
+            : $request->getHost();
+        $currentScheme = $request->header('X-Forwarded-Proto') ?: $request->getScheme();
         $path = '/' . ltrim($request->path(), '/');
         if ($path === '//') {
             $path = '/';
         }
 
         $currentHostLower = strtolower($currentHost);
+        // Убрать порт, если передан (moscow.proffi-center.ru:443 -> moscow.proffi-center.ru)
+        if (str_contains($currentHostLower, ':')) {
+            $currentHostLower = explode(':', $currentHostLower, 2)[0];
+        }
         $canonicalHostLower = strtolower($canonicalHost);
         // Допускаем основной домен и любые поддомены (moscow., anapa., stavropol., www. и т.д.)
         $isOurDomain = $currentHostLower === $canonicalHostLower
