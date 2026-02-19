@@ -108,7 +108,7 @@
     </div>
 
     <!-- Форма данных -->
-    <form method="POST" action="http://calc.gm-vrn.ru/sketch/index.php" style="display: none" id="form_data">
+    <form method="POST" action="/api/calc/sketch" style="display: none" id="form_data">
       <input name="n4" id="input_n4" value="0.00" placeholder="Площадь" type="hidden">
       <input name="n5" id="input_n5" value="0.00" placeholder="Периметр" type="hidden">
       <input name="n9" id="input_n9" value="" placeholder="Углы" type="hidden">

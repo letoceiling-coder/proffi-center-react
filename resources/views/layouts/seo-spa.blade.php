@@ -1,7 +1,7 @@
 @php
     $seo = $seo ?? null;
     $seoBodyContent = $seoBodyContent ?? '';
-    $buildPath = public_path('build/assets');
+    $buildPath = public_path('build-spa/assets');
     $jsFile = collect(glob($buildPath . '/index-*.js'))->map(fn ($f) => basename($f))->first();
     $cssFile = collect(glob($buildPath . '/index-*.css'))->map(fn ($f) => basename($f))->first();
 @endphp
@@ -85,7 +85,7 @@
         @endif
     </div>
     @if($jsFile)
-    <script type="module" crossorigin src="{{ asset('build/assets/' . $jsFile) }}"></script>
+    <script type="module" crossorigin src="{{ asset('build-spa/assets/' . $jsFile) }}"></script>
     @endif
 </body>
 </html>

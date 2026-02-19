@@ -32,7 +32,9 @@ php artisan deploy --dry-run          # показать команды, не в
 
 ### Калькулятор по маршруту /calc
 
-Приложение из репозитория [cieling-calc](https://github.com/letoceiling-coder/cieling-calc) лежит в папке `calc/` и отдаётся по адресу **/calc**. При выполнении `php artisan deploy` на сервере автоматически запускаются: сборка в `calc/` (`npm install --legacy-peer-deps`, `npm run build`) и копирование `calc/dist/` и `calc/public/` в `public/calc/`. Ручная пересборка не требуется.
+Калькулятор — часть репозитория **proffi-center-react** (папка `calc/`), отдаётся по адресу **/calc**. При выполнении `php artisan deploy` на сервере автоматически запускаются: сборка в `calc/` (`npm install --legacy-peer-deps`, `npm run build`) и копирование `calc/dist/` и `calc/public/` в `public/calc/`. Отдельный репозиторий cieling-calc не используется.
+
+**Если по адресу /calc приходит 403 Forbidden:** веб-сервер (nginx) может отдавать каталог `public/calc/` сам и возвращать 403 при отсутствии прав. На сервере выполните: `chmod -R a+rX public/calc` (или `chown -R www-data:www-data public/calc` и права 755/644). Либо настройте nginx так, чтобы запросы к `/calc` и `/calc/` шли в Laravel (в `location /` уже есть `try_files ... /index.php` — тогда убедитесь, что запрос не перехватывается отдельным `location /calc` без передачи в PHP).
 
 ---
 

@@ -68,4 +68,21 @@ class TelegramLoginController extends Controller
         $botUsername = Config::get('telegram.bot_username', '');
         return response()->json(['telegram_bot_username' => $botUsername]);
     }
+
+    /**
+     * API калькулятора: комнаты (заглушка — возвращает пустой массив).
+     */
+    public function rooms(Request $request): JsonResponse
+    {
+        return response()->json([]);
+    }
+
+    /**
+     * Приём POST формы из калькулятора (ранее sketch/index.php на другом домене).
+     * Заглушка — редирект обратно на /calc/.
+     */
+    public function sketch(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        return redirect('/calc/');
+    }
 }

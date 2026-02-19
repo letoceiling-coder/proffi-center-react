@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { useAppStore } from './stores/appStore'
 import Main1Section from './components/Main1Section.vue'
 import Main2Section from './components/Main2Section.vue'
@@ -46,14 +46,66 @@ import Main6Section from './components/Main6Section.vue'
 
 const store = useAppStore()
 const activeSection = ref('main-2')
+const telegramUser = ref(null)
+const telegramBotUsername = ref('')
+
+function getBaseUrl () {
+  if (typeof window === 'undefined') return ''
+  return window.location.origin || ''
+}
+
+async function fetchMe () {
+  const base = getBaseUrl()
+  try {
+    const r = await fetch(base + '/api/calc/me', { credentials: 'include' })
+    if (r.ok) telegramUser.value = await r.json()
+    else telegramUser.value = null
+  } catch (_) {
+    telegramUser.value = null
+  }
+}
+
+async function loadConfig () {
+  const base = getBaseUrl()
+  try {
+    const r = await fetch(base + '/api/calc/config', { credentials: 'include' })
+    if (r.ok) {
+      const data = await r.json()
+      telegramBotUsername.value = (data.telegram_bot_username || '').replace(/^@/, '') || ''
+    }
+  } catch (_) {}
+}
+
+function loadTelegramWidget () {
+  if (!telegramBotUsername.value) return
+  const root = document.getElementById('telegram-login-root')
+  if (!root || root.querySelector('script')) return
+  const authUrl = getBaseUrl() + '/auth/telegram-callback'
+  const script = document.createElement('script')
+  script.async = true
+  script.src = 'https://telegram.org/js/telegram-widget.js?22'
+  script.setAttribute('data-telegram-login', telegramBotUsername.value)
+  script.setAttribute('data-size', 'medium')
+  script.setAttribute('data-auth-url', authUrl)
+  script.setAttribute('data-request-access', 'write')
+  root.appendChild(script)
+}
+
+async function logout () {
+  const base = getBaseUrl()
+  try {
+    await fetch(base + '/api/calc/logout', { method: 'POST', credentials: 'include' })
+  } catch (_) {}
+  telegramUser.value = null
+}
 
 const headerIcons = [
-  { id: 'main-1', src: '/images/icon/blueprint.png', title: '' },
-  { id: 'main-2', src: '/images/icon/add.png', title: 'Новый чертеж' },
-  { id: 'main-3', src: '/images/icon/listing.png', title: '' },
-  { id: 'main-4', src: '/images/icon/project-management.png', title: '' },
-  { id: 'main-5', src: '/images/icon/document.png', title: '' },
-  { id: 'main-6', src: '/images/icon/user.png', title: '' }
+  { id: 'main-1', src: 'images/icon/blueprint.png', title: '' },
+  { id: 'main-2', src: 'images/icon/add.png', title: 'Новый чертеж' },
+  { id: 'main-3', src: 'images/icon/listing.png', title: '' },
+  { id: 'main-4', src: 'images/icon/project-management.png', title: '' },
+  { id: 'main-5', src: 'images/icon/document.png', title: '' },
+  { id: 'main-6', src: 'images/icon/user.png', title: '' }
 ]
 
 const handleIconClick = (sectionId) => {
@@ -81,21 +133,17 @@ onMounted(async () => {
   if (!telegramUser.value) {
     await loadConfig()
     if (telegramBotUsername.value) {
+      await nextTick()
       loadTelegramWidget()
     }
   }
-  const err = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '').get('telegram_error')
-  if (err === 'invalid') {
-    console.warn('Telegram login: неверная подпись или устаревшие данные')
-  } else if (err === 'config') {
-    console.warn('Telegram login: бот не настроен (TELEGRAM_BOT_TOKEN)')
-  }
+  const err = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('telegram_error') : null
+  if (err === 'invalid') console.warn('Telegram login: неверная подпись или устаревшие данные')
+  else if (err === 'config') console.warn('Telegram login: бот не настроен (TELEGRAM_BOT_TOKEN)')
 })
 
 watch(telegramBotUsername, (username) => {
-  if (username) {
-    setTimeout(loadTelegramWidget, 100)
-  }
+  if (username) setTimeout(loadTelegramWidget, 100)
 })
 </script>
 

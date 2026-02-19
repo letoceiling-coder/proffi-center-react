@@ -6,12 +6,10 @@ export function useRooms() {
 
   const getRooms = async () => {
     try {
-      // Используем прокси через Vite или прямой URL к backend
-      // В режиме разработки используем прокси, в production - прямой URL
-      const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'http://calc.gm-vrn.ru/')
-      const response = await axios.post(apiUrl, {
-        success: 'getRooms'
-      })
+      // Запрос на тот же origin (нет Mixed Content). Laravel: POST /api/calc/rooms
+      const base = typeof window !== 'undefined' ? (window.location.origin || '') : ''
+      const url = base ? `${base}/api/calc/rooms` : '/api/calc/rooms'
+      const response = await axios.post(url, { success: 'getRooms' }, { withCredentials: true })
       if (response.data) {
         rooms.value = response.data
       }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Public\RobotsController;
 use App\Http\Controllers\Api\V1\Public\SitemapController;
 use App\Http\Controllers\SeoLandingController;
+use App\Http\Controllers\TelegramLoginController;
 use App\Services\ServerSeoService;
 use App\Services\SiteResolverService;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| SEO: robots.txt и sitemap.xml в корне сайта (для индексации)
+| Служебные: robots.txt, sitemap.xml
 |--------------------------------------------------------------------------
 */
 Route::get('robots.txt', [RobotsController::class, 'index']);
@@ -19,31 +20,19 @@ Route::get('sitemap.xml', [SitemapController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------
-| SEO landing routes: серверные meta + минимальный контент для ботов
-|--------------------------------------------------------------------------
-*/
-Route::get('/', [SeoLandingController::class, 'showHome'])->name('home');
-Route::get('/uslugi/{slug}', [SeoLandingController::class, 'showService'])->name('seo.service');
-Route::get('{pathKey}', [SeoLandingController::class, 'showStatic'])
-    ->whereIn('pathKey', ServerSeoService::getStaticPathKeys())
-    ->name('seo.static');
-Route::get('/{slug}', [SeoLandingController::class, 'showPage'])
-    ->where('slug', '[^/]+')
-    ->name('seo.page');
-
-/*
-|--------------------------------------------------------------------------
-| Вход через Telegram для калькулятора (виджет Login)
+| Auth и API для калькулятора (сессия) — до любых /{slug}
 |--------------------------------------------------------------------------
 */
 Route::get('/auth/telegram-callback', [TelegramLoginController::class, 'callback'])->name('auth.telegram.callback');
 Route::get('/api/calc/config', [TelegramLoginController::class, 'config']);
 Route::get('/api/calc/me', [TelegramLoginController::class, 'me']);
 Route::post('/api/calc/logout', [TelegramLoginController::class, 'logout']);
+Route::post('/api/calc/rooms', [TelegramLoginController::class, 'rooms']);
+Route::post('/api/calc/sketch', [TelegramLoginController::class, 'sketch'])->name('api.calc.sketch');
 
 /*
 |--------------------------------------------------------------------------
-| Калькулятор (Vue SPA из репозитория cieling-calc)
+| Калькулятор (Vue SPA, часть proffi-center-react, папка calc/)
 |--------------------------------------------------------------------------
 */
 $serveCalcIndex = function () {
@@ -65,7 +54,7 @@ Route::get('/calc/{path}', function (string $path) {
 
 /*
 |--------------------------------------------------------------------------
-| Админ-панель (Vue/JS SPA)
+| Админ-панель (Vue SPA)
 |--------------------------------------------------------------------------
 */
 Route::get('/admin', function () {
@@ -80,7 +69,21 @@ Route::get('/admin/{any}', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Fallback для клиентского роутинга React (все остальные GET не /api/*)
+| Публичный сайт: SEO + React SPA (главная, услуги, статика, страницы)
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [SeoLandingController::class, 'showHome'])->name('home');
+Route::get('/uslugi/{slug}', [SeoLandingController::class, 'showService'])->name('seo.service');
+Route::get('{pathKey}', [SeoLandingController::class, 'showStatic'])
+    ->whereIn('pathKey', ServerSeoService::getStaticPathKeys())
+    ->name('seo.static');
+Route::get('/{slug}', [SeoLandingController::class, 'showPage'])
+    ->where('slug', '[^/]+')
+    ->name('seo.page');
+
+/*
+|--------------------------------------------------------------------------
+| Fallback для клиентского роутинга React SPA
 |--------------------------------------------------------------------------
 */
 Route::get('/{any}', function (Request $request) {
