@@ -600,8 +600,8 @@ import { initSketch } from '../utils/sketchInit'
 const store = useAppStore()
 const { fetchClients, createClient, fetchAddresses, addAddress } = useClients()
 
-// ──── Popup: показывать только если клиент не выбран ────
-const showClientPopup = ref(!store.currentClient)
+// ──── Popup: всегда показывать при входе в раздел чертежа (перед созданием чертежа обязателен клиент) ────
+const showClientPopup = ref(true)
 const showGetRoomsPopup = ref(false)
 const showClientSelectPopup = ref(false)
 const showPreloader = ref(false)
@@ -791,10 +791,16 @@ const confirmStep1 = async () => {
     }
     selectedClientObj.value = found
     clientAddresses.value   = await fetchAddresses(found.id)
-    selectedAddressId.value = clientAddresses.value[0]?.id ?? null
+    const keepAddr = clientAddresses.value.find(a => a.id === Number(selectedAddressId.value))
+    selectedAddressId.value = keepAddr ? selectedAddressId.value : (clientAddresses.value[0]?.id ?? null)
   }
 
   clientPopupStep.value = 2
+  // По умолчанию помещение — Гостиная
+  if (!selectedRoomId.value && rooms.value?.length) {
+    const gost = rooms.value.find(r => r.name === 'Гостиная')
+    selectedRoomId.value = gost?.id ?? rooms.value[0]?.id
+  }
 }
 
 /** Шаг 2: назад */
@@ -822,7 +828,13 @@ const confirmStep2 = () => {
   const addr = clientAddresses.value.find(a => a.id === Number(selectedAddressId.value)) ?? null
 
   store.setCurrentClient(selectedClientObj.value, addr?.id ?? null)
-  store.currentRoomId   = selectedRoomId.value
+  // Помещение: по умолчанию «Гостиная», если не выбрано
+  let roomId = selectedRoomId.value
+  if (!roomId && rooms.value?.length) {
+    const gost = rooms.value.find(r => r.name === 'Гостиная')
+    roomId = gost?.id ?? rooms.value[0]?.id
+  }
+  store.currentRoomId   = roomId
   store.currentRoomNote = roomNote.value
   store.saveDraftClient()
 
@@ -1026,8 +1038,22 @@ onMounted(async () => {
   // Загружаем список клиентов для попапа
   await store.fetchClients()
 
-  // Показываем попап только если клиент не выбран
-  showClientPopup.value = !store.currentClient
+  // Всегда показываем попап при открытии раздела чертежа: у каждого чертежа должен быть клиент с адресом и помещением
+  showClientPopup.value = true
+
+  // Если уже есть клиент (например из прошлого сеанса) — предзаполняем попап, чтобы можно было просто нажать «Далее» → «Начать чертёж»
+  if (store.currentClient?.id) {
+    selectedClientId.value   = store.currentClient.id
+    selectedClientObj.value  = store.currentClient
+    clientAddresses.value    = await fetchAddresses(store.currentClient.id)
+    selectedAddressId.value  = store.currentAddress?.id ?? clientAddresses.value[0]?.id ?? null
+    selectedRoomId.value     = store.currentRoomId ?? null
+    roomNote.value           = store.currentRoomNote ?? ''
+    const gost = rooms.value?.find(r => r.name === 'Гостиная')
+    if (!selectedRoomId.value && rooms.value?.length) {
+      selectedRoomId.value = gost?.id ?? rooms.value[0]?.id
+    }
+  }
 
   // Показываем прелоадер при загрузке
   showPreloader.value = true
