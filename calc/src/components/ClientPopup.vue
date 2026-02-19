@@ -1,15 +1,14 @@
 <template>
-  <Teleport to="body">
-    <!-- Оверлей виден, когда нет выбранного клиента или нажали «Сменить» -->
-    <div
-      v-show="!store.currentClient || store.showClientPopup"
-      id="popup_client"
-      class="client-popup-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="client-popup-title"
-    >
-      <div class="client-popup-box">
+  <!-- Оверлей без Teleport — первый ребёнок .content, поверх всего -->
+  <div
+    v-show="!store.currentClient || store.showClientPopup"
+    id="popup_client"
+    class="client-popup-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="client-popup-title"
+  >
+    <div class="client-popup-box">
         <div v-if="step === 1">
           <div class="pcp-header">
             <span id="client-popup-title" class="pcp-title">Выбор клиента</span>
@@ -148,8 +147,7 @@
           </div>
         </div>
       </div>
-    </div>
-  </Teleport>
+  </div>
 </template>
 
 <script setup>
