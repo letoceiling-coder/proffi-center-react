@@ -142,9 +142,7 @@ onMounted(async () => {
   if (telegramUser.value) {
     authChecked.value = true
     store.getRooms()
-    if (localStorage.getItem('newClient') != null) {
-      store.getStorageReturn()
-    }
+    store.getStorageReturn()
     return
   }
   await loadConfig()
@@ -165,9 +163,7 @@ watch(telegramBotUsername, (username) => {
 watch(telegramUser, (user) => {
   if (user) {
     store.getRooms()
-    if (localStorage.getItem('newClient') != null) {
-      store.getStorageReturn()
-    }
+    store.getStorageReturn()
   }
 })
 </script>

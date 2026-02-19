@@ -16,8 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/calc/*',
         ]);
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-            'noindex' => \App\Http\Middleware\NoindexRobotsHeader::class,
+            'admin'     => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'noindex'   => \App\Http\Middleware\NoindexRobotsHeader::class,
+            'calc.auth' => \App\Http\Middleware\CalcAuth::class,
         ]);
         $middleware->appendToGroup('api', [\App\Http\Middleware\NoindexRobotsHeader::class]);
         $middleware->appendToGroup('web', [\App\Http\Middleware\NormalizeSeoUrl::class]);

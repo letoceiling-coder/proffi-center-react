@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\Calc\CalcClientController;
+use App\Http\Controllers\Api\Calc\CalcDrawingController;
 use App\Http\Controllers\Api\V1\Public\RobotsController;
 use App\Http\Controllers\Api\V1\Public\SitemapController;
 use App\Http\Controllers\SeoLandingController;
@@ -27,8 +29,31 @@ Route::get('/auth/telegram-callback', [TelegramLoginController::class, 'callback
 Route::get('/api/calc/config', [TelegramLoginController::class, 'config']);
 Route::get('/api/calc/me', [TelegramLoginController::class, 'me']);
 Route::post('/api/calc/logout', [TelegramLoginController::class, 'logout']);
-Route::post('/api/calc/rooms', [TelegramLoginController::class, 'rooms']);
 Route::post('/api/calc/sketch', [TelegramLoginController::class, 'sketch'])->name('api.calc.sketch');
+
+// Калькулятор: защищённые маршруты (требуют telegram_user в сессии)
+Route::middleware('calc.auth')->prefix('api/calc')->group(function () {
+    // Справочник комнат
+    Route::get('/rooms', [TelegramLoginController::class, 'rooms']);
+
+    // Клиенты
+    Route::get('/clients',                  [CalcClientController::class, 'index']);
+    Route::post('/clients',                 [CalcClientController::class, 'store']);
+    Route::get('/clients/{id}',             [CalcClientController::class, 'show']);
+    Route::put('/clients/{id}',             [CalcClientController::class, 'update']);
+    Route::delete('/clients/{id}',          [CalcClientController::class, 'destroy']);
+    Route::get('/clients/{id}/addresses',   [CalcClientController::class, 'addresses']);
+    Route::post('/clients/{id}/addresses',  [CalcClientController::class, 'addAddress']);
+    Route::get('/clients/{id}/drawings',    [CalcDrawingController::class, 'byClient']);
+
+    // Чертежи
+    Route::get('/drawings',                 [CalcDrawingController::class, 'index']);
+    Route::post('/drawings',                [CalcDrawingController::class, 'store']);
+    Route::get('/drawings/{id}',            [CalcDrawingController::class, 'show']);
+    Route::put('/drawings/{id}',            [CalcDrawingController::class, 'update']);
+    Route::delete('/drawings/{id}',         [CalcDrawingController::class, 'destroy']);
+    Route::post('/drawings/{id}/images',    [CalcDrawingController::class, 'uploadImage']);
+});
 
 /*
 |--------------------------------------------------------------------------

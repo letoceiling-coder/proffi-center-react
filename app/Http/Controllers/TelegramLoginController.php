@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CalcRoom;
 use App\Services\TelegramService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -70,11 +71,13 @@ class TelegramLoginController extends Controller
     }
 
     /**
-     * API калькулятора: комнаты (заглушка — возвращает пустой массив).
+     * API калькулятора: справочник типов помещений.
      */
     public function rooms(Request $request): JsonResponse
     {
-        return response()->json([]);
+        return response()->json(
+            CalcRoom::orderBy('sort')->get(['id', 'name'])
+        );
     }
 
     /**

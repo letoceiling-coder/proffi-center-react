@@ -1,120 +1,137 @@
 import { ref } from 'vue'
+import axios from 'axios'
 import { noty } from '../utils/noty'
 
+function getBaseUrl() {
+  return typeof window !== 'undefined' ? (window.location.origin || '') : ''
+}
+
 export function useClients() {
-  const newClient = ref([])
-  const userClient = ref(false)
-  const userClientAdress = ref([])
-  const maxClient = ref(1)
-  const max = ref(1)
+  const loading = ref(false)
+  const error   = ref(null)
 
-  const clearElems = () => {
-    // Очистка элементов формы
-    // Реализация зависит от вашей логики
+  /**
+   * Загрузить список клиентов оператора.
+   * @param {string} search — строка поиска (имя / телефон)
+   */
+  async function fetchClients(search = '') {
+    loading.value = true
+    error.value   = null
+    try {
+      const params = search ? { search } : {}
+      const { data } = await axios.get(`${getBaseUrl()}/api/calc/clients`, {
+        params,
+        withCredentials: true,
+      })
+      return data
+    } catch (e) {
+      error.value = e?.response?.data?.error || 'Ошибка загрузки клиентов'
+      return []
+    } finally {
+      loading.value = false
+    }
   }
 
-  const getStorageReturn = () => {
-    const stored = localStorage.getItem('newClient')
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored)
-        newClient.value = parsed.newClient || []
-        userClient.value = parsed.userClient || false
-        userClientAdress.value = parsed.userClientAdress || []
-      } catch (e) {
-        console.error('Error parsing stored data:', e)
-      }
+  /**
+   * Создать нового клиента (+ первый адрес).
+   * @param {{ name, phone, address }} clientData
+   * @returns {{ client, address } | null}
+   */
+  async function createClient(clientData) {
+    if (!clientData.name?.trim()) {
+      noty('warning', 'Заполните имя клиента')
+      return null
+    }
+
+    loading.value = true
+    error.value   = null
+    try {
+      const { data } = await axios.post(`${getBaseUrl()}/api/calc/clients`, {
+        name:    clientData.name.trim(),
+        phone:   clientData.phone?.trim() || null,
+        address: clientData.address?.trim() || null,
+      }, { withCredentials: true })
+
+      noty('success', 'Клиент создан')
+      return data  // { client, address }
+    } catch (e) {
+      const msg = e?.response?.data?.message || 'Ошибка создания клиента'
+      noty('error', msg)
+      error.value = msg
+      return null
+    } finally {
+      loading.value = false
     }
   }
 
-  const saveClient = (clientData) => {
-    const error = ref(false)
-    
-    if (!clientData.name) {
-      noty('warning', 'Заполните Имя')
-      error.value = true
-    }
-    
-    if (!clientData.phone) {
-      noty('warning', 'Заполните телефон')
-      error.value = true
-    } else if (clientData.phone.indexOf('_') !== -1) {
-      noty('warning', 'Номер телефона заполнен не полностью')
-      error.value = true
-    }
-    
-    if (!clientData.adress) {
-      noty('warning', 'Заполните адрес')
-      error.value = true
-    }
-    
-    if (error.value) return false
-
-    // Логика сохранения клиента (аналогично оригинальному коду)
-    if (userClient.value === false) {
-      userClient.value = []
-      maxClient.value = 1
-
-      userClient.value.push({
-        id: maxClient.value,
-        user_id: window.user_id,
-        name: clientData.name,
-        phone: clientData.phone
-      })
-      
-      max.value = 1
-      userClientAdress.value.push({
-        id: max.value,
-        user_id: window.user_id,
-        client_id: maxClient.value,
-        adress: clientData.adress
-      })
-      
-      newClient.value.push({
-        room_id: clientData.room_id,
-        client_id: maxClient.value,
-        id_user: window.user_id,
-        name: clientData.name,
-        phone: clientData.phone,
-        adress: clientData.adress,
-        adress_id: max.value,
-        newCeiling: true,
-        newClient: true,
-        newAdress: true
-      })
-      
-      if (window.showNoty) {
-        noty('success', 'Создан новый клиент')
-        noty('success', 'Добавлен новый адрес')
-        noty('success', 'Создан новый чертеж')
-      }
-    } else {
-      // Логика для существующего клиента
-      const existingClient = userClient.value.find(
-        item => item.name === clientData.name && item.phone === clientData.phone
+  /**
+   * Обновить клиента.
+   */
+  async function updateClient(id, data) {
+    loading.value = true
+    try {
+      const { data: updated } = await axios.put(
+        `${getBaseUrl()}/api/calc/clients/${id}`,
+        data,
+        { withCredentials: true }
       )
-      
-      if (existingClient) {
-        // Обработка существующего клиента
-        // ... (полная логика из оригинального кода)
-      } else {
-        // Создание нового клиента
-        // ... (полная логика из оригинального кода)
-      }
+      return updated
+    } catch (e) {
+      noty('error', 'Ошибка обновления клиента')
+      return null
+    } finally {
+      loading.value = false
     }
+  }
 
-    return true
+  /**
+   * Загрузить адреса клиента.
+   */
+  async function fetchAddresses(clientId) {
+    try {
+      const { data } = await axios.get(
+        `${getBaseUrl()}/api/calc/clients/${clientId}/addresses`,
+        { withCredentials: true }
+      )
+      return data
+    } catch (e) {
+      noty('error', 'Ошибка загрузки адресов')
+      return []
+    }
+  }
+
+  /**
+   * Добавить адрес клиенту.
+   */
+  async function addAddress(clientId, address) {
+    if (!address?.trim()) {
+      noty('warning', 'Заполните адрес')
+      return null
+    }
+    loading.value = true
+    try {
+      const { data } = await axios.post(
+        `${getBaseUrl()}/api/calc/clients/${clientId}/addresses`,
+        { address: address.trim() },
+        { withCredentials: true }
+      )
+      noty('success', 'Адрес добавлен')
+      return data
+    } catch (e) {
+      noty('error', 'Ошибка добавления адреса')
+      return null
+    } finally {
+      loading.value = false
+    }
   }
 
   return {
-    newClient,
-    userClient,
-    userClientAdress,
-    maxClient,
-    max,
-    clearElems,
-    getStorageReturn,
-    saveClient
+    loading,
+    error,
+    fetchClients,
+    createClient,
+    updateClient,
+    fetchAddresses,
+    addAddress,
   }
 }
-

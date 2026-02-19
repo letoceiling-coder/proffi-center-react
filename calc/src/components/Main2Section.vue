@@ -55,27 +55,95 @@
       <input name="user_url" id="user_url" value="" type="hidden">
     </form>
 
-    <!-- Popup клиента -->
-    <div id="popup_client" v-show="showClientPopup">
-      <div style="text-align: center">
-        <input type="hidden" id="client_id" v-model="clientId">
-        Клиент:<br>
-        <input type="text" id="client" v-model="client.name"><br>
-        Телефон клиента:<br>
-        <input type="text" id="client_phone" v-model="client.phone" v-mask="'+7 (999) 999-99-99'"><br>
-        Адрес клиента:<br>
-        <input type="text" id="client_adress" v-model="client.adress" style="margin-bottom: 10px"><br>
-        Помещение:<br>
-        <select id="select_client" class="form-control inputbox" v-model="client.room_id">
-          <option v-for="room in rooms" :key="room.id" :value="room.id">{{ room.name }}</option>
-        </select>
-        <br>
-        <button id="btn_client_select" class="sketch_hud btn btn-gm" @click="showClientSelect">Клиенты</button>
-        <button id="btn_client" class="sketch_hud btn btn-gm" @click="handleNewClient">Новый заказ</button>
+    <!-- Popup клиента: 2-шаговый -->
+    <div id="popup_client" v-show="showClientPopup" class="popup-client-overlay">
+      <div class="popup-client-box">
+
+        <!-- ШАГ 1: Выбор или создание клиента -->
+        <div v-if="clientPopupStep === 1">
+          <h3 class="popup-client-title">Клиент</h3>
+
+          <!-- Режим создания нового клиента -->
+          <div v-if="newClientMode">
+            <label>Имя клиента *</label>
+            <input type="text" class="form-control inputbox" v-model="client.name" placeholder="Иванов Иван">
+            <label>Телефон</label>
+            <input type="text" class="form-control inputbox" v-model="client.phone" v-mask="'+7 (999) 999-99-99'" placeholder="+7 (___) ___-__-__">
+            <label>Адрес объекта</label>
+            <input type="text" class="form-control inputbox" v-model="client.address" placeholder="ул. Ленина 1, кв. 10">
+            <div class="popup-client-actions">
+              <button class="sketch_hud btn btn-gm" @click="confirmStep1">Далее →</button>
+              <button class="sketch_hud btn btn-gm" @click="newClientMode = false">← Список</button>
+            </div>
+          </div>
+
+          <!-- Режим выбора из списка -->
+          <div v-else>
+            <div v-if="store.clientsLoading" style="text-align:center;padding:10px;">Загрузка...</div>
+            <div v-else-if="availableClients.length === 0" style="text-align:center;color:#888;padding:10px;">
+              Клиентов нет
+            </div>
+            <div v-else>
+              <label>Выберите клиента:</label>
+              <select class="form-control inputbox" v-model="selectedClientId">
+                <option value="">— выберите —</option>
+                <option v-for="c in availableClients" :key="c.id" :value="c.id">
+                  {{ c.name }}{{ c.phone ? ' · ' + c.phone : '' }}
+                </option>
+              </select>
+            </div>
+            <div class="popup-client-actions">
+              <button class="sketch_hud btn btn-gm" @click="confirmStep1" :disabled="!selectedClientId">Далее →</button>
+              <button class="sketch_hud btn btn-gm" @click="startNewClient">+ Новый клиент</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ШАГ 2: Адрес + тип помещения -->
+        <div v-if="clientPopupStep === 2">
+          <h3 class="popup-client-title">Адрес и помещение</h3>
+          <p style="color:#555;font-size:0.9em;">Клиент: <strong>{{ selectedClientObj?.name }}</strong></p>
+
+          <!-- Адреса клиента -->
+          <label>Адрес объекта:</label>
+          <div v-if="clientAddresses.length">
+            <select class="form-control inputbox" v-model="selectedAddressId">
+              <option :value="null">— без адреса —</option>
+              <option v-for="a in clientAddresses" :key="a.id" :value="a.id">{{ a.address }}</option>
+            </select>
+          </div>
+          <div v-else style="color:#888;font-size:0.85em;margin:4px 0;">Адресов нет</div>
+
+          <!-- Добавить новый адрес -->
+          <div v-if="!showNewAddressForm" style="margin:6px 0;">
+            <button class="sketch_hud btn btn-sm btn-gm" @click="showNewAddressForm = true">+ Добавить адрес</button>
+          </div>
+          <div v-else style="margin:6px 0;">
+            <input type="text" class="form-control inputbox" v-model="newAddressText" placeholder="Новый адрес">
+            <button class="sketch_hud btn btn-sm btn-gm" @click="confirmAddAddress">Сохранить</button>
+            <button class="sketch_hud btn btn-sm btn-gm" @click="showNewAddressForm = false">Отмена</button>
+          </div>
+
+          <!-- Тип помещения -->
+          <label>Тип помещения:</label>
+          <select class="form-control inputbox" v-model="selectedRoomId">
+            <option :value="null">— не указан —</option>
+            <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
+          </select>
+
+          <label>Уточнение (необязательно):</label>
+          <input type="text" class="form-control inputbox" v-model="roomNote" placeholder="Спальня хозяев, кабинет 2...">
+
+          <div class="popup-client-actions">
+            <button class="sketch_hud btn btn-gm" @click="confirmStep2">✓ Начать чертёж</button>
+            <button class="sketch_hud btn btn-gm" @click="backToStep1">← Назад</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Popup выбора комнат -->
+    <!-- Popup выбора комнат (legacy) -->
     <div id="popup_get_rooms" v-show="showGetRoomsPopup">
       <div style="text-align: center">
         <input type="text" id="input_get_rooms" v-model="newRoomName">
@@ -85,13 +153,13 @@
       </div>
     </div>
 
-    <!-- Popup выбора клиента -->
-    <div id="popup_client_select" v-show="showClientSelectPopup">
+    <!-- Popup выбора клиента (legacy, скрыт) -->
+    <div id="popup_client_select" v-show="false">
       <div style="text-align: center">
         <span class="selectClient">Выберите клиента:</span><br>
         <select id="get_select_client" class="form-control inputbox" v-model="selectedClientId">
-          <option v-for="client in availableClients" :key="client.id" :value="client.id" :data-adress="client.adress_id">
-            {{ client.name }} - {{ client.phone }}
+          <option v-for="c in availableClients" :key="c.id" :value="c.id">
+            {{ c.name }} - {{ c.phone }}
           </option>
         </select>
         <br>
@@ -183,6 +251,19 @@
         <button id="btn_level1" class="sketch_hud btn btn-gm" @click="handleLevel(1)">Простой</button>
         <button id="btn_level2" class="sketch_hud btn btn-gm" @click="handleLevel(2)">Двухуровневый</button>
       </div>
+    </div>
+
+    <!-- Индикатор текущего клиента + кнопка смены -->
+    <div v-if="store.currentClient && !showClientPopup" class="current-client-bar">
+      <span>
+        <strong>{{ store.currentClient.name }}</strong>
+        <template v-if="store.currentAddress"> · {{ store.currentAddress.address }}</template>
+        <template v-if="store.currentRoomId">
+           · {{ rooms.find(r => r.id === store.currentRoomId)?.name ?? '' }}
+        </template>
+        <template v-if="store.currentRoomNote"> ({{ store.currentRoomNote }})</template>
+      </span>
+      <button class="sketch_hud btn btn-sm btn-gm" @click="changeClient">Сменить</button>
     </div>
 
     <!-- Canvas редактор -->
@@ -347,19 +428,24 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import axios from 'axios'
 import { useAppStore } from '../stores/appStore'
 import { useClients } from '../composables/useClients'
 import { noty } from '../utils/noty'
 import { initSketch } from '../utils/sketchInit'
 
 const store = useAppStore()
-const { saveClient } = useClients()
+const { fetchClients, createClient, fetchAddresses, addAddress } = useClients()
 
-// State
-const showClientPopup = ref(true)
+// ──── Popup: показывать только если клиент не выбран ────
+const showClientPopup = ref(!store.currentClient)
 const showGetRoomsPopup = ref(false)
 const showClientSelectPopup = ref(false)
 const showPreloader = ref(false)
+
+// ──── Popup шаги: 1=выбор/создание клиента, 2=адрес+комната ────
+const clientPopupStep = ref(1)
+const newClientMode   = ref(false)   // создаём нового или выбираем
 const showTriangulatePopup = ref(false)
 const showCoordinatesPopup = ref(false)
 const showBuildPopup = ref(false)
@@ -371,14 +457,21 @@ const showMenu = ref(false)
 const showMobileMenu = ref(false)
 const showNumPad = ref(false)
 
-const client = ref({
-  name: '',
-  phone: '',
-  adress: '',
-  room_id: ''
-})
-const clientId = ref('')
+// ──── Форма нового клиента ────
+const client = ref({ name: '', phone: '', address: '' })
+
+// ──── Форма выбора адреса (шаг 2) ────
+const selectedAddressId = ref(null)
+const newAddressText    = ref('')
+const showNewAddressForm = ref(false)
+const selectedRoomId    = ref(null)
+const roomNote          = ref('')
+
+// ──── Список для выбора клиента ────
+const clientId      = ref('')
 const selectedClientId = ref('')
+const selectedClientObj = ref(null)   // клиент, выбранный в списке шага 1
+const clientAddresses   = ref([])     // адреса выбранного клиента
 const newRoomName = ref('')
 const coordinatesText = ref('')
 const wallsCount = ref(0)
@@ -389,13 +482,8 @@ const arc = ref(false)
 
 const widthData = ref('[{"id":"146","width":"500","price":"165.00"},{"id":"143","width":"450","price":"165.00"},{"id":"140","width":"400","price":"165.00"},{"id":"137","width":"360","price":"110.00"},{"id":"1477","width":"340","price":"110.00"},{"id":"132","width":"320","price":"110.00"},{"id":"951","width":"300","price":"110.00"},{"id":"129","width":"270","price":"110.00"},{"id":"125","width":"240","price":"110.00"},{"id":"921","width":"220","price":"110.00"},{"id":"120","width":"200","price":"110.00"},{"id":"115","width":"150","price":"110.00"}]')
 
-const rooms = computed(() => store.rooms || [])
-const availableClients = computed(() => {
-  if (Array.isArray(store.userClient)) {
-    return store.userClient
-  }
-  return []
-})
+const rooms           = computed(() => store.rooms || [])
+const availableClients = computed(() => store.clientsList || [])
 
 // Всегда тот же origin, без внешних URL
 const formDataAction = computed(() => {
@@ -405,18 +493,98 @@ const formDataAction = computed(() => {
 
 const canvas = ref(null)
 
-// Methods
-const handleNewClient = () => {
-  const result = saveClient({
-    name: client.value.name,
-    phone: client.value.phone,
-    adress: client.value.adress,
-    room_id: client.value.room_id
-  })
-  
-  if (result) {
-    showClientPopup.value = false
+// ──── Методы popup_client ────
+
+/** Шаг 1 → «Создать нового» */
+const startNewClient = () => {
+  newClientMode.value = true
+  client.value = { name: '', phone: '', address: '' }
+}
+
+/** Шаг 1 → «Выбрать из списка» */
+const startSelectClient = async () => {
+  newClientMode.value = false
+  await store.fetchClients()
+}
+
+/** Шаг 1: подтвердить выбор/создание → перейти к шагу 2 */
+const confirmStep1 = async () => {
+  if (newClientMode.value) {
+    // Создаём нового клиента
+    if (!client.value.name.trim()) {
+      noty('warning', 'Заполните имя клиента')
+      return
+    }
+    const result = await createClient({
+      name:    client.value.name,
+      phone:   client.value.phone,
+      address: client.value.address,
+    })
+    if (!result) return
+
+    selectedClientObj.value = result.client
+    clientAddresses.value   = result.client.addresses || []
+
+    // Если при создании был указан адрес — предвыбрать его
+    if (result.address) {
+      selectedAddressId.value = result.address.id
+    }
+
+    // Обновляем список клиентов
+    await store.fetchClients()
+  } else {
+    // Выбираем существующего
+    const found = availableClients.value.find(c => c.id === Number(selectedClientId.value))
+    if (!found) {
+      noty('warning', 'Выберите клиента из списка')
+      return
+    }
+    selectedClientObj.value = found
+    clientAddresses.value   = await fetchAddresses(found.id)
+    selectedAddressId.value = clientAddresses.value[0]?.id ?? null
   }
+
+  clientPopupStep.value = 2
+}
+
+/** Шаг 2: назад */
+const backToStep1 = () => {
+  clientPopupStep.value = 1
+}
+
+/** Шаг 2: добавить новый адрес */
+const confirmAddAddress = async () => {
+  if (!newAddressText.value.trim()) {
+    noty('warning', 'Введите адрес')
+    return
+  }
+  const addr = await addAddress(selectedClientObj.value.id, newAddressText.value)
+  if (addr) {
+    clientAddresses.value.push(addr)
+    selectedAddressId.value  = addr.id
+    newAddressText.value     = ''
+    showNewAddressForm.value = false
+  }
+}
+
+/** Шаг 2: подтвердить → установить клиента в store и закрыть попап */
+const confirmStep2 = () => {
+  const addr = clientAddresses.value.find(a => a.id === Number(selectedAddressId.value)) ?? null
+
+  store.setCurrentClient(selectedClientObj.value, addr?.id ?? null)
+  store.currentRoomId.value  = selectedRoomId.value
+  store.currentRoomNote.value = roomNote.value
+  store.saveDraftClient()
+
+  showClientPopup.value = false
+  noty('success', `Клиент: ${selectedClientObj.value.name}`)
+}
+
+/** Кнопка «Сменить клиента» */
+const changeClient = () => {
+  clientPopupStep.value = 1
+  newClientMode.value   = false
+  showClientPopup.value = true
 }
 
 const showClientSelect = () => {
@@ -425,17 +593,13 @@ const showClientSelect = () => {
 }
 
 const handleSelectClient = () => {
-  // Логика выбора клиента
   showClientSelectPopup.value = false
   showClientPopup.value = true
 }
 
-const toggleClientSelectMode = () => {
-  // Переключение режима выбора
-}
+const toggleClientSelectMode = () => {}
 
 const handleGetRooms = () => {
-  // Логика создания новой комнаты
   showGetRoomsPopup.value = false
 }
 
@@ -507,8 +671,88 @@ const closeSketch = () => {
   // Закрытие редактора
 }
 
-const saveAndClose = () => {
-  // Сохранение и закрытие
+const saveAndClose = async () => {
+  if (!store.currentClient) {
+    noty('warning', 'Сначала выберите клиента')
+    showClientPopup.value = true
+    return
+  }
+
+  const drawingData = window.optimized_drawing_data
+  if (!drawingData) {
+    noty('warning', 'Нет данных чертежа. Постройте чертёж.')
+    return
+  }
+
+  showPreloader.value = true
+
+  try {
+    const base   = window.location.origin || ''
+    const client = store.currentClient
+    const addr   = store.currentAddress
+
+    // Собираем SVG (текст)
+    const cutImgSvg  = window.cut_img  || null
+    const calcImgSvg = window.calc_img || null
+
+    // Сохраняем чертёж
+    const { data: drawing } = await axios.post(`${base}/api/calc/drawings`, {
+      client_id:        client.id,
+      address_id:       addr?.id ?? null,
+      room_id:          store.currentRoomId || null,
+      room_note:        store.currentRoomNote || null,
+      title:            null,
+      drawing_data:     drawingData,
+      raw_drawing_data: window.drawing_data_parsed ?? null,
+      raw_cuts_json:    window.cuts_json            ?? null,
+      cut_img_svg:      cutImgSvg,
+      calc_img_svg:     calcImgSvg,
+      goods_data:       drawingData.goods_and_jobs?.goods ?? null,
+      works_data:       drawingData.goods_and_jobs?.jobs  ?? null,
+    }, { withCredentials: true })
+
+    // Обновляем #calc_id в форме sketch.js
+    const calcIdEl = document.getElementById('calc_id')
+    if (calcIdEl) calcIdEl.value = drawing.id
+
+    // Загружаем PNG изображения отдельно (не в теле основного запроса)
+    await uploadPng(base, drawing.id, 'png',     window.png_img)
+    await uploadPng(base, drawing.id, 'png_alt', window.png__img)
+
+    noty('success', 'Чертёж сохранён')
+
+    // Обновляем список чертежей
+    await store.fetchDrawings(client.id)
+  } catch (e) {
+    console.error('saveAndClose error:', e)
+    const msg = e?.response?.data?.message || 'Ошибка сохранения чертежа'
+    noty('error', msg)
+  } finally {
+    showPreloader.value = false
+  }
+}
+
+/** Загрузить одно PNG изображение как base64. */
+async function uploadPng(base, drawingId, type, source) {
+  if (!source) return
+  try {
+    let base64 = null
+    if (typeof source === 'string' && source.startsWith('data:')) {
+      base64 = source
+    } else if (source?.canvas?.toDataURL) {
+      base64 = source.canvas.toDataURL('image/png')
+    } else if (source?.toDataURL) {
+      base64 = source.toDataURL('image/png')
+    }
+    if (!base64) return
+
+    await axios.post(`${base}/api/calc/drawings/${drawingId}/images`, {
+      type,
+      image_base64: base64,
+    }, { withCredentials: true })
+  } catch (e) {
+    console.warn(`uploadPng [${type}] error:`, e)
+  }
 }
 
 const placeLights = () => {
@@ -528,7 +772,13 @@ const numPadOk = () => {
   // Обработка введенной длины
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // Загружаем список клиентов для попапа
+  await store.fetchClients()
+
+  // Показываем попап только если клиент не выбран
+  showClientPopup.value = !store.currentClient
+
   // Показываем прелоадер при загрузке
   showPreloader.value = true
   
@@ -690,6 +940,61 @@ onMounted(() => {
   -webkit-user-select: none;
   user-select: none;
 }
+
+/* Popup клиента — оверлей поверх всего */
+.popup-client-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.popup-client-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 28px;
+  min-width: 320px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.popup-client-title {
+  margin: 0 0 16px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.popup-client-box label {
+  display: block;
+  font-size: 0.85rem;
+  color: #555;
+  margin: 10px 0 3px;
+}
+.popup-client-box .form-control {
+  width: 100%;
+  margin-bottom: 4px;
+}
+.popup-client-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Строка текущего клиента над canvas */
+.current-client-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  background: #f0f4ff;
+  border-bottom: 1px solid #dde4f5;
+  font-size: 0.85rem;
+  color: #333;
+}
+.current-client-bar span { flex: 1; }
 
 /* NumPad (window) должен быть поверх sketch_editor2 */
 #window {
