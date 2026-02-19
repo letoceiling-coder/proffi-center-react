@@ -33,12 +33,28 @@ Route::get('/{slug}', [SeoLandingController::class, 'showPage'])
 
 /*
 |--------------------------------------------------------------------------
+| Вход через Telegram для калькулятора (виджет Login)
+|--------------------------------------------------------------------------
+*/
+Route::get('/auth/telegram-callback', [TelegramLoginController::class, 'callback'])->name('auth.telegram.callback');
+Route::get('/api/calc/config', [TelegramLoginController::class, 'config']);
+Route::get('/api/calc/me', [TelegramLoginController::class, 'me']);
+Route::post('/api/calc/logout', [TelegramLoginController::class, 'logout']);
+
+/*
+|--------------------------------------------------------------------------
 | Калькулятор (Vue SPA из репозитория cieling-calc)
 |--------------------------------------------------------------------------
 */
-Route::get('/calc', function () {
-    return response()->file(public_path('calc/index.html'));
-})->name('calc');
+$serveCalcIndex = function () {
+    $index = public_path('calc/index.html');
+    if (!File::exists($index)) {
+        abort(404, 'Calculator not built. Run deploy or build calc.');
+    }
+    return response()->file($index);
+};
+Route::get('/calc', $serveCalcIndex)->name('calc');
+Route::get('/calc/', $serveCalcIndex);
 Route::get('/calc/{path}', function (string $path) {
     $file = public_path('calc/' . $path);
     if (File::exists($file) && File::isFile($file)) {

@@ -14,6 +14,8 @@
 /auth.json
 /node_modules
 /public/build
+/calc/node_modules
+/calc/dist
 /public/hot
 /public/storage
 /storage/*.key

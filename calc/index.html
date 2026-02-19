@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <base href="/calc/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Существующие CSS -->
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/noty.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="lib/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="lib/slick/slick-theme.css"/>
+    
+    <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml">
+    <title>Vue 3 Application</title>
+    <meta name="description" content="" />
+</head>
+<body>
+    <div id="app"></div>
+    
+    <!-- Существующие скрипты, которые нужны для работы -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/noty.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/jquery.inputmask.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="lib/slick/slick.min.js"></script>
+    
+    <!-- Paper.js и другие библиотеки для canvas -->
+    <script type="text/javascript" src="js/property.js"></script>
+    <script type="text/javascript" src="js/decimal.js"></script>
+    <script type="text/javascript" src="js/paper-full.js"></script>
+    <script type="text/javascript" src="js/delaunay.js"></script>
+    <script type="text/javascript" src="js/sketch_class.js"></script>
+    <!-- Отключаем автоматическую инициализацию sketch.js -->
+    <script type="text/javascript">
+      // Флаг для отключения автоматической инициализации
+      window.SKETCH_AUTO_INIT = false;
+      
+      // Сохраняем оригинальный jQuery ready
+      const originalJQueryReady = jQuery.fn.ready;
+      const originalJQueryDocumentReady = jQuery.ready;
+      
+      // Переопределяем jQuery ready для перехвата вызовов из sketch.js
+      jQuery.fn.ready = function(callback) {
+        // Если автоинициализация отключена, проверяем callback
+        if (window.SKETCH_AUTO_INIT === false && callback) {
+          const callbackStr = callback.toString();
+          // Проверяем, что это вызов из sketch.js (содержит характерные функции)
+          if (callbackStr.includes('paper.setup') || 
+              callbackStr.includes('paper.install') ||
+              callbackStr.includes('new Sketch()') ||
+              callbackStr.includes('activeLayer') ||
+              callbackStr.includes('yaBrowser = get_ya_browser') ||
+              callbackStr.includes('function clicks()')) {
+            console.log('Автоматическая инициализация sketch.js отключена - будет управляться через Vue');
+            // Сохраняем callback для последующего вызова
+            if (!window.SKETCH_READY_CALLBACK) {
+              window.SKETCH_READY_CALLBACK = callback;
+            }
+            return jQuery(this);
+          }
+        }
+        return originalJQueryReady.call(this, callback);
+      };
+      
+      // Также перехватываем jQuery(document).ready
+      jQuery.ready = function(callback) {
+        if (window.SKETCH_AUTO_INIT === false && callback) {
+          const callbackStr = callback.toString();
+          if (callbackStr.includes('paper.setup') || 
+              callbackStr.includes('paper.install') ||
+              callbackStr.includes('new Sketch()') ||
+              callbackStr.includes('activeLayer') ||
+              callbackStr.includes('function clicks()')) {
+            console.log('Автоматическая инициализация sketch.js отключена');
+            if (!window.SKETCH_READY_CALLBACK) {
+              window.SKETCH_READY_CALLBACK = callback;
+            }
+            return;
+          }
+        }
+        return originalJQueryDocumentReady.call(this, callback);
+      };
+    </script>
+    <script type="text/javascript" src="js/sketch.js"></script>
+    <script type="text/javascript">
+      // Делаем clicks() доступной глобально после загрузки sketch.js
+      // Это нужно, так как clicks() определена внутри jQuery(document).ready()
+      if (window.SKETCH_READY_CALLBACK) {
+        // После выполнения callback, clicks() будет доступна
+        // Но нужно подождать выполнения callback
+      }
+    </script>
+    
+    <!-- Vue приложение -->
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

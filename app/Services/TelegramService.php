@@ -273,4 +273,41 @@ class TelegramService
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
+
+    /**
+     * Проверка данных Telegram Login Widget (https://core.telegram.org/widgets/login#checking-authorization).
+     * Возвращает данные пользователя при успехе или null при неверном hash.
+     *
+     * @param  array<string, string>  $params  Параметры из redirect (id, first_name, auth_date, hash, ...)
+     */
+    public function verifyLoginWidgetHash(string $botToken, array $params): ?array
+    {
+        $hash = $params['hash'] ?? null;
+        if ($hash === null || $hash === '') {
+            return null;
+        }
+        unset($params['hash']);
+        ksort($params);
+        $dataCheckArr = [];
+        foreach ($params as $key => $value) {
+            $dataCheckArr[] = $key . '=' . $value;
+        }
+        $dataCheckString = implode("\n", $dataCheckArr);
+        $secretKey = hash('sha256', $botToken, true);
+        $computedHash = hash_hmac('sha256', $dataCheckString, $secretKey);
+        if (! hash_equals($computedHash, $hash)) {
+            return null;
+        }
+        $authDate = (int) ($params['auth_date'] ?? 0);
+        if ($authDate < time() - 86400) {
+            return null;
+        }
+        return [
+            'id' => (int) ($params['id'] ?? 0),
+            'first_name' => $params['first_name'] ?? '',
+            'last_name' => $params['last_name'] ?? '',
+            'username' => $params['username'] ?? '',
+            'photo_url' => $params['photo_url'] ?? '',
+        ];
+    }
 }
