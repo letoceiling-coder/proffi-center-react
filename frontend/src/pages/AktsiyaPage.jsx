@@ -17,6 +17,10 @@ import { aktsiyaPageData, aktsiyaGifts, aktsiyaForm5minData } from '../data/akts
 import { footerMenuData, footerData } from '../data/mockPageData';
 
 export default function AktsiyaPage() {
+  const { pathname } = useLocation();
+  const staticMeta = getStaticMeta(pathname);
+  const breadcrumb = breadcrumbList(getBaseUrl(), [{ name: 'Главная', url: '/' }, { name: staticMeta?.title?.replace(' — Proffi Center', '') || 'Акции и подарки' }]);
+
   const [popupCallback, setPopupCallback] = useState(false);
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
