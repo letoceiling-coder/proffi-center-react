@@ -3,10 +3,12 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 
 /**
- * Деплой: коммит и push в git, затем по SSH на сервере — pull, миграции, сборка админки и фронта, сброс кэша.
+ * Деплой: коммит и push в git, затем по SSH на сервере — pull, миграции, сборка admin/frontend/calc, сброс кэша.
+ * Опция --local: выполнить те же шаги (миграции, сборки, кэш) только локально, без git и SSH.
  * Настройка: .env — DEPLOY_SSH_HOST, DEPLOY_SSH_USER, DEPLOY_SERVER_PATH, DEPLOY_BRANCH.
  */
 class DeployCommand extends Command
@@ -15,12 +17,17 @@ class DeployCommand extends Command
                             {--message= : Сообщение коммита}
                             {--no-commit : Не коммитить и не пушить (только сервер)}
                             {--server-only : Только выполнить команды на сервере, без git}
+                            {--local : Полный деплой локально: миграции, сборка admin/frontend/calc, сброс и кэш (без git и SSH)}
                             {--dry-run : Показать команды, не выполнять}';
 
-    protected $description = 'Commit, push, then on server: git pull, migrate, npm/composer install, build admin & frontend, clear cache';
+    protected $description = 'Full deploy: git push + server (or --local): migrate, composer/npm install, build admin & frontend & calc, clear/cache';
 
     public function handle(): int
     {
+        if ($this->option('local')) {
+            return $this->runLocalDeploy();
+        }
+
         $branch = config('deploy.branch', 'main');
         $path = config('deploy.server_path');
         $commands = config('deploy.server_commands', []);
@@ -97,5 +104,103 @@ class DeployCommand extends Command
         $this->line($result->output());
         $this->line($result->errorOutput());
         return self::FAILURE;
+    }
+
+    /**
+     * Полный деплой локально: миграции, composer, сборка admin (root), frontend (React), calc, сброс и кэш.
+     */
+    protected function runLocalDeploy(): int
+    {
+        $base = base_path();
+
+        $steps = [
+            'Composer install' => ['composer', 'install', '--no-dev', '--optimize-autoloader'],
+            'Миграции' => ['php', 'artisan', 'migrate', '--force'],
+            'Admin (Vite) npm install' => ['npm', 'install', '--legacy-peer-deps'],
+            'Admin (Vite) build' => ['npm', 'run', 'build'],
+            'Frontend (React) build' => null,
+            'Calc build и копирование в public/calc' => null,
+            'Laravel cache' => null,
+        ];
+
+        foreach ($steps as $label => $cmd) {
+            if (is_array($cmd)) {
+                $this->info("{$label}...");
+                $r = Process::timeout(300)->path($base)->run($cmd);
+                if (! $r->successful()) {
+                    $this->error("{$label} failed: " . $r->errorOutput() ?: $r->output());
+                    return self::FAILURE;
+                }
+                continue;
+            }
+
+            if ($label === 'Frontend (React) build') {
+                $this->info("{$label}...");
+                $frontDir = $base . DIRECTORY_SEPARATOR . 'frontend';
+                if (! is_dir($frontDir)) {
+                    $this->warn('Папка frontend не найдена, пропуск.');
+                    continue;
+                }
+                $r = Process::timeout(300)->path($frontDir)->run('npm install --legacy-peer-deps');
+                if (! $r->successful()) {
+                    $this->error("{$label} (npm install) failed: " . ($r->errorOutput() ?: $r->output()));
+                    return self::FAILURE;
+                }
+                $r = Process::timeout(300)->path($frontDir)->run('npm run build');
+                if (! $r->successful()) {
+                    $this->error("{$label} (npm run build) failed: " . ($r->errorOutput() ?: $r->output()));
+                    return self::FAILURE;
+                }
+                continue;
+            }
+
+            if ($label === 'Calc build и копирование в public/calc') {
+                $calcDir = $base . DIRECTORY_SEPARATOR . 'calc';
+                $publicCalc = $base . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'calc';
+                if (! is_dir($calcDir) || ! is_file($calcDir . DIRECTORY_SEPARATOR . 'package.json')) {
+                    $this->warn('Калькулятор (calc/) не найден, пропуск.');
+                    continue;
+                }
+                $this->info("{$label}...");
+                $r = Process::timeout(300)->path($calcDir)->run('npm install --legacy-peer-deps');
+                if (! $r->successful()) {
+                    $this->error("Calc npm install failed: " . ($r->errorOutput() ?: $r->output()));
+                    return self::FAILURE;
+                }
+                $r = Process::timeout(300)->path($calcDir)->run('npm run build');
+                if (! $r->successful()) {
+                    $this->error("Calc npm run build failed: " . ($r->errorOutput() ?: $r->output()));
+                    return self::FAILURE;
+                }
+                $distDir = $calcDir . DIRECTORY_SEPARATOR . 'dist';
+                $calcPublic = $calcDir . DIRECTORY_SEPARATOR . 'public';
+                if (is_dir($publicCalc)) {
+                    File::deleteDirectory($publicCalc);
+                }
+                File::ensureDirectoryExists($publicCalc);
+                if (is_dir($distDir)) {
+                    File::copyDirectory($distDir, $publicCalc);
+                }
+                if (is_dir($calcPublic)) {
+                    File::copyDirectory($calcPublic, $publicCalc);
+                }
+                continue;
+            }
+
+            if ($label === 'Laravel cache') {
+                $this->info('Сброс и кэш Laravel...');
+                foreach (['config:clear', 'config:cache', 'route:clear', 'route:cache', 'view:clear', 'view:cache', 'optimize'] as $artCmd) {
+                    $r = Process::timeout(60)->path($base)->run(['php', 'artisan', $artCmd]);
+                    if (! $r->successful()) {
+                        $this->error("php artisan {$artCmd} failed: " . ($r->errorOutput() ?: $r->output()));
+                        return self::FAILURE;
+                    }
+                }
+                $this->info('Деплой (локальный) завершён.');
+                return self::SUCCESS;
+            }
+        }
+
+        return self::SUCCESS;
     }
 }

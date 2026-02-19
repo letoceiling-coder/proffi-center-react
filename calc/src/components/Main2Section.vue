@@ -107,8 +107,8 @@
       <img src="/images/GM_R_HD.png" class="PRELOADER_IMG">
     </div>
 
-    <!-- Форма данных -->
-    <form method="POST" action="/api/calc/sketch" style="display: none" id="form_data">
+    <!-- Форма данных: только текущий origin -->
+    <form method="POST" :action="formDataAction" style="display: none" id="form_data">
       <input name="n4" id="input_n4" value="0.00" placeholder="Площадь" type="hidden">
       <input name="n5" id="input_n5" value="0.00" placeholder="Периметр" type="hidden">
       <input name="n9" id="input_n9" value="" placeholder="Углы" type="hidden">
@@ -395,6 +395,12 @@ const availableClients = computed(() => {
     return store.userClient
   }
   return []
+})
+
+// Всегда тот же origin, без внешних URL
+const formDataAction = computed(() => {
+  if (typeof window === 'undefined') return '/api/calc/sketch'
+  return (window.location.origin || '') + '/api/calc/sketch'
 })
 
 const canvas = ref(null)

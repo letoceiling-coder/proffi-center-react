@@ -25,8 +25,11 @@ php artisan deploy                    # коммит, push, обновление
 php artisan deploy --message="fix"    # свой текст коммита
 php artisan deploy --server-only     # только команды на сервере (без git)
 php artisan deploy --no-commit        # не пушить (только коммит локально + сервер)
+php artisan deploy --local            # полный деплой локально: миграции, сборка admin/frontend/calc, сброс и кэш (без git и SSH)
 php artisan deploy --dry-run          # показать команды, не выполнять
 ```
+
+**Полный деплой** (на сервере или с `--local`) включает: обновление кода (git pull при деплое на сервер), `composer install`, `php artisan migrate --force`, сборку **admin** (Vite в корне → `public/build`), сборку **frontend** (React → `public/build-spa`), сборку **calc** (Vue → `public/calc/`), сброс и повторное кэширование конфига, маршрутов и представлений, `php artisan optimize`.
 
 Требуется доступ по SSH без пароля (ключ). На сервере должны быть установлены git, PHP, Composer, Node.js, npm.
 

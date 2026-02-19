@@ -52,7 +52,7 @@
     <link rel="stylesheet" href="{{ asset('css/component.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/react-overrides.css') }}" />
     @if($cssFile)
-    <link rel="stylesheet" crossorigin href="{{ asset('build/assets/' . $cssFile) }}">
+    <link rel="stylesheet" crossorigin href="{{ asset('build-spa/assets/' . $cssFile) }}">
     @endif
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">

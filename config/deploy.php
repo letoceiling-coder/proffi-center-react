@@ -34,7 +34,9 @@ return [
         'if [ -d calc ] && [ -f calc/package.json ]; then cd calc && npm install --legacy-peer-deps && npm run build && cd .. && rm -rf public/calc && mkdir -p public/calc && cp -r calc/dist/* public/calc/ && cp -r calc/public/* public/calc/; fi',
         'php artisan config:clear',
         'php artisan config:cache',
+        'php artisan route:clear',
         'php artisan route:cache',
+        'php artisan view:clear',
         'php artisan view:cache',
         'php artisan optimize',
         // Сброс opcache: без перезагрузки PHP-FPM сервер может отдавать старый код middleware

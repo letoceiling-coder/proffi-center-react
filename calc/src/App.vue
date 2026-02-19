@@ -1,16 +1,29 @@
 <template>
-  <div class="content" :class="{ 'main-2-active': activeSection === 'main-2' }">
-    <!-- Telegram auth: быстрый вход (всегда виден) -->
-    <div class="calc-auth container">
-      <template v-if="telegramUser">
-        <span class="calc-auth-user">Вход: {{ telegramUser.first_name }}{{ telegramUser.username ? ' @' + telegramUser.username : '' }}</span>
-        <button type="button" class="btn btn-sm btn-outline-secondary calc-auth-logout" @click="logout">Выйти</button>
+  <!-- Страница входа: только после успешной авторизации показываем калькулятор -->
+  <div v-if="!telegramUser" class="calc-login-page">
+    <div class="calc-login-card">
+      <h1 class="calc-login-title">Калькулятор натяжных потолков</h1>
+      <p class="calc-login-subtitle">Войдите через Telegram для доступа</p>
+      <template v-if="authChecked">
+        <template v-if="telegramBotUsername">
+          <div id="telegram-login-root" class="calc-login-widget"></div>
+        </template>
+        <template v-else>
+          <p class="calc-login-error">Вход временно недоступен. Настройте бота в админ-панели.</p>
+        </template>
       </template>
-      <template v-else-if="telegramBotUsername">
-        <div id="telegram-login-root"></div>
+      <template v-else>
+        <p class="calc-login-loading">Загрузка…</p>
       </template>
     </div>
-    <!-- Header Navigation -->
+  </div>
+
+  <!-- Калькулятор: только для авторизованных -->
+  <div v-else class="content" :class="{ 'main-2-active': activeSection === 'main-2' }">
+    <div class="calc-auth container">
+      <span class="calc-auth-user">Вход: {{ telegramUser.first_name }}{{ telegramUser.username ? ' @' + telegramUser.username : '' }}</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary calc-auth-logout" @click="logout">Выйти</button>
+    </div>
     <div class="header-block container" v-show="activeSection !== 'main-2'">
       <div 
         v-for="icon in headerIcons" 
@@ -24,7 +37,6 @@
       </div>
     </div>
 
-    <!-- Main Sections -->
     <Main1Section v-if="activeSection === 'main-1'" />
     <Main2Section v-if="activeSection === 'main-2'" />
     <Main3Section v-if="activeSection === 'main-3'" />
@@ -48,6 +60,7 @@ const store = useAppStore()
 const activeSection = ref('main-2')
 const telegramUser = ref(null)
 const telegramBotUsername = ref('')
+const authChecked = ref(false)
 
 function getBaseUrl () {
   if (typeof window === 'undefined') return ''
@@ -125,17 +138,20 @@ const handleIconClick = (sectionId) => {
 }
 
 onMounted(async () => {
-  store.getRooms()
-  if (localStorage.getItem('newClient') != null) {
-    store.getStorageReturn()
-  }
   await fetchMe()
-  if (!telegramUser.value) {
-    await loadConfig()
-    if (telegramBotUsername.value) {
-      await nextTick()
-      loadTelegramWidget()
+  if (telegramUser.value) {
+    authChecked.value = true
+    store.getRooms()
+    if (localStorage.getItem('newClient') != null) {
+      store.getStorageReturn()
     }
+    return
+  }
+  await loadConfig()
+  authChecked.value = true
+  if (telegramBotUsername.value) {
+    await nextTick()
+    loadTelegramWidget()
   }
   const err = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('telegram_error') : null
   if (err === 'invalid') console.warn('Telegram login: неверная подпись или устаревшие данные')
@@ -143,11 +159,67 @@ onMounted(async () => {
 })
 
 watch(telegramBotUsername, (username) => {
-  if (username) setTimeout(loadTelegramWidget, 100)
+  if (username && !telegramUser.value) setTimeout(loadTelegramWidget, 100)
+})
+
+watch(telegramUser, (user) => {
+  if (user) {
+    store.getRooms()
+    if (localStorage.getItem('newClient') != null) {
+      store.getStorageReturn()
+    }
+  }
 })
 </script>
 
 <style scoped>
+/* Страница входа — отдельный экран до авторизации */
+.calc-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  padding: 1rem;
+}
+.calc-login-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 380px;
+  width: 100%;
+}
+.calc-login-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+.calc-login-subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 1.5rem 0;
+}
+.calc-login-widget {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+.calc-login-widget :deep(iframe) {
+  vertical-align: middle;
+}
+.calc-login-loading,
+.calc-login-error {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0;
+}
+.calc-login-error {
+  color: #c00;
+}
+
 .calc-auth {
   display: flex;
   align-items: center;
@@ -162,20 +234,14 @@ watch(telegramBotUsername, (username) => {
 .calc-auth-logout {
   margin-left: auto;
 }
-#telegram-login-root :deep(iframe) {
-  vertical-align: middle;
-}
 .header-block .icons {
   cursor: pointer;
   padding: 10px;
   border: 2px solid transparent;
 }
-
 .header-block .icons.active {
   border-color: blue;
 }
-
-/* Скрываем скролл и делаем content на всю высоту когда main-2 активен */
 .content.main-2-active {
   height: 100vh;
   overflow: hidden;
