@@ -39,6 +39,9 @@ function createAppStore() {
   const drawings        = ref([])
   const drawingsLoading = ref(false)
 
+  // ──── Показать попап выбора клиента (управляется из App.vue и кнопки «Сменить») ────
+  const showClientPopup = ref(false)
+
   // ──── Вспомогательные ────
   function getBaseUrl() {
     return typeof window !== 'undefined' ? (window.location.origin || '') : ''
@@ -109,9 +112,8 @@ function createAppStore() {
     if (!stored) return
     try {
       const parsed = JSON.parse(stored)
-      if (parsed.client)  currentClient.value  = parsed.client
-      if (parsed.address) currentAddress.value = parsed.address
-      if (parsed.room_id) currentRoomId.value  = parsed.room_id
+      if (parsed.room_id) currentRoomId.value = parsed.room_id
+      // Клиента не восстанавливаем — перед чертежом всегда показываем попап выбора
     } catch (e) {
       console.error('getStorageReturn error:', e)
     }
@@ -196,6 +198,9 @@ function createAppStore() {
     drawings,
     drawingsLoading,
     fetchDrawings,
+
+    // Попап клиента
+    showClientPopup,
 
     // Совместимость
     clearElems,

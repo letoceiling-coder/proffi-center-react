@@ -20,6 +20,9 @@
 
   <!-- Калькулятор: только для авторизованных -->
   <div v-else class="content" :class="{ 'main-2-active': activeSection === 'main-2' }">
+    <!-- Попап выбора клиента — на уровне App, показывается при входе в раздел чертежа (main-2) без клиента или по кнопке «Сменить» -->
+    <ClientPopup v-if="activeSection === 'main-2' && (!store.currentClient || store.showClientPopup)" />
+
     <div class="calc-auth container">
       <span class="calc-auth-user">Вход: {{ telegramUser.first_name }}{{ telegramUser.username ? ' @' + telegramUser.username : '' }}</span>
       <button type="button" class="btn btn-sm btn-outline-secondary calc-auth-logout" @click="logout">Выйти</button>
@@ -123,9 +126,10 @@ const headerIcons = [
 
 const handleIconClick = (sectionId) => {
   activeSection.value = sectionId
-  
+
   if (sectionId === 'main-2') {
     store.clearElems()
+    if (!store.currentClient) store.showClientPopup = true
   }
   
   if (['main-1', 'main-3', 'main-4', 'main-5'].includes(sectionId)) {

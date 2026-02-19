@@ -55,263 +55,7 @@
       <input name="user_url" id="user_url" value="" type="hidden">
     </form>
 
-    <!-- ===================== POPUP КЛИЕНТА (Teleport в body — всегда поверх всего) ===================== -->
-    <Teleport to="body">
-      <div
-        id="popup_client"
-        v-show="showClientPopup"
-        class="popup-client-overlay"
-        style="position: fixed !important; inset: 0 !important; z-index: 2147483647 !important;"
-      >
-        <div class="popup-client-box" style="position: relative; z-index: 1;">
-
-        <!-- ══════════════ ШАГ 1: Выбор / создание клиента ══════════════ -->
-        <div v-if="clientPopupStep === 1">
-
-          <!-- Заголовок -->
-          <div class="pcp-header">
-            <span class="pcp-title">Выбор клиента</span>
-          </div>
-
-          <!-- ── Режим: создание нового клиента ── -->
-          <div v-if="newClientMode" class="pcp-section">
-            <div class="pcp-back-row">
-              <button class="pcp-back-btn" @click="newClientMode = false">← К списку</button>
-            </div>
-            <div class="pcp-field">
-              <label class="pcp-label">Имя клиента <span class="pcp-required">*</span></label>
-              <input
-                type="text"
-                class="pcp-input"
-                v-model="client.name"
-                placeholder="Иванов Иван Иванович"
-                @keyup.enter="confirmStep1"
-                autofocus
-              >
-            </div>
-            <div class="pcp-field">
-              <label class="pcp-label">Телефон</label>
-              <input
-                type="text"
-                class="pcp-input"
-                v-model="client.phone"
-                v-mask="'+7 (999) 999-99-99'"
-                placeholder="+7 (___) ___-__-__"
-              >
-            </div>
-            <div class="pcp-field">
-              <label class="pcp-label">Адрес объекта</label>
-              <input
-                type="text"
-                class="pcp-input"
-                v-model="client.address"
-                placeholder="ул. Ленина 1, кв. 10"
-              >
-            </div>
-            <div class="pcp-actions">
-              <button class="pcp-btn pcp-btn-primary" @click="confirmStep1" :disabled="!client.name.trim()">
-                Далее →
-              </button>
-            </div>
-          </div>
-
-          <!-- ── Режим: поиск и выбор существующего клиента ── -->
-          <div v-else class="pcp-section">
-
-            <!-- Табы: По клиенту / По адресу -->
-            <div class="pcp-tabs">
-              <button
-                class="pcp-tab"
-                :class="{ active: searchTab === 'client' }"
-                @click="switchTab('client')"
-              >По клиенту</button>
-              <button
-                class="pcp-tab"
-                :class="{ active: searchTab === 'address' }"
-                @click="switchTab('address')"
-              >По адресу</button>
-            </div>
-
-            <!-- Поиск по клиенту -->
-            <div v-if="searchTab === 'client'">
-              <div class="pcp-search-row">
-                <input
-                  type="text"
-                  class="pcp-input"
-                  v-model="clientSearch"
-                  placeholder="Поиск по имени или телефону..."
-                  @input="onClientSearch"
-                >
-              </div>
-
-              <div v-if="store.clientsLoading" class="pcp-loading">Загрузка...</div>
-
-              <div v-else-if="filteredClients.length === 0" class="pcp-empty">
-                {{ clientSearch ? 'Ничего не найдено' : 'Клиентов ещё нет' }}
-              </div>
-
-              <div v-else class="pcp-list">
-                <div
-                  v-for="c in filteredClients"
-                  :key="c.id"
-                  class="pcp-list-item"
-                  :class="{ selected: selectedClientId == c.id }"
-                  @click="selectClientFromList(c)"
-                >
-                  <span class="pcp-item-name">{{ c.name }}</span>
-                  <span class="pcp-item-sub">{{ c.phone || '' }}</span>
-                  <span class="pcp-item-badge" v-if="c.drawings_count">{{ c.drawings_count }} чертежей</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Поиск по адресу -->
-            <div v-if="searchTab === 'address'">
-              <div class="pcp-search-row">
-                <input
-                  type="text"
-                  class="pcp-input"
-                  v-model="addressSearch"
-                  placeholder="Поиск по адресу..."
-                  @input="onAddressSearch"
-                >
-              </div>
-
-              <div v-if="addressSearchLoading" class="pcp-loading">Поиск...</div>
-
-              <div v-else-if="addressResults.length === 0" class="pcp-empty">
-                {{ addressSearch ? 'Ничего не найдено' : 'Введите адрес для поиска' }}
-              </div>
-
-              <div v-else class="pcp-list">
-                <div
-                  v-for="a in addressResults"
-                  :key="a.address_id"
-                  class="pcp-list-item"
-                  :class="{ selected: selectedAddressResult?.address_id === a.address_id }"
-                  @click="selectFromAddressResult(a)"
-                >
-                  <span class="pcp-item-name">{{ a.address }}</span>
-                  <span class="pcp-item-sub">{{ a.client_name }}{{ a.client_phone ? ' · ' + a.client_phone : '' }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Действия -->
-            <div class="pcp-actions pcp-actions-split">
-              <button
-                class="pcp-btn pcp-btn-primary"
-                @click="confirmStep1"
-                :disabled="!selectedClientId && !selectedAddressResult"
-              >
-                Далее →
-              </button>
-              <button class="pcp-btn pcp-btn-secondary" @click="startNewClient">
-                + Новый клиент
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════════════ ШАГ 2: Адрес + помещение ══════════════ -->
-        <div v-if="clientPopupStep === 2">
-          <div class="pcp-header">
-            <button class="pcp-back-btn" @click="backToStep1">← Назад</button>
-            <span class="pcp-title">Адрес и помещение</span>
-          </div>
-
-          <!-- Клиент -->
-          <div class="pcp-client-badge">
-            <span class="pcp-client-icon">👤</span>
-            <span>
-              <strong>{{ selectedClientObj?.name }}</strong>
-              <em v-if="selectedClientObj?.phone"> · {{ selectedClientObj.phone }}</em>
-            </span>
-          </div>
-
-          <!-- Адрес -->
-          <div class="pcp-field">
-            <label class="pcp-label">Адрес объекта</label>
-
-            <div v-if="clientAddresses.length" class="pcp-address-list">
-              <div
-                v-for="a in clientAddresses"
-                :key="a.id"
-                class="pcp-address-item"
-                :class="{ selected: selectedAddressId == a.id }"
-                @click="selectedAddressId = a.id"
-              >
-                <span class="pcp-address-radio">{{ selectedAddressId == a.id ? '●' : '○' }}</span>
-                {{ a.address }}
-              </div>
-              <div
-                class="pcp-address-item pcp-address-none"
-                :class="{ selected: selectedAddressId === null }"
-                @click="selectedAddressId = null"
-              >
-                <span class="pcp-address-radio">{{ selectedAddressId === null ? '●' : '○' }}</span>
-                — без адреса —
-              </div>
-            </div>
-
-            <!-- Если адресов нет -->
-            <div v-else class="pcp-empty" style="margin:6px 0;">Адресов нет</div>
-
-            <!-- Добавить адрес -->
-            <div v-if="!showNewAddressForm" class="pcp-add-link" @click="showNewAddressForm = true">
-              + Добавить адрес
-            </div>
-            <div v-else class="pcp-add-form">
-              <input
-                type="text"
-                class="pcp-input"
-                v-model="newAddressText"
-                placeholder="Новый адрес объекта"
-                @keyup.enter="confirmAddAddress"
-              >
-              <div style="display:flex;gap:6px;margin-top:6px;">
-                <button class="pcp-btn pcp-btn-sm pcp-btn-primary" @click="confirmAddAddress">Сохранить</button>
-                <button class="pcp-btn pcp-btn-sm pcp-btn-secondary" @click="showNewAddressForm = false">Отмена</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Тип помещения -->
-          <div class="pcp-field">
-            <label class="pcp-label">Тип помещения</label>
-            <div class="pcp-room-grid">
-              <div
-                v-for="r in rooms"
-                :key="r.id"
-                class="pcp-room-item"
-                :class="{ selected: selectedRoomId == r.id }"
-                @click="selectedRoomId = r.id"
-              >{{ r.name }}</div>
-            </div>
-          </div>
-
-          <!-- Уточнение -->
-          <div class="pcp-field">
-            <label class="pcp-label">Уточнение <em>(необязательно)</em></label>
-            <input
-              type="text"
-              class="pcp-input"
-              v-model="roomNote"
-              placeholder="Спальня хозяев, кабинет 2..."
-            >
-          </div>
-
-          <div class="pcp-actions">
-            <button class="pcp-btn pcp-btn-primary pcp-btn-full" @click="confirmStep2">
-              ✓ Начать чертёж
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-    </Teleport>
-    <!-- ===================== / POPUP КЛИЕНТА ===================== -->
+    <!-- Popup выбора клиента вынесен в App.vue (ClientPopup.vue), открывается по store.showClientPopup -->
 
     <!-- Popup выбора комнат (legacy) -->
     <div id="popup_get_rooms" v-show="showGetRoomsPopup">
@@ -424,7 +168,7 @@
     </div>
 
     <!-- Индикатор текущего клиента + кнопка смены -->
-    <div v-if="store.currentClient && !showClientPopup" class="current-client-bar">
+    <div v-if="store.currentClient && !store.showClientPopup" class="current-client-bar">
       <span>
         <strong>{{ store.currentClient.name }}</strong>
         <template v-if="store.currentAddress"> · {{ store.currentAddress.address }}</template>
@@ -433,7 +177,7 @@
         </template>
         <template v-if="store.currentRoomNote"> ({{ store.currentRoomNote }})</template>
       </span>
-      <button class="sketch_hud btn btn-sm btn-gm" @click="changeClient">Сменить</button>
+      <button type="button" class="sketch_hud btn btn-sm btn-gm" @click="store.showClientPopup = true">Сменить</button>
     </div>
 
     <!-- Canvas редактор -->
@@ -607,8 +351,6 @@ import { initSketch } from '../utils/sketchInit'
 const store = useAppStore()
 const { fetchClients, createClient, fetchAddresses, addAddress } = useClients()
 
-// ──── Popup: всегда показывать при входе в раздел чертежа (перед созданием чертежа обязателен клиент) ────
-const showClientPopup = ref(true)
 const showGetRoomsPopup = ref(false)
 const showClientSelectPopup = ref(false)
 const showPreloader = ref(false)
@@ -845,25 +587,17 @@ const confirmStep2 = () => {
   store.currentRoomNote = roomNote.value
   store.saveDraftClient()
 
-  showClientPopup.value = false
+  store.showClientPopup = false
   noty('success', `Клиент: ${selectedClientObj.value.name}`)
-}
-
-/** Кнопка «Сменить клиента» */
-const changeClient = () => {
-  clientPopupStep.value = 1
-  newClientMode.value   = false
-  showClientPopup.value = true
 }
 
 const showClientSelect = () => {
   showClientSelectPopup.value = true
-  showClientPopup.value = false
 }
 
 const handleSelectClient = () => {
   showClientSelectPopup.value = false
-  showClientPopup.value = true
+  store.showClientPopup = true
 }
 
 const toggleClientSelectMode = () => {}
@@ -943,7 +677,7 @@ const closeSketch = () => {
 const saveAndClose = async () => {
   if (!store.currentClient) {
     noty('warning', 'Сначала выберите клиента')
-    showClientPopup.value = true
+    store.showClientPopup = true
     return
   }
 
@@ -1042,34 +776,7 @@ const numPadOk = () => {
 }
 
 onMounted(async () => {
-  // Сразу показываем попап (до любых await), чтобы пользователь его гарантированно видел
-  showClientPopup.value = true
-
-  // Загружаем список клиентов для попапа
-  await store.fetchClients()
-
-  // Повторно включаем попап после загрузки (на случай если что-то его скрыло) и после nextTick для Teleport
-  await nextTick()
-  showClientPopup.value = true
-
-  // Если уже есть клиент (например из прошлого сеанса) — предзаполняем попап, чтобы можно было просто нажать «Далее» → «Начать чертёж»
-  if (store.currentClient?.id) {
-    selectedClientId.value   = store.currentClient.id
-    selectedClientObj.value  = store.currentClient
-    clientAddresses.value    = await fetchAddresses(store.currentClient.id)
-    selectedAddressId.value  = store.currentAddress?.id ?? clientAddresses.value[0]?.id ?? null
-    selectedRoomId.value     = store.currentRoomId ?? null
-    roomNote.value           = store.currentRoomNote ?? ''
-    const gost = rooms.value?.find(r => r.name === 'Гостиная')
-    if (!selectedRoomId.value && rooms.value?.length) {
-      selectedRoomId.value = gost?.id ?? rooms.value[0]?.id
-    }
-  }
-
-  // Показываем прелоадер при загрузке
   showPreloader.value = true
-  
-  // Ждем, пока DOM полностью загрузится и Paper.js будет доступен
   const initCanvas = () => {
     if (canvas.value) {
       // Передаем callback для скрытия прелоадера после успешной инициализации
