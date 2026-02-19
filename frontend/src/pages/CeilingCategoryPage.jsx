@@ -22,6 +22,8 @@ import SectionGallery from '../components/sections/SectionGallery';
 import SectionReviews from '../components/sections/SectionReviews';
 import FooterMenu from '../components/FooterMenu';
 import Footer from '../components/Footer';
+import { useSite } from '../context/SiteContext.jsx';
+import { formatPhoneDisplay } from '../utils/phoneFormat.js';
 import { getCeilingCategoryBySlug, CEILING_CATEGORY_SLUGS } from '../data/ceilingCategoriesData';
 import {
   siteConfig,
@@ -42,6 +44,9 @@ export default function CeilingCategoryPage({ slugOverride }) {
   const [popupSpasibo, setPopupSpasibo] = useState(false);
   const [popupPozdr, setPopupPozdr] = useState(false);
   const [navMobileOpen, setNavMobileOpen] = useState(false);
+  const { contacts } = useSite();
+  const rawPhone = contacts?.phone ?? siteConfig?.phone;
+  const phone = rawPhone ? formatPhoneDisplay(rawPhone) : (siteConfig?.phone || '');
 
   const { ceilingCategorySlug } = useParams();
   const ceilingCategorySlugResolved = slugOverride ?? ceilingCategorySlug;
@@ -54,7 +59,6 @@ export default function CeilingCategoryPage({ slugOverride }) {
   const openCallback = () => setPopupCallback(true);
   const closeCallback = () => setPopupCallback(false);
   const onCallbackSuccess = () => setPopupSpasibo(true);
-  const phone = siteConfig?.phone || '';
   const pathname = useLocation().pathname;
   const breadcrumb = breadcrumbList(getBaseUrl(), [{ name: 'Главная', url: '/' }, { name: category.title }]);
 

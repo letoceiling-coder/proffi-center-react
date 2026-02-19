@@ -1,13 +1,15 @@
 import { useSite } from '../../context/SiteContext.jsx';
-import { formatPhoneDisplay } from '../../utils/phoneFormat.js';
+import { formatPhoneDisplay, formatPhoneHref } from '../../utils/phoneFormat.js';
 import { siteConfig } from '../../data/mockPageData';
 
 export default function SectionS25({ data }) {
   const { contacts } = useSite();
-  const rawPhone = contacts?.phone ?? siteConfig.phone;
-  const displayPhone = rawPhone ? formatPhoneDisplay(rawPhone) : (siteConfig.phone || '');
+  // Телефон по региону (как в шапке и футере), fallback — из data/siteConfig
+  const rawPhone = contacts?.phone ?? data?.phone ?? siteConfig.phone;
+  const displayPhone = rawPhone ? formatPhoneDisplay(rawPhone) : (data?.phone || siteConfig.phone || '');
+  const phoneHref = rawPhone ? formatPhoneHref(rawPhone) : (data?.phone ? formatPhoneHref(data.phone) : '');
   if (!data) return null;
-  const { title, columns, subtitle, phoneLabel, phone } = data;
+  const { title, columns, subtitle, phoneLabel } = data;
 
   return (
     <div className="section s25">
@@ -29,7 +31,7 @@ export default function SectionS25({ data }) {
         <div className="y_tel">
           <p>
             {phoneLabel}<br />
-            <span>Звоните: <a style={{ textDecoration: 'none', color: '#333' }} className="comagic_phone" href={`tel:${(phone || displayPhone || '').replace(/\s/g, '')}`}>{phone || displayPhone}</a></span>
+            <span>Звоните: <a style={{ textDecoration: 'none', color: '#333' }} className="comagic_phone" href={phoneHref ? `tel:${phoneHref}` : '#'} itemProp="telephone">{displayPhone}</a></span>
           </p>
         </div>
       </div>
