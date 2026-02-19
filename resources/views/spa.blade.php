@@ -56,6 +56,16 @@
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/54757786" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
+
+    <!-- Google Analytics (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147635853-1"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-147635853-1', { 'optimize_id': 'GTM-KR9QN9D' });
+    </script>
+    <!-- /Google Analytics -->
 </head>
 <body>
     <div id="root"></div>

@@ -35,21 +35,27 @@ class NormalizeSeoUrl
             $path = '/';
         }
 
-        $targetUrl = $canonicalScheme . '://' . $canonicalHost . $path;
-        $query = $request->getQueryString();
-        if ($query !== null && $query !== '') {
-            $targetUrl .= '?' . $query;
-        }
+        $currentHostLower = strtolower($currentHost);
+        $canonicalHostLower = strtolower($canonicalHost);
+        // Допускаем основной домен и любые поддомены (moscow., anapa., stavropol., www. и т.д.)
+        $isOurDomain = $currentHostLower === $canonicalHostLower
+            || str_ends_with($currentHostLower, '.' . $canonicalHostLower);
 
         $needRedirect = false;
         if ($canonicalScheme === 'https' && $currentScheme !== 'https') {
             $needRedirect = true;
         }
-        if (strtolower($currentHost) !== strtolower($canonicalHost)) {
+        // Редирект только если хост не наш (не основной и не поддомен)
+        if (!$isOurDomain) {
             $needRedirect = true;
         }
 
         if ($needRedirect) {
+            $targetUrl = $canonicalScheme . '://' . $canonicalHost . $path;
+            $query = $request->getQueryString();
+            if ($query !== null && $query !== '') {
+                $targetUrl .= '?' . $query;
+            }
             return redirect()->to($targetUrl, 301);
         }
 

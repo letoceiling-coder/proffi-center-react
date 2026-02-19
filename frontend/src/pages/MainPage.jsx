@@ -21,6 +21,9 @@ import SectionS25 from '../components/sections/SectionS25';
 import SectionS30 from '../components/sections/SectionS30';
 import SectionGallery from '../components/sections/SectionGallery';
 import SectionReviews from '../components/sections/SectionReviews';
+import SectionWhyUs from '../components/sections/SectionWhyUs';
+import SectionHowItWorks from '../components/sections/SectionHowItWorks';
+import SectionFAQ from '../components/sections/SectionFAQ';
 import FooterMenu from '../components/FooterMenu';
 import Footer from '../components/Footer';
 import { getRegionPrepositional } from '../utils/regionDisplay.js';
@@ -41,6 +44,9 @@ import {
   footerMenuData,
   footerData,
   bannerData as defaultBannerData,
+  whyUsData,
+  howItWorksData,
+  faqData,
 } from '../data/mockPageData';
 
 function buildIntroContent(cityPrepositional, regionDisplay) {
@@ -147,14 +153,18 @@ export default function MainPage() {
         list2={simpleTextQuality.list2}
       />
 
+      <SectionWhyUs items={whyUsData} />
+
       <SectionZamer items={zamerBlocks} />
       <SectionPrTable data={prTableData} />
       <SectionPotolki2 items={potolki2Data} />
+      <SectionHowItWorks items={howItWorksData.steps} cta={howItWorksData.cta} onZamerClick={openCallback} />
       <SectionForm5min data={form5minData} />
       <SectionS25 data={s25Data} />
       <SectionS30 data={s30Data} />
       <SectionGallery items={galleryData} />
       <SectionReviews items={reviewsData} />
+      <SectionFAQ items={faqData} />
 
       <FooterMenu items={footerMenuData} />
       <Footer data={footerData} />

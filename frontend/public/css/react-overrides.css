@@ -709,3 +709,236 @@ body.menu-open {
   color: #555;
 }
 
+
+/* ========================================================
+   SectionWhyUs вЂ” В«РџРѕС‡РµРјСѓ РІС‹Р±РёСЂР°СЋС‚ РЅР°СЃВ»
+   ======================================================== */
+.s_why_us {
+  padding: 52px 0 44px;
+  background: #f5f7fb;
+}
+.s_why_us_title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.s_why_us_sub {
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 36px;
+}
+.s_why_us_grid {
+  margin-top: 0;
+}
+.s_why_us_card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e8edf5;
+  padding: 28px 22px 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: box-shadow 0.2s;
+}
+.s_why_us_card:hover {
+  box-shadow: 0 4px 18px rgba(40,97,220,0.10);
+}
+.s_why_us_num {
+  font-size: 32px;
+  font-weight: 800;
+  color: #2861dc;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+.s_why_us_label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+}
+.s_why_us_text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #444;
+  margin: 0;
+}
+
+/* ========================================================
+   SectionHowItWorks вЂ” В«РљР°Рє РїСЂРѕС…РѕРґРёС‚ РјРѕРЅС‚Р°Р¶В»
+   ======================================================== */
+.s_how_it_works {
+  padding: 52px 0 48px;
+  background: #fff;
+}
+.s_hiw_title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.s_hiw_sub {
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 40px;
+}
+.s_hiw_steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  justify-content: center;
+  align-items: flex-start;
+}
+.s_hiw_step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 200px;
+  max-width: 240px;
+  text-align: center;
+  padding: 0 16px 32px;
+}
+.s_hiw_step_num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #2861dc;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  flex-shrink: 0;
+}
+.s_hiw_step_title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+}
+.s_hiw_step_text {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #555;
+  margin: 0;
+}
+.s_hiw_step_arrow {
+  display: none;
+}
+.s_hiw_cta_wrap {
+  text-align: center;
+  margin-top: 16px;
+}
+/* Кнопка «Записаться на замер» — как в форме zakaz_5min: компактная .blue_btn по центру */
+.s_how_it_works .s_hiw_cta_wrap .blue_btn {
+  display: inline-block;
+  width: 253px;
+  margin-top: 21px;
+  margin-bottom: 21px;
+}
+.s_how_it_works .s_hiw_cta_wrap .blue_btn a {
+  display: block;
+  line-height: 32px;
+  text-decoration: none;
+}
+.s_hiw_cta {
+  display: inline-block;
+  font-size: 16px;
+  padding: 14px 36px;
+}
+
+/* ========================================================
+   SectionFAQ вЂ” В«Р§Р°СЃС‚С‹Рµ РІРѕРїСЂРѕСЃС‹В»
+   ======================================================== */
+.s_faq {
+  padding: 52px 0 56px;
+  background: #f5f7fb;
+}
+.s_faq_title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+  line-height: 1.3;
+}
+.s_faq_sub {
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 36px;
+}
+.s_faq_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.s_faq_item {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e4e8f0;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.s_faq_item--open {
+  box-shadow: 0 4px 16px rgba(40,97,220,0.09);
+  border-color: #c2d0ef;
+}
+.s_faq_q {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+}
+.s_faq_q:hover { color: #2861dc; }
+.s_faq_icon {
+  font-size: 22px;
+  font-weight: 400;
+  color: #2861dc;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.s_faq_a {
+  padding: 0 22px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+.s_faq_a p {
+  margin: 14px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #444;
+}
+
+/* РђРґР°РїС‚РёРІ РЅРѕРІС‹С… СЃРµРєС†РёР№ */
+@media (max-width: 767px) {
+  .s_why_us { padding: 36px 0 28px; }
+  .s_why_us_title,
+  .s_hiw_title,
+  .s_faq_title { font-size: 21px; }
+  .s_hiw_steps { flex-direction: column; align-items: center; }
+  .s_hiw_step { max-width: 100%; padding: 0 16px 24px; }
+  .s_how_it_works { padding: 36px 0 32px; }
+  .s_faq { padding: 36px 0 40px; }
+  .s_faq_q { font-size: 15px; padding: 15px 16px; }
+  .s_faq_a { padding: 0 16px 14px; }
+}
