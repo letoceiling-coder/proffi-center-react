@@ -55,9 +55,15 @@
       <input name="user_url" id="user_url" value="" type="hidden">
     </form>
 
-    <!-- ===================== POPUP КЛИЕНТА ===================== -->
-    <div id="popup_client" v-show="showClientPopup" class="popup-client-overlay">
-      <div class="popup-client-box">
+    <!-- ===================== POPUP КЛИЕНТА (Teleport в body — всегда поверх всего) ===================== -->
+    <Teleport to="body">
+      <div
+        id="popup_client"
+        v-show="showClientPopup"
+        class="popup-client-overlay"
+        style="position: fixed !important; inset: 0 !important; z-index: 2147483647 !important;"
+      >
+        <div class="popup-client-box" style="position: relative; z-index: 1;">
 
         <!-- ══════════════ ШАГ 1: Выбор / создание клиента ══════════════ -->
         <div v-if="clientPopupStep === 1">
@@ -304,6 +310,7 @@
 
       </div>
     </div>
+    </Teleport>
     <!-- ===================== / POPUP КЛИЕНТА ===================== -->
 
     <!-- Popup выбора комнат (legacy) -->
@@ -1035,10 +1042,14 @@ const numPadOk = () => {
 }
 
 onMounted(async () => {
+  // Сразу показываем попап (до любых await), чтобы пользователь его гарантированно видел
+  showClientPopup.value = true
+
   // Загружаем список клиентов для попапа
   await store.fetchClients()
 
-  // Всегда показываем попап при открытии раздела чертежа: у каждого чертежа должен быть клиент с адресом и помещением
+  // Повторно включаем попап после загрузки (на случай если что-то его скрыло) и после nextTick для Teleport
+  await nextTick()
   showClientPopup.value = true
 
   // Если уже есть клиент (например из прошлого сеанса) — предзаполняем попап, чтобы можно было просто нажать «Далее» → «Начать чертёж»

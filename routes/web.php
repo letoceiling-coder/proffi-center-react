@@ -66,7 +66,8 @@ $serveCalcIndex = function () {
     if (!File::exists($index)) {
         abort(404, 'Calculator not built. Run deploy or build calc.');
     }
-    return response()->file($index);
+    return response()->file($index)
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
 };
 Route::get('/calc', $serveCalcIndex)->name('calc');
 Route::get('/calc/', $serveCalcIndex);
