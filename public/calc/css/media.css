@@ -1,0 +1,1383 @@
+/*==========  Desktop First Method  ==========*/
+
+
+input:focus { outline-offset: 0px; outline: 0px}
+
+
+@media only screen and (max-width : 1300px) {
+.s30 .txt {   width: 700px;  left: 385px;}
+.s30{
+background: url("/template/globalTemplate/images/s30_bg.jpg") repeat-x scroll 65% top rgba(0, 0, 0, 0);}
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1400px) {
+.b-map {
+    background: url(/template/globalTemplate/images/map.png) top right no-repeat;
+    height: 475px;
+    width: 100%;
+    background-size: cover;
+}
+
+}
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+  .mapicon{
+    display: none;
+  }
+}
+@media only screen and (max-width : 1200px) {
+
+.gal_potolki {
+    display: none;
+}
+    .s_zakazalo .y_label{
+        float:none;
+        margin: 0 auto;
+    }    
+    
+    .s_zakazalo .z_blocks{
+         float:none;
+        margin: 0 auto ; 
+        width:auto;
+    }
+    .s_zakazalo .z_blocks .z_block {
+        float:none;
+          margin: 20px auto 0; 
+    }  
+    
+.s_top .menu ul{
+	padding-left:0px;
+}
+
+.s_top .menu ul li{
+	min-width:0px;
+    padding: 0 2px;
+}
+
+.s_top .menu ul li ul {
+  padding-left: 24px;
+}
+
+
+.s_top .logo img{
+	width:100%;
+}
+
+
+.s_ind_banner .wooman{
+	top:-5px;left:0px;}
+.zakaz_5min {text-align: center}
+
+
+.s30 .txt {   width: 700px;  left: 385px;}
+.s_potolki2 .p2_txt,
+.s_potolki2 .p2_txt_r{
+max-width: 992px;}
+.s_potolok .tovar_zakaz {text-align: center}
+.s_potolok .razmetka2 { float: none; width: auto;display: inline-block;  vertical-align: top;   padding-left: 0px;   padding-right: 0px; }
+.s_potolok .razmetka1 { float: none; display: inline-block; vertical-align: top;   margin-left: 0px;}
+.s_potolok .i_art { display: inline-block;}
+.s_potolok .potolok_block .razmer { display: inline-block;}
+.s_potolok .potolok_block .old_price { float: none;  display: inline-block;}
+.s_potolok .potolok_block .current_price {float: none; display: inline-block;}
+.s_potolok .potolok_block .c_border1 { padding-left: 0px;}
+.s_buy_now .buy_now .block5 {  height: auto; left: auto;  top: auto;  width: 100%;}
+.s_buy_now .buy_now .block5 img { width: 96%;    max-width: 330px;}
+
+
+
+.footer .d1 { font-size: 35px;}
+
+
+
+.s_akcii .ak_block .akb_img_left {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  float:none;
+}
+.s_akcii .ak_block .akb_txt_right {
+  margin: 0 auto;
+  padding-top: 20px;
+  width: 100%;
+  float:none;
+}
+.s_akcii .ak_block .akb_txt_right h3{
+	text-align:center;
+}
+.s_akcii .ak_block .akb_txt_right p {
+  padding: 15px 0px 30px 0;
+}
+.s_akcii .ak_block .akb_img_right {
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+  float:none;
+}
+.s_akcii .ak_block .akb_txt_left {
+  margin: 0 auto;
+  padding-top: 20px;
+  width: 100%;
+  float:none;
+}
+.s_akcii .ak_block .akb_txt_left h3{
+	text-align:center;
+}
+.s_akcii .ak_block .akb_txt_left p {
+  padding: 15px 0px 30px 0;
+}
+
+/***********************/
+
+.potolok_block .m_sub {
+    margin-top: 20px;
+    width: 500px;
+    margin: auto;
+    text-align: center;
+
+}
+
+
+ /**********************/
+.s_buy_now .buy_now{
+background: none;
+height: auto;
+margin-top: 50px;
+position: relative;
+}
+
+.s_buy_now .buy_now .now_blocks{
+color: #333;
+font-size: 18px;
+
+height: auto;
+line-height: 23px;
+position: relative;
+text-align: center;
+width: 225px;
+
+margin:0 auto;
+padding-bottom:40px;	
+}	
+
+.s_buy_now .buy_now .now_blocks span{
+color: #ff3333;
+font-size: 28px;
+font-weight: normal;
+}
+
+.s_buy_now .buy_now .now_block div{
+	padding-left:10px;
+}
+
+
+.s_buy_now .buy_now .block1{
+left: auto;
+top: auto;
+width: 312px;	
+}
+.s_buy_now .buy_now .block2{
+left: auto;
+width: 250px;
+	
+}
+.s_buy_now .buy_now .block3{
+left: auto;
+top: auto;
+width: 273px;	
+}
+.s_buy_now .buy_now .block4{
+left: auto;
+top: auto;
+width: 308px;	
+}
+.s_buy_now .buy_now .block5{
+	height: 400px;
+left: auto;
+top: auto;
+width: 360px;
+	
+}
+
+.s_buy_now .buy_now .block6{
+left: auto;
+top: auto;
+width: 300px;
+	
+}
+
+.s_buy_now .buy_now .block6 p{
+font-family: "officinaserifcbold";
+font-size: 28px;
+padding-bottom: 23px;
+text-align: center;
+}
+
+/**********************/
+
+
+
+.s24 .otz_page .otz_right {
+    float: none;
+    margin: 0 auto;
+    max-width: 432px;
+    width: 100%;
+}
+
+}
+
+
+
+
+@media only screen and (max-width : 1100px) {
+
+.s30{
+background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/s30m_bg.jpg") repeat-x scroll 50% top;
+margin-top: 50px;min-width: 300px;padding-left: 5px;padding-right: 5px;width: 100%; text-align: center;}
+.s30 h4 {text-align: center}
+.s30 .txt {  width: 100%;  left: 484px; position: relative; padding-top: 55px;
+    margin: auto; left: 0; top: auto}
+.s30 ul {padding-left: 0px;text-align:left;    width: 580px; margin: auto; }
+.s30 .btn {    position: relative;  top: auto;  left: auto;   margin: auto;}
+.s25 .grafic {transform: scale(0.8);}
+}
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 992px) {
+    .pop_up_block{
+    position: fixed;
+    right: 7%;
+    top: 146px;
+    max-width: 50%;
+    /* height: 40px; */
+    background-color: #bcc1c7;
+    padding: 9px 25px 9px 25px;
+    border: 1px solid #000;
+    z-index: 9000;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.fixed{
+   top: 146px!important;
+    transition: 1s;
+}
+.b-map {
+    background: url(/template/globalTemplate/images/map.png) top right no-repeat;
+    height: 400px;
+    width: 100%;
+    background-size: cover;
+}
+.map-phone {font-size: 24px; text-align: center; margin-top: 10px}
+.c_adr br {display: none}
+.rub3 {
+    background: url(/template/globalTemplate/images/rub3.png) no-repeat;
+    width: 38px;
+    background-size: contain;
+    height: 23px;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 10px;} 
+
+.s_pr_table .pr_table th {
+    font-family: "RobotoCondensedBold";
+    font-size: 22px;}
+.s_pr_table .pr_table td {
+    font-family: "RobotoLight";
+    font-size: 22px;}
+
+.s_otable table tr td {
+    font-size: 26px;}
+
+.o_best_price {  left: 14px;}
+.s_links .link_block a {  font-size: 30px;}
+.s_ind_banner .wooman { top: auto;
+    left: -100px;  bottom: -62px;    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/w.png) no-repeat scroll center center;
+    width: 410px;  background-size: 75%;}
+    .light {font-size:22px}
+.s_potolok .info_block {
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+   
+    
+    .gal_potolki{
+        display:none;
+    }    
+    
+.s_top {
+  background: #fff none repeat scroll 0 0;
+  padding-top: 20px;
+  position: fixed;
+  width: 100%;
+  z-index: 3;
+
+}	
+
+.small_hide{
+    display:none;
+}
+
+.probel,	
+.s_top .b_line{
+	display:block;
+	
+}	
+	
+	
+.s_top .logo img{
+	width:220px;
+}
+
+
+.s_top .menu .m_last{
+	display:none;
+}
+
+.s_top .menu .dop_menu{
+	display:block;
+}
+
+
+
+.s_top .menu{
+	 background: rgba(0, 0, 0, 0.9);
+	 border-radius:0px;
+	 box-shadow: none;
+	margin-top:0px;
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	display:none;
+	padding-bottom:10px;
+	z-index:3;
+}
+
+
+.s_top .menu ul{
+	padding-left: 24px;
+}
+
+.s_top .menu ul li{
+background: none;
+color: #fff;
+float: none;
+font-family: "RobotoCondensedRegular";
+font-size: 15px;
+position: relative;
+text-align: center;
+text-transform: uppercase;
+min-width: 185px;
+height:auto;
+margin-top:1px;
+
+}
+
+.s_top .menu ul li:hover{
+	color:#fff;
+}
+
+.s_top .menu ul li div{
+	/*background:#47462e;*/
+border-radius: 0px;
+height: auto;
+margin: 0 auto !important;
+padding-left: 7px;
+padding-right: 7px;
+padding-top: 2px;
+text-align: left;
+width: 200px;
+	
+}
+
+.s_top .menu ul li:hover div{
+	background:none;
+}
+
+.s_top .menu ul li div.dop_css1{
+   width:170px; 
+    background:#ffe501;
+}
+.s_top .menu ul li div.dop_css1 a{
+    color:#000;
+}
+
+
+.s_top .menu ul li div a{
+	color:#fff;
+	cursor:pointer;
+}
+
+.s_top .menu ul li:hover div a{
+	color:#fff;
+}
+
+
+.s_top .menu ul li:hover ul{
+	display:block;
+}
+
+.s_top .menu ul li ul{
+background: none;
+border-radius: 0px;
+display: block;
+left: auto;
+position: relative;
+width: auto;
+padding-top:5px;
+padding-bottom:0px;
+}
+
+.s_top .menu ul li ul li{
+	background:none;
+	float:none;
+	text-align:center;
+	color:#fff;
+	text-transform: none;
+	font-family: "RobotoCondensedLight";
+	height:33px;
+}
+
+.s_top .menu ul li ul li a{
+	color:#fff;
+	cursor:pointer;
+}
+
+.s_top .menu ul li ul li a:hover{
+	color:#ffe501;
+}
+
+
+.s_top .menu ul li ul li div,
+.s_top .menu ul li ul li:hover div{
+background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/m_arrow.png") no-repeat scroll left center !important;
+padding-left: 21px;
+width: 220px;
+}
+
+
+.s_simple_text{
+	margin-top:20px;
+}
+
+/*
+
+
+
+
+*/
+
+h1, h2, h3, h4, h5, .ttl{font-size:40px;}
+
+
+
+.s_simple_text p{
+padding-top:20px;	
+text-align:center;
+}
+
+.s_ind_banner{
+	margin-top:0px;
+}
+
+
+
+.s_form_lowprice .cont_section .zagl{
+		font-size:21px;
+}
+.s_form_lowprice {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/uzbg1.png) no-repeat scroll center top;
+    background-size: cover;    padding-top: 95px;
+        height: auto;
+    padding-bottom: 20px;}
+
+
+.s_pr_table .pr_table .t_hide{
+	display:none;
+}
+
+
+
+/*************/
+
+.s_potolki2 h5, .s_potolki2 h2{
+	font-size:32px;
+	font-family: "RobotoBold";
+	margin-bottom:20px;
+	margin-top:20px;
+	text-align:center;
+}
+
+.s_potolki2 p{
+font-family: "RobotoLight";
+font-size: 18px;
+text-align: center
+}
+
+.s_potolki2 .p2_img{
+	float:none;
+	padding-left:0px;
+	max-width:420px;
+	margin:0 auto;
+}
+.s_potolki2 .p2_txt{
+float: none;
+max-width: 100%;
+padding-left: 0px;
+}
+
+.s_potolki2 .p2_img_r{
+	float:none;
+	padding-right:0px;
+	max-width:420px;
+	margin:0 auto;
+}
+.s_potolki2 .p2_txt_r{
+float: none;
+max-width: 100%;
+padding-right: 0px;
+}
+
+.s_potolki2 .yellow_btn {
+
+  margin: 20px auto;
+
+}
+/***************/
+
+
+.razmetka1{
+	float:none;
+	width:100%;
+}
+
+.razmetka1_1{
+	float:none;
+	width:100%;
+}
+
+
+
+.s25{display:none;}
+
+.s30 .content {
+  margin: 0 auto;
+  position: relative;
+  width: 100%;
+  position: relative;
+}
+
+.s30 .txt {
+left: auto;
+margin: 0 auto;
+max-width: 700px;
+position: relative;
+top: auto;
+width: 100%;
+}
+
+
+
+.s30 ul {
+  padding-left:0px;
+}
+
+.s30 .btn {
+background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/btn_blue3.png") no-repeat scroll 0 0;
+border-radius: 50px;
+color: white;
+cursor: pointer;
+display: block;
+font-family: officinaserifcregular;
+font-size: 25px;
+height: 64px;
+left: 0;
+line-height: 1em;
+margin: 0 auto;
+padding-top: 18px;
+position: relative;
+text-align: center;
+text-decoration: none;
+text-transform: uppercase;
+top: 0;
+white-space: nowrap;
+width: 310px;
+}
+
+
+
+
+
+.footer .d1 { font-size: 26px;}
+
+/********************/
+ .s_minicalc .mc_block{
+	 background:#f6f6f6;
+	 border:1px solid #ccc;
+	 border-radius:10px;
+	 padding-top:40px;
+	 padding-bottom:40px;
+ }
+ 
+ .s_minicalc #mc_slider-horizontal{
+	 width:465px;
+	 float:left;
+ }
+ 
+ .s_minicalc .mc_input_place,
+ .s_minicalc .mc_slider_place,
+ .s_minicalc .mc_price_place{
+	 float:none;
+	 
+ }
+ 
+.s_minicalc .mc_input_place .mc_label{
+float: left;
+font-family: "RobotoLight";
+font-size: 18px;
+padding: 0 10px;
+text-align: right;
+width: 169px;
+}
+
+
+ .s_minicalc .mc_slider_place {
+height: 50px;
+line-height: 13px;
+padding-top: 32px;
+margin:0 auto;
+max-width:650px
+/*display:inline;*/
+}
+
+ .s_minicalc .mc_slider_place .txt{
+float: left;
+padding: 0 42px;
+text-align: center;
+width: 31px;
+font-size:21px;
+color:#666;
+ }
+ /*
+  .s_minicalc .mc_slider_place .txt.t1{
+	  float:left;
+  }
+  .s_minicalc .mc_slider_place .txt.t2{
+	  float:right;
+  }
+  */
+ 
+.s_minicalc .mc_input_place {
+	padding-top:14px;
+	margin:0 auto;
+	max-width:300px;
+}
+  
+  
+ .s_minicalc .mc_input_place input{
+font-size: 30px;
+text-align: center;
+width: 100px;
+ }
+ 
+
+.s_minicalc .mc_price_place {
+	margin:40px auto 0;
+	width:178px;
+	text-align:center;
+
+}
+ 
+.s_minicalc .mc_price_place .mc_price{
+background: #ffe501 none repeat scroll 0 0;
+font-family: "RobotoBold";font-size: 36px;padding: 10px 15px;
+}
+
+  .s_minicalc h5{
+	  text-transform:none;   font-size: 28px;  line-height: 28px;
+ }
+
+
+ .s_calc .p_type .room{  display: none !important; }
+ 
+
+ .s_rsto{   display:none; }
+ 
+
+
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 768px) {
+.pop_up_block {
+    position: fixed;
+    right: 7%;
+    top: 141px;
+    max-width: 65%;
+    /* height: 40px; */
+    background-color: #bcc1c7;
+    padding: 9px 25px 9px 25px;
+    border: 1px solid #000;
+    z-index: 9000;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.b-map {
+    background: url(/template/globalTemplate/images/map.png) 75% 96% no-repeat;
+    height: 400px;
+    width: 100%;
+    background-size: cover;}
+
+.map-phone {font-size: 20px; text-align: center; margin-top: 10px}
+
+h1, h2, h3, h4, h5, .ttl{font-size:44px;}
+.s_potolki2 h5, .s_potolki2 h2 {
+    font-size: 28px;}
+.zagl-otz {
+    font-size: 36px;}
+
+.digits {    transform: scale(0.7);     margin-bottom: -30px; margin: auto;}
+.s_zakazalo .y_label {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/y_label.png) no-repeat scroll 0 0;
+    background-size: contain;
+    font-family: "officinaserifcbold";
+    font-size: 32px;
+    height: 181px;
+    padding-right: 40px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 320px;
+}
+.ddd{ width: 370px; margin:auto}
+.s_form_lowprice .cont_section span {
+    font-size: 16px;   margin-left: 35px!important;
+    margin-right: 35px!important;}
+.s30 {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/s30m_bg.jpg) repeat-x scroll 50% top;
+    background-size: cover; height: auto;   margin-top: 50px;   padding-bottom: 50px;}
+.s30 ul { width: 100%; margin-bottom: 15px}
+
+.s_simple_text p {font-size: 20px}
+.light{font-size:20px} 
+ .s30 ul li {
+height: auto;
+min-height: 46px;
+font-size:29px;
+}   
+ .potolok_block .m_sub {
+    margin-top: 20px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+}
+ .s_potolok .potolok_block h1{
+	font-size:28px;}   
+    
+.potplok_calc .p_made {
+  background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/p_made.png") no-repeat scroll 0 0 / 349px 111px;
+  padding-left: 0;
+}    
+
+
+.potplok_calc .p_made {  width: 350px;}
+
+.potplok_calc .p_made .flag {  margin-right: 5px;}    
+.potplok_calc .p_made .hh.pr {
+  left: 160px;
+
+}
+
+.potplok_calc .discount {
+  background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/best1.png") no-repeat scroll left 0 / 71px auto;
+  left: 287px;
+  width:72px;
+}
+
+.potplok_calc .p_made #made3{ 
+    margin-left: 20px !important;
+}
+
+
+.potplok_calc .buy_rassr {
+  left: 153px;
+  top: 323px;
+
+}
+
+.s_otable{
+     display: none;
+ }
+.s_top .menu ul {
+    display: block;}
+    
+.s_pr_table .pr_table{
+	margin: 40px auto 0;
+}
+
+.s_pr_table .pr_table tr{
+	border-bottom:1px solid #fff;
+}
+
+.s_pr_table .pr_table th{
+font-family: "RobotoCondensedBold";
+font-size: 15px;
+padding: 11px 13px;
+text-align: left;
+text-transform: uppercase;
+}
+
+.s_pr_table .pr_table th span{
+	color:red;
+	font-size:19px;
+}
+
+.s_pr_table .pr_table td{
+font-family: "RobotoLight";
+font-size: 14px;
+padding: 9px 10px;
+}
+
+
+.footer .d2 {
+  font-size: 27px;
+  padding-top: 10px;
+}
+
+
+ .s_minicalc #mc_slider-horizontal{
+	 width:55%;
+	 float:left;
+ }
+
+ 
+ .s_gallery  .owl-theme .owl-controls .owl-nav .owl-prev{
+background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/g_prev.png") repeat scroll 0 0;
+cursor: pointer;
+height: 54px;
+left: 4px;
+position: absolute;
+text-decoration: none;
+top: 32%;
+width: 38px;
+
+}
+.s_gallery  .owl-theme .owl-controls .owl-nav .owl-next{
+        background: rgba(0, 0, 0, 0) url("/template/globalTemplate/images/g_next.png") repeat scroll 0 0;
+right: 4px;
+cursor: pointer;
+height: 54px;
+position: absolute;
+text-decoration: none;
+top: 32%;
+width: 38px;
+}
+ 
+}
+
+@media only screen and (max-width : 700px) {
+.s_ind_banner .wooman { background: none}
+.popup1,.popup2 {  width: 98%;}
+.popup1 .header,.popup2 .header {  font-size: 38px;}
+
+
+
+.popup1 .low_tel,.popup2 .low_tel {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/tel2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.popup1 .low_name,.popup2 .low_name {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/name2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.popup1 .low_name input,
+.popup1 .low_tel input,
+.popup1 .low_adress input,
+.popup2 .low_name input,
+.popup2 .low_tel input,
+.popup2 .low_adress input{
+  margin-top: 0px;
+  margin-left:45px;
+    width: 229px;
+    height: 45px;}
+
+.pozdr .low_tel {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/tel2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.pozdr .low_name {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/name2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.pozdr .low_name input,
+.pozdr .low_tel input,
+.pozdr .low_adress input {
+  margin-top: 0px;
+  margin-left:45px;
+    width: 229px;
+    height: 45px;}
+}
+
+
+@media only screen and (max-width: 540px){
+.dd { margin-left: -40px;}
+}
+
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 480px) {
+  .pop_up_block {
+    position: fixed;
+    right: 7%;
+    top: 141px;
+    max-width: 80%;
+    /* height: 40px; */
+    background-color: #bcc1c7;
+    padding: 9px 25px 9px 25px;
+    border: 1px solid #000;
+    z-index: 9000;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 14px;
+}
+.b-map {
+    background: url(/template/globalTemplate/images/map.png) 58% 96% no-repeat;
+    height: 400px;
+    width: 100%;
+    background-size: cover;
+}
+.h1{
+	font-size:22px;
+}
+.pozdr .sec {    line-height: 1;}
+
+h1, h2, h3, h4, h5, .ttl{font-size:28px;}
+ymaps h3{font-size:18px;}
+.s_simple_text p {  font-size: 18px;}
+#uLogin{
+  left:0;
+}
+.parag{
+  margin-top: 10px;
+  padding-bottom: 10px;
+}
+.s_potolki2 h5, .s_potolki2 h2 { font-size: 24px;}
+.zagl-otz {
+    font-size: 30px;}
+.s_zakazalo .y_label {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/y_label.png) no-repeat scroll 0 0;
+    background-size: contain;
+    float: none;
+    font-family: "officinaserifcbold";
+    font-size: 26px;
+    height: 150px;
+    padding-right: 40px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 280px;}
+.cont_section{display: none}
+.s_links .link_block a {  font-size: 26px;}
+.s_simple_text .dop_links a { font-size: 24px;}
+.light{font-size:18px;    line-height: 26px;} 
+.s30 ul li {
+       height: auto;
+    min-height: 50px;
+    font-size: 24px;
+    padding-top: 3px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+.pozdr {  max-width: 332px;}    
+.low_tel {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/tel2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.low_name {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/name2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+    .low_ad {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/map-icon.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+.low_adress {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/email2.png) no-repeat scroll center top;
+    background-size: contain;
+    max-width: 260px;
+    height: 50px;
+    margin: 20px auto 0 auto;} 
+
+.low_ad input, 
+.low_name input,
+.low_tel input,
+.low_adress input {
+  margin-top: 7px;
+  width: 210px;
+  margin-left:45px;
+}
+
+
+.s24 .zakaz_vp .low_text {
+    width: 260px;
+}
+
+.s_form5min .low_name input,
+.s_form5min .low_tel input,
+.s_form5min .low_adress input {
+  
+  margin-left:45px;
+}
+.zakaz_rassr .low_name input,
+.zakaz_rassr .low_tel input,
+.zakaz_rassr .low_adress input {
+  
+  margin-left:45px;
+}
+
+
+
+.s_form_lowprice .low_name input,
+.s_form_lowprice .low_tel input,
+.s_form_lowprice .low_adress input
+{
+  margin-top: 0px;
+  width: 229px;
+  margin-left: 45px;
+}
+.s24 .zakaz_vp .v_name 
+{    width: 229px;
+    height: 45px;}
+.s24 .zakaz_vp .v_tel
+{    width: 229px;
+    height: 45px;}
+
+.s_potolok .low_name input,
+.s_potolok .low_tel input,
+.s_potolok .low_adress input
+{ margin-left:45px;}
+
+ 
+.pr_table img{ width:24px;}
+    
+   .s_market .cat_menu a img {height: 45px}
+.s_market .market_block h3 { font-size: 24px;}
+.s_market .market_block .m_sub {  text-align: center;} 
+.s_market .market_block .old_price { display: inline-flex;
+font-size: 36px;}
+.s_market .market_block .current_price { font-size: 54px;    display: inline-flex;}
+.s_market .red_line { left: -14px;}
+.s_market .yellow_btn {margin: 20px auto 0 auto;}
+.s_market .market_block .c_border {width:200px;}
+.s_market .market_block .c_border .red_lenta { left: -8px;}
+
+.s_potolok .potolok_block .old_price { display: inline-block;font-size: 36px;}
+.s_potolok .potolok_block .old_price span { font-size: 30px;}
+.s_potolok .potolok_block .current_price { font-size: 54px;}
+.s_potolok .potolok_block .current_price span { font-size: 38px;}
+.s_potolok .red_line {  width: 100%;}
+
+    
+
+ .s_potolok .razmetka1{
+        margin-left: 0px;  }
+      
+ 
+    
+
+    .ulogin-buttons-container{
+      width: 176px !important; }
+      .ulogin-dropdown-button{
+        display: none!important;
+      }
+    .popup1,.popup2{
+        width: 85%;padding: 5px
+    }    
+    
+.pozdr{
+    width: 90%;
+    padding: 5px;
+}
+    .pozdr .header {  font-size: 38px;}
+.s_gallery p{
+    font-size: 20px;
+}    
+    
+.s_top .b_line .tel{
+	font-size:15px;
+	margin-top:8px;
+}
+
+.s_top .b_line .call{
+	font-size:15px;
+	margin-top:8px;
+}
+
+.s_ind_banner .wooman{
+	display:none;
+}
+.s_rassr .usl_part {
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/usl_part.png) no-repeat scroll left 70px;
+    background-size: contain;
+    color: #333;
+    font-family: "officinaserifcbold";
+    height: 200px;
+    line-height: 36px;
+    padding-left: 51px;
+    padding-top: 63px;
+    width: 256px;
+    margin: 0 auto;
+}
+.s_buy_now {margin-top: 30px}
+
+.s_rassr .usl_part .max { font-size: 110px;}
+
+.s_rassr .usl_part .med { font-size: 48px;}
+
+
+
+
+
+.s_ind_banner .i_banner .i_act{
+background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/i_act.png) no-repeat scroll center top;
+    height: 272px;
+    background-size: contain;
+    position: relative;
+    right: 0px;
+    top: 93px;
+    width: 285px; margin: auto
+}
+
+
+.s_ind_banner .i_banner .i_zamer{
+margin: 0 auto;
+position: relative;
+right: auto;
+top: 116px;
+width: 290px;
+    padding-left: 92px;
+    padding-top: 15px;
+    background: rgba(0, 0, 0, 0) url(/template/globalTemplate/images/i_zamer.png) no-repeat scroll left top;
+    background-size: contain;
+font-size: 32px}
+.s_ind_banner .i_banner .i_zamer span {
+    font-size: 20px;}
+.s_ind_banner .i_banner .i_act .np {
+    color: #000;
+    font-family: "RobotoBold";
+    font-size: 20px;
+    font-style: italic;
+    left: 59px;
+    line-height: 24px;
+    position: absolute;
+    text-align: left;
+    text-transform: uppercase;
+    top: 10px;
+    width: 150px;
+}
+.s_ind_banner .i_banner .i_act .za {
+    font-size: 46px;
+    left: 194px;
+    top: 0px;
+}
+.s_ind_banner .i_banner .i_act .r99 {
+    left: 18px;
+    top: 55px;
+    font-size: 74px;
+}
+.s_ind_banner .i_banner .i_act .tolko {
+   color: #fff;
+    font-size: 19px;
+    left: 12px;
+    top: 191px;	}
+.s_top .logo img{
+	width:140px;
+}
+
+.probel{
+	height:93px;
+}
+.s_form_lowprice .digits .cntSeparator{
+	font-size: 50px;
+font-weight: bold;
+line-height: 48px;
+margin-left: 2px;
+text-align: left;
+width: 14px;
+
+}
+
+
+
+
+.s_form_lowprice .cont_section .dd span{
+margin-left: 25px;
+margin-right: 10px;
+}
+
+
+.s_form_lowprice .low_tel{margin-top:0px;background-size:260px;    margin: 0px auto;}
+.s_form_lowprice .low_tel input{width:229px; height: 45px}
+
+
+.s_form5min .low_tel{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_form5min .low_tel input{  width:229px;height: 45px}
+
+.s_form5min .low_name{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_form5min .low_name input{ width:229px;height: 45px}
+.s_form5min .zakaz_5min {padding-top:30px; padding-left:15px;}
+
+
+.s_form_rassr .low_tel{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_form_rassr .low_tel input{ width:229px;height: 45px}
+.s_form_rassr .low_name{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_form_rassr .low_name input{ width:229px;height: 45px}
+.s_form_rassr .zakaz_rassr {padding-top:30px; padding-left:15px;}
+
+
+
+
+.s_potolok .low_tel{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_potolok .low_tel input{ width:229px;height: 45px}
+.s_potolok .low_name{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_potolok .low_name input{ width:229px;height: 45px}
+.s_potolok .low_adress{margin-top:0px;background-size:260px;margin: 0px auto;}
+.s_potolok .low_adress input{ width:229px;height: 45px}
+
+.s_form_rassr{margin-top:0px;}
+
+.potplok_calc .p_made {
+    background: none;
+    padding-left: 0;
+}
+.potplok_calc .discount {  left: auto;   right: 10px;}
+.potplok_calc .p_type { margin-top: 40px;  margin-left: 0;}
+.potplok_calc .p_made {  width: auto;}
+.potplok_calc .p_made div {  text-align: center;  width: auto;}
+.potplok_calc .p_made div img {width:40px; border: 3px solid transparent}
+.potplok_calc .itogo_block h3 { font-size: 26px;}
+.buy_rassr {display: none}
+
+
+.footer_menu .f_block{
+	
+	width:150px;
+}
+
+
+.footer .d1 {
+  font-size: 19px;
+}
+
+.footer .d2 {
+  font-size: 19px;
+  padding-top: 10px;
+}
+
+
+.s_akcii .ak_block .akb_txt_right h3,
+.s_akcii .ak_block .akb_txt_left h3{
+	font-size:25px;    padding-left: 0px;
+}
+
+.s_akcii .ak_block .akb_txt_right p,
+.s_akcii .ak_block .akb_txt_left p{
+font-size: 18px;
+
+}
+
+ .s_minicalc #mc_slider-horizontal{
+	 width:160px;
+	 float:left;
+ }
+
+
+.s_zamer .z_block_img,
+.s_zamer .z_block_txt{
+    float:none;}
+
+ .s_buy_now .buy_now .block5 {
+    height: 360px;
+    width: 285px;
+}
+
+.s_standart h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 0px;}
+.s_akcii .ak_block .akb_txt_right p, .s_akcii .ak_block .akb_txt_left p{text-align: center}
+.rub {
+    background: url(/template/globalTemplate/images/rub.png) no-repeat;
+    width: 65px;
+    background-size: contain;
+    height: 34px;
+    display: inline-block;
+    margin-top: 15px;
+    margin-left: 10px;
+
+}
+.rub2 {
+    background: url(/template/globalTemplate/images/rub2.png) no-repeat;
+    width: 53px;
+    background-size: contain;
+    height: 29px;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 10px;
+
+
+}
+
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width : 400px) {
+.potplok_calc .p_made .flag {
+    margin-right: 1px; font-size: 12px
+}
+
+
+/*==========  Mobile First Method  ==========*/
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px) {
+
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+
+}
+
+ /* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+}}}

@@ -30,6 +30,10 @@ php artisan deploy --dry-run          # показать команды, не в
 
 Требуется доступ по SSH без пароля (ключ). На сервере должны быть установлены git, PHP, Composer, Node.js, npm.
 
+### Калькулятор по маршруту /calc
+
+Приложение из репозитория [cieling-calc](https://github.com/letoceiling-coder/cieling-calc) развёрнуто в папке `calc/` и отдаётся по адресу **/calc**. Сборка: `cd calc && npm install --legacy-peer-deps && npm run build`, затем скопировать содержимое `calc/dist/` и `calc/public/` в `public/calc/`. После первого клонирования и сборки файлы в `public/calc/` можно закоммитить; при изменении кода в `calc/` пересобрать и обновить `public/calc/`.
+
 ---
 
 ## 1) Backend

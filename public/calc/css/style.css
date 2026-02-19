@@ -1,0 +1,169 @@
+.fz-10 {
+    font-size: 10px;
+}
+
+
+
+
+#main-1,#main-2,#main-3,#main-4,#main-5,#main-6{
+    display: none;
+}
+
+.header-block,.specification-block {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 25px;
+}
+.header-block .icons {
+
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+.header-block .icons img {
+    width: 32px;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+}
+.images-block{
+    text-align: center;
+}
+.hr{
+    border-bottom: 1px solid #000;
+    margin: 10px 0 ;
+}
+.specification-block div{
+    margin: 20px;
+    width: 40%;
+}
+.specification-block div table{
+
+    width: 100%;
+}
+.btn-block {
+    text-align: center;
+}
+.btn-block-client{
+    margin-bottom: 15px;
+}
+.right{
+    text-align: right;
+}
+.table-smeta {
+    margin-top: 5px;
+}
+.flex-block {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+
+}
+#logoImg {
+    height: 50px;
+
+}
+.h-50{
+    height: 50px;
+}
+.h-30{
+    height: 30px;
+}
+.selectRoom-block{
+    text-align: center;
+    position: fixed;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid orange;
+    border-radius: 4px;
+    z-index: 99999;
+    opacity: 1;
+    width: 80%;
+
+}
+.table-smeta-one td{
+    padding: 5px 0;
+}
+.table-smeta-one tbody tr td:first-child{
+    padding: 0 10px ;
+}
+.table-bordered {
+    margin-top: 10px;
+    width: 100%;
+}
+.table-striped{
+    text-align: center;
+}
+.popup-fade,.popup-form,.popup-form-dogovor{
+   display: none;
+}
+.popup-fade:before {
+    content: '';
+    background: #000;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.7;
+    z-index: 9999;
+}
+.popup-form,.popup-form-dogovor {
+    position: fixed;
+    padding: 20px;
+     width: 90%;
+    background: #fff;
+    border: 1px solid orange;
+    border-radius: 4px;
+    z-index: 99999;
+    opacity: 1;
+
+    /*overflow: scroll;*/
+}
+.cloused span {
+    padding: 5px 11px;
+    border: 1px solid black;
+    border-radius: 10px;
+    font-weight: bold;
+}
+.checkbox_technical_requirements label span,.checkbox_dogovor  label span{
+    text-decoration: underline;
+}
+.cloused {
+    cursor: pointer;
+    text-align: right;
+}
+.ol {
+    list-style-type: none;
+    counter-reset: num;
+    margin: 0 0 0 35px;
+    padding: 15px 0 5px 0;
+    font-size: 18px;
+}
+.ol>li {
+    position: relative;
+    margin: 0 0 0 0;
+    padding: 0 0 10px 0;
+}
+.ol>li:before {
+    content: counter(num) '.';
+    counter-increment: num;
+    display: inline-block;
+    position: absolute;
+    top: 0px;
+    left: -26px;
+    width: 20px;
+    color: #ef6780;
+    text-align: right;
+}
+.flex-block-row {
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+.text-decoration{
+    text-decoration: underline;
+}

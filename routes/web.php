@@ -6,6 +6,7 @@ use App\Http\Controllers\SeoLandingController;
 use App\Services\ServerSeoService;
 use App\Services\SiteResolverService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,6 +30,22 @@ Route::get('{pathKey}', [SeoLandingController::class, 'showStatic'])
 Route::get('/{slug}', [SeoLandingController::class, 'showPage'])
     ->where('slug', '[^/]+')
     ->name('seo.page');
+
+/*
+|--------------------------------------------------------------------------
+| Калькулятор (Vue SPA из репозитория cieling-calc)
+|--------------------------------------------------------------------------
+*/
+Route::get('/calc', function () {
+    return response()->file(public_path('calc/index.html'));
+})->name('calc');
+Route::get('/calc/{path}', function (string $path) {
+    $file = public_path('calc/' . $path);
+    if (File::exists($file) && File::isFile($file)) {
+        return response()->file($file);
+    }
+    return response()->file(public_path('calc/index.html'));
+})->where('path', '.*')->name('calc.any');
 
 /*
 |--------------------------------------------------------------------------
