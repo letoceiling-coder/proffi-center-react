@@ -20,8 +20,8 @@
 
   <!-- Калькулятор: только для авторизованных -->
   <div v-else class="content" :class="{ 'main-2-active': activeSection === 'main-2' }">
-    <!-- Попап выбора клиента — на уровне App, показывается при входе в раздел чертежа (main-2) без клиента или по кнопке «Сменить» -->
-    <ClientPopup v-if="activeSection === 'main-2' && (!store.currentClient || store.showClientPopup)" />
+    <!-- Попап выбора клиента: всегда монтируем при main-2, видимость внутри ClientPopup -->
+    <ClientPopup v-if="activeSection === 'main-2'" />
 
     <div class="calc-auth container">
       <span class="calc-auth-user">Вход: {{ telegramUser.first_name }}{{ telegramUser.username ? ' @' + telegramUser.username : '' }}</span>

@@ -1,6 +1,8 @@
 <template>
   <Teleport to="body">
+    <!-- Оверлей виден, когда нет выбранного клиента или нажали «Сменить» -->
     <div
+      v-show="!store.currentClient || store.showClientPopup"
       id="popup_client"
       class="client-popup-overlay"
       role="dialog"
@@ -301,6 +303,7 @@ function confirmStep2() {
 }
 
 onMounted(async () => {
+  store.showClientPopup = true
   await store.fetchClients()
   if (store.currentClient?.id) {
     selectedClientId.value = store.currentClient.id
