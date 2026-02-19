@@ -1,0 +1,101 @@
+/* font-family: "RobotoRegular"; */
+@font-face {
+    font-family: "RobotoRegular";
+    src: url("/template/globalTemplate/fonts/RobotoRegular/RobotoRegular.eot");
+    src: url("/template/globalTemplate/fonts/RobotoRegular/RobotoRegular.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoRegular/RobotoRegular.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoRegular/RobotoRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoLight"; */
+@font-face {
+    font-family: "RobotoLight";
+    src: url("/template/globalTemplate/fonts/RobotoLight/RobotoLight.eot");
+    src: url("/template/globalTemplate/fonts/RobotoLight/RobotoLight.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoLight/RobotoLight.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoLight/RobotoLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoMedium"; */
+@font-face {
+    font-family: "RobotoMedium";
+    src: url("/template/globalTemplate/fonts/RobotoMedium/RobotoMedium.eot");
+    src: url("/template/globalTemplate/fonts/RobotoMedium/RobotoMedium.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoMedium/RobotoMedium.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoMedium/RobotoMedium.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoBold"; */
+@font-face {
+    font-family: "RobotoBold";
+    src: url("/template/globalTemplate/fonts/RobotoBold/RobotoBold.eot");
+    src: url("/template/globalTemplate/fonts/RobotoBold/RobotoBold.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoBold/RobotoBold.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoBold/RobotoBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+/* font-family: "RobotoCondensedRegular"; */
+@font-face {
+    font-family: "RobotoCondensedRegular";
+    src: url("/template/globalTemplate/fonts/RobotoCondensedRegular/RobotoCondensedRegular.eot");
+    src: url("/template/globalTemplate/fonts/RobotoCondensedRegular/RobotoCondensedRegular.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoCondensedRegular/RobotoCondensedRegular.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoCondensedRegular/RobotoCondensedRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoCondensedLight"; */
+@font-face {
+    font-family: "RobotoCondensedLight";
+    src: url("/template/globalTemplate/fonts/RobotoCondensedLight/RobotoCondensedLight.eot");
+    src: url("/template/globalTemplate/fonts/RobotoCondensedLight/RobotoCondensedLight.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoCondensedLight/RobotoCondensedLight.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoCondensedLight/RobotoCondensedLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "RobotoCondensedBold"; */
+@font-face {
+    font-family: "RobotoCondensedBold";
+    src: url("/template/globalTemplate/fonts/RobotoCondensedBold/RobotoCondensedBold.eot");
+    src: url("/template/globalTemplate/fonts/RobotoCondensedBold/RobotoCondensedBold.eot?#iefix")format("embedded-opentype"),
+    url("/template/globalTemplate/fonts/RobotoCondensedBold/RobotoCondensedBold.woff") format("woff"),
+    url("/template/globalTemplate/fonts/RobotoCondensedBold/RobotoCondensedBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+
+
+	@font-face {
+	font-family: 'officinaserifcbold';
+	src: url('/template/globalTemplate/fonts/officinaserifc-bold-webfont.eot');
+	src: url('/template/globalTemplate/fonts/officinaserifc-bold-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('/template/globalTemplate/fonts/officinaserifc-bold-webfont.woff') format('woff'),
+		 url('/template/globalTemplate/fonts/officinaserifc-bold-webfont.ttf') format('truetype'),
+		 url('/template/globalTemplate/fonts/officinaserifc-bold-webfont.svg#officinaserifcbold') format('svg');
+	font-weight: normal;
+	font-style: normal;
+	}
+
+	@font-face {
+	font-family: 'officinaserifcregular';
+	src: url('/template/globalTemplate/fonts/officinaserifc-book-webfont.eot');
+	src: url('/template/globalTemplate/fonts/officinaserifc-book-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('/template/globalTemplate/fonts/officinaserifc-book-webfont.woff') format('woff'),
+		 url('/template/globalTemplate/fonts/officinaserifc-book-webfont.ttf') format('truetype'),
+		 url('/template/globalTemplate/fonts/officinaserifc-book-webfont.svg#officinaserifcregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+	}
+	
+	
+@font-face {
+	font-family: 'impact';
+	src: url('/template/globalTemplate/fonts/impact.ttf') format('truetype');
+		 }
+	

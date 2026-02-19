@@ -44,6 +44,7 @@ Route::middleware('calc.auth')->prefix('api/calc')->group(function () {
     Route::delete('/clients/{id}',          [CalcClientController::class, 'destroy']);
     Route::get('/clients/{id}/addresses',   [CalcClientController::class, 'addresses']);
     Route::post('/clients/{id}/addresses',  [CalcClientController::class, 'addAddress']);
+    Route::get('/addresses',                [CalcClientController::class, 'searchAddresses']);
     Route::get('/clients/{id}/drawings',    [CalcDrawingController::class, 'byClient']);
 
     // Чертежи

@@ -55,93 +55,256 @@
       <input name="user_url" id="user_url" value="" type="hidden">
     </form>
 
-    <!-- Popup клиента: 2-шаговый -->
+    <!-- ===================== POPUP КЛИЕНТА ===================== -->
     <div id="popup_client" v-show="showClientPopup" class="popup-client-overlay">
       <div class="popup-client-box">
 
-        <!-- ШАГ 1: Выбор или создание клиента -->
+        <!-- ══════════════ ШАГ 1: Выбор / создание клиента ══════════════ -->
         <div v-if="clientPopupStep === 1">
-          <h3 class="popup-client-title">Клиент</h3>
 
-          <!-- Режим создания нового клиента -->
-          <div v-if="newClientMode">
-            <label>Имя клиента *</label>
-            <input type="text" class="form-control inputbox" v-model="client.name" placeholder="Иванов Иван">
-            <label>Телефон</label>
-            <input type="text" class="form-control inputbox" v-model="client.phone" v-mask="'+7 (999) 999-99-99'" placeholder="+7 (___) ___-__-__">
-            <label>Адрес объекта</label>
-            <input type="text" class="form-control inputbox" v-model="client.address" placeholder="ул. Ленина 1, кв. 10">
-            <div class="popup-client-actions">
-              <button class="sketch_hud btn btn-gm" @click="confirmStep1">Далее →</button>
-              <button class="sketch_hud btn btn-gm" @click="newClientMode = false">← Список</button>
+          <!-- Заголовок -->
+          <div class="pcp-header">
+            <span class="pcp-title">Выбор клиента</span>
+          </div>
+
+          <!-- ── Режим: создание нового клиента ── -->
+          <div v-if="newClientMode" class="pcp-section">
+            <div class="pcp-back-row">
+              <button class="pcp-back-btn" @click="newClientMode = false">← К списку</button>
+            </div>
+            <div class="pcp-field">
+              <label class="pcp-label">Имя клиента <span class="pcp-required">*</span></label>
+              <input
+                type="text"
+                class="pcp-input"
+                v-model="client.name"
+                placeholder="Иванов Иван Иванович"
+                @keyup.enter="confirmStep1"
+                autofocus
+              >
+            </div>
+            <div class="pcp-field">
+              <label class="pcp-label">Телефон</label>
+              <input
+                type="text"
+                class="pcp-input"
+                v-model="client.phone"
+                v-mask="'+7 (999) 999-99-99'"
+                placeholder="+7 (___) ___-__-__"
+              >
+            </div>
+            <div class="pcp-field">
+              <label class="pcp-label">Адрес объекта</label>
+              <input
+                type="text"
+                class="pcp-input"
+                v-model="client.address"
+                placeholder="ул. Ленина 1, кв. 10"
+              >
+            </div>
+            <div class="pcp-actions">
+              <button class="pcp-btn pcp-btn-primary" @click="confirmStep1" :disabled="!client.name.trim()">
+                Далее →
+              </button>
             </div>
           </div>
 
-          <!-- Режим выбора из списка -->
-          <div v-else>
-            <div v-if="store.clientsLoading" style="text-align:center;padding:10px;">Загрузка...</div>
-            <div v-else-if="availableClients.length === 0" style="text-align:center;color:#888;padding:10px;">
-              Клиентов нет
+          <!-- ── Режим: поиск и выбор существующего клиента ── -->
+          <div v-else class="pcp-section">
+
+            <!-- Табы: По клиенту / По адресу -->
+            <div class="pcp-tabs">
+              <button
+                class="pcp-tab"
+                :class="{ active: searchTab === 'client' }"
+                @click="switchTab('client')"
+              >По клиенту</button>
+              <button
+                class="pcp-tab"
+                :class="{ active: searchTab === 'address' }"
+                @click="switchTab('address')"
+              >По адресу</button>
             </div>
-            <div v-else>
-              <label>Выберите клиента:</label>
-              <select class="form-control inputbox" v-model="selectedClientId">
-                <option value="">— выберите —</option>
-                <option v-for="c in availableClients" :key="c.id" :value="c.id">
-                  {{ c.name }}{{ c.phone ? ' · ' + c.phone : '' }}
-                </option>
-              </select>
+
+            <!-- Поиск по клиенту -->
+            <div v-if="searchTab === 'client'">
+              <div class="pcp-search-row">
+                <input
+                  type="text"
+                  class="pcp-input"
+                  v-model="clientSearch"
+                  placeholder="Поиск по имени или телефону..."
+                  @input="onClientSearch"
+                >
+              </div>
+
+              <div v-if="store.clientsLoading" class="pcp-loading">Загрузка...</div>
+
+              <div v-else-if="filteredClients.length === 0" class="pcp-empty">
+                {{ clientSearch ? 'Ничего не найдено' : 'Клиентов ещё нет' }}
+              </div>
+
+              <div v-else class="pcp-list">
+                <div
+                  v-for="c in filteredClients"
+                  :key="c.id"
+                  class="pcp-list-item"
+                  :class="{ selected: selectedClientId == c.id }"
+                  @click="selectClientFromList(c)"
+                >
+                  <span class="pcp-item-name">{{ c.name }}</span>
+                  <span class="pcp-item-sub">{{ c.phone || '' }}</span>
+                  <span class="pcp-item-badge" v-if="c.drawings_count">{{ c.drawings_count }} чертежей</span>
+                </div>
+              </div>
             </div>
-            <div class="popup-client-actions">
-              <button class="sketch_hud btn btn-gm" @click="confirmStep1" :disabled="!selectedClientId">Далее →</button>
-              <button class="sketch_hud btn btn-gm" @click="startNewClient">+ Новый клиент</button>
+
+            <!-- Поиск по адресу -->
+            <div v-if="searchTab === 'address'">
+              <div class="pcp-search-row">
+                <input
+                  type="text"
+                  class="pcp-input"
+                  v-model="addressSearch"
+                  placeholder="Поиск по адресу..."
+                  @input="onAddressSearch"
+                >
+              </div>
+
+              <div v-if="addressSearchLoading" class="pcp-loading">Поиск...</div>
+
+              <div v-else-if="addressResults.length === 0" class="pcp-empty">
+                {{ addressSearch ? 'Ничего не найдено' : 'Введите адрес для поиска' }}
+              </div>
+
+              <div v-else class="pcp-list">
+                <div
+                  v-for="a in addressResults"
+                  :key="a.address_id"
+                  class="pcp-list-item"
+                  :class="{ selected: selectedAddressResult?.address_id === a.address_id }"
+                  @click="selectFromAddressResult(a)"
+                >
+                  <span class="pcp-item-name">{{ a.address }}</span>
+                  <span class="pcp-item-sub">{{ a.client_name }}{{ a.client_phone ? ' · ' + a.client_phone : '' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Действия -->
+            <div class="pcp-actions pcp-actions-split">
+              <button
+                class="pcp-btn pcp-btn-primary"
+                @click="confirmStep1"
+                :disabled="!selectedClientId && !selectedAddressResult"
+              >
+                Далее →
+              </button>
+              <button class="pcp-btn pcp-btn-secondary" @click="startNewClient">
+                + Новый клиент
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- ШАГ 2: Адрес + тип помещения -->
+        <!-- ══════════════ ШАГ 2: Адрес + помещение ══════════════ -->
         <div v-if="clientPopupStep === 2">
-          <h3 class="popup-client-title">Адрес и помещение</h3>
-          <p style="color:#555;font-size:0.9em;">Клиент: <strong>{{ selectedClientObj?.name }}</strong></p>
-
-          <!-- Адреса клиента -->
-          <label>Адрес объекта:</label>
-          <div v-if="clientAddresses.length">
-            <select class="form-control inputbox" v-model="selectedAddressId">
-              <option :value="null">— без адреса —</option>
-              <option v-for="a in clientAddresses" :key="a.id" :value="a.id">{{ a.address }}</option>
-            </select>
+          <div class="pcp-header">
+            <button class="pcp-back-btn" @click="backToStep1">← Назад</button>
+            <span class="pcp-title">Адрес и помещение</span>
           </div>
-          <div v-else style="color:#888;font-size:0.85em;margin:4px 0;">Адресов нет</div>
 
-          <!-- Добавить новый адрес -->
-          <div v-if="!showNewAddressForm" style="margin:6px 0;">
-            <button class="sketch_hud btn btn-sm btn-gm" @click="showNewAddressForm = true">+ Добавить адрес</button>
+          <!-- Клиент -->
+          <div class="pcp-client-badge">
+            <span class="pcp-client-icon">👤</span>
+            <span>
+              <strong>{{ selectedClientObj?.name }}</strong>
+              <em v-if="selectedClientObj?.phone"> · {{ selectedClientObj.phone }}</em>
+            </span>
           </div>
-          <div v-else style="margin:6px 0;">
-            <input type="text" class="form-control inputbox" v-model="newAddressText" placeholder="Новый адрес">
-            <button class="sketch_hud btn btn-sm btn-gm" @click="confirmAddAddress">Сохранить</button>
-            <button class="sketch_hud btn btn-sm btn-gm" @click="showNewAddressForm = false">Отмена</button>
+
+          <!-- Адрес -->
+          <div class="pcp-field">
+            <label class="pcp-label">Адрес объекта</label>
+
+            <div v-if="clientAddresses.length" class="pcp-address-list">
+              <div
+                v-for="a in clientAddresses"
+                :key="a.id"
+                class="pcp-address-item"
+                :class="{ selected: selectedAddressId == a.id }"
+                @click="selectedAddressId = a.id"
+              >
+                <span class="pcp-address-radio">{{ selectedAddressId == a.id ? '●' : '○' }}</span>
+                {{ a.address }}
+              </div>
+              <div
+                class="pcp-address-item pcp-address-none"
+                :class="{ selected: selectedAddressId === null }"
+                @click="selectedAddressId = null"
+              >
+                <span class="pcp-address-radio">{{ selectedAddressId === null ? '●' : '○' }}</span>
+                — без адреса —
+              </div>
+            </div>
+
+            <!-- Если адресов нет -->
+            <div v-else class="pcp-empty" style="margin:6px 0;">Адресов нет</div>
+
+            <!-- Добавить адрес -->
+            <div v-if="!showNewAddressForm" class="pcp-add-link" @click="showNewAddressForm = true">
+              + Добавить адрес
+            </div>
+            <div v-else class="pcp-add-form">
+              <input
+                type="text"
+                class="pcp-input"
+                v-model="newAddressText"
+                placeholder="Новый адрес объекта"
+                @keyup.enter="confirmAddAddress"
+              >
+              <div style="display:flex;gap:6px;margin-top:6px;">
+                <button class="pcp-btn pcp-btn-sm pcp-btn-primary" @click="confirmAddAddress">Сохранить</button>
+                <button class="pcp-btn pcp-btn-sm pcp-btn-secondary" @click="showNewAddressForm = false">Отмена</button>
+              </div>
+            </div>
           </div>
 
           <!-- Тип помещения -->
-          <label>Тип помещения:</label>
-          <select class="form-control inputbox" v-model="selectedRoomId">
-            <option :value="null">— не указан —</option>
-            <option v-for="r in rooms" :key="r.id" :value="r.id">{{ r.name }}</option>
-          </select>
+          <div class="pcp-field">
+            <label class="pcp-label">Тип помещения</label>
+            <div class="pcp-room-grid">
+              <div
+                v-for="r in rooms"
+                :key="r.id"
+                class="pcp-room-item"
+                :class="{ selected: selectedRoomId == r.id }"
+                @click="selectedRoomId = r.id"
+              >{{ r.name }}</div>
+            </div>
+          </div>
 
-          <label>Уточнение (необязательно):</label>
-          <input type="text" class="form-control inputbox" v-model="roomNote" placeholder="Спальня хозяев, кабинет 2...">
+          <!-- Уточнение -->
+          <div class="pcp-field">
+            <label class="pcp-label">Уточнение <em>(необязательно)</em></label>
+            <input
+              type="text"
+              class="pcp-input"
+              v-model="roomNote"
+              placeholder="Спальня хозяев, кабинет 2..."
+            >
+          </div>
 
-          <div class="popup-client-actions">
-            <button class="sketch_hud btn btn-gm" @click="confirmStep2">✓ Начать чертёж</button>
-            <button class="sketch_hud btn btn-gm" @click="backToStep1">← Назад</button>
+          <div class="pcp-actions">
+            <button class="pcp-btn pcp-btn-primary pcp-btn-full" @click="confirmStep2">
+              ✓ Начать чертёж
+            </button>
           </div>
         </div>
 
       </div>
     </div>
+    <!-- ===================== / POPUP КЛИЕНТА ===================== -->
 
     <!-- Popup выбора комнат (legacy) -->
     <div id="popup_get_rooms" v-show="showGetRoomsPopup">
@@ -446,6 +609,16 @@ const showPreloader = ref(false)
 // ──── Popup шаги: 1=выбор/создание клиента, 2=адрес+комната ────
 const clientPopupStep = ref(1)
 const newClientMode   = ref(false)   // создаём нового или выбираем
+
+// Поиск клиента / адреса
+const searchTab          = ref('client')   // 'client' | 'address'
+const clientSearch       = ref('')
+const addressSearch      = ref('')
+const addressResults     = ref([])
+const addressSearchLoading = ref(false)
+const selectedAddressResult = ref(null)   // результат выбора из "по адресу"
+
+let addressSearchTimer = null
 const showTriangulatePopup = ref(false)
 const showCoordinatesPopup = ref(false)
 const showBuildPopup = ref(false)
@@ -485,6 +658,15 @@ const widthData = ref('[{"id":"146","width":"500","price":"165.00"},{"id":"143",
 const rooms           = computed(() => store.rooms || [])
 const availableClients = computed(() => store.clientsList || [])
 
+const filteredClients = computed(() => {
+  const q = clientSearch.value.trim().toLowerCase()
+  if (!q) return availableClients.value
+  return availableClients.value.filter(c =>
+    (c.name  || '').toLowerCase().includes(q) ||
+    (c.phone || '').toLowerCase().includes(q)
+  )
+})
+
 // Всегда тот же origin, без внешних URL
 const formDataAction = computed(() => {
   if (typeof window === 'undefined') return '/api/calc/sketch'
@@ -494,6 +676,59 @@ const formDataAction = computed(() => {
 const canvas = ref(null)
 
 // ──── Методы popup_client ────
+
+/** Переключить таб поиска */
+const switchTab = (tab) => {
+  searchTab.value      = tab
+  selectedClientId.value   = ''
+  selectedAddressResult.value = null
+  clientSearch.value   = ''
+  addressSearch.value  = ''
+  addressResults.value = []
+}
+
+/** Живой поиск по клиентам (фильтр через filteredClients computed) */
+const onClientSearch = () => {
+  selectedClientId.value = ''
+}
+
+/** Живой поиск по адресам (debounce 350 мс) */
+const onAddressSearch = () => {
+  selectedAddressResult.value = null
+  clearTimeout(addressSearchTimer)
+  const q = addressSearch.value.trim()
+  if (!q) {
+    addressResults.value = []
+    return
+  }
+  addressSearchTimer = setTimeout(async () => {
+    addressSearchLoading.value = true
+    try {
+      const base = window.location.origin || ''
+      const { data } = await axios.get(`${base}/api/calc/addresses`, {
+        params: { search: q },
+        withCredentials: true,
+      })
+      addressResults.value = data
+    } catch (e) {
+      console.warn('Address search error:', e)
+      addressResults.value = []
+    } finally {
+      addressSearchLoading.value = false
+    }
+  }, 350)
+}
+
+/** Выбрать клиента из списка (кликом по карточке) */
+const selectClientFromList = (c) => {
+  selectedClientId.value = c.id
+}
+
+/** Выбрать адрес из результатов поиска по адресу */
+const selectFromAddressResult = (a) => {
+  selectedAddressResult.value = a
+  selectedClientId.value      = a.client_id
+}
 
 /** Шаг 1 → «Создать нового» */
 const startNewClient = () => {
@@ -510,7 +745,6 @@ const startSelectClient = async () => {
 /** Шаг 1: подтвердить выбор/создание → перейти к шагу 2 */
 const confirmStep1 = async () => {
   if (newClientMode.value) {
-    // Создаём нового клиента
     if (!client.value.name.trim()) {
       noty('warning', 'Заполните имя клиента')
       return
@@ -525,18 +759,34 @@ const confirmStep1 = async () => {
     selectedClientObj.value = result.client
     clientAddresses.value   = result.client.addresses || []
 
-    // Если при создании был указан адрес — предвыбрать его
     if (result.address) {
       selectedAddressId.value = result.address.id
+    } else {
+      selectedAddressId.value = clientAddresses.value[0]?.id ?? null
     }
 
-    // Обновляем список клиентов
     await store.fetchClients()
+
+  } else if (selectedAddressResult.value) {
+    // Выбор через таб «По адресу»
+    const ar = selectedAddressResult.value
+    const found = availableClients.value.find(c => c.id === ar.client_id)
+    selectedClientObj.value = found || {
+      id: ar.client_id, name: ar.client_name, phone: ar.client_phone,
+    }
+    clientAddresses.value   = await fetchAddresses(ar.client_id)
+    selectedAddressId.value = ar.address_id
+
   } else {
-    // Выбираем существующего
-    const found = availableClients.value.find(c => c.id === Number(selectedClientId.value))
-    if (!found) {
+    // Выбор через таб «По клиенту»
+    const clientIdNum = Number(selectedClientId.value)
+    if (!clientIdNum) {
       noty('warning', 'Выберите клиента из списка')
+      return
+    }
+    const found = availableClients.value.find(c => c.id === clientIdNum)
+    if (!found) {
+      noty('warning', 'Клиент не найден')
       return
     }
     selectedClientObj.value = found
@@ -942,46 +1192,228 @@ onMounted(async () => {
 }
 
 /* Popup клиента — оверлей поверх всего */
+/* ─── Overlay ─── */
 .popup-client-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px;
 }
 .popup-client-box {
   background: #fff;
-  border-radius: 10px;
-  padding: 24px 28px;
-  min-width: 320px;
-  max-width: 420px;
+  border-radius: 12px;
+  padding: 0;
+  min-width: 340px;
+  max-width: 460px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
 }
-.popup-client-title {
-  margin: 0 0 16px;
-  font-size: 1.15rem;
-  font-weight: 600;
+
+/* ─── Header ─── */
+.pcp-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #eee;
+}
+.pcp-title {
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #1a1a1a;
+  flex: 1;
 }
-.popup-client-box label {
-  display: block;
-  font-size: 0.85rem;
+.pcp-back-btn {
+  background: none;
+  border: none;
+  color: #4c80f1;
+  font-size: 0.88rem;
+  cursor: pointer;
+  padding: 0;
+}
+.pcp-back-btn:hover { text-decoration: underline; }
+.pcp-back-row { margin-bottom: 10px; }
+
+/* ─── Section ─── */
+.pcp-section { padding: 16px 20px 20px; }
+
+/* ─── Tabs ─── */
+.pcp-tabs {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.pcp-tab {
+  flex: 1;
+  border: none;
+  background: #f5f5f5;
   color: #555;
-  margin: 10px 0 3px;
+  font-size: 0.88rem;
+  padding: 8px 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
-.popup-client-box .form-control {
+.pcp-tab.active {
+  background: #4c80f1;
+  color: #fff;
+  font-weight: 600;
+}
+.pcp-tab:first-child { border-right: 1px solid #ddd; }
+
+/* ─── Search ─── */
+.pcp-search-row { margin-bottom: 8px; }
+
+/* ─── Input ─── */
+.pcp-input {
+  display: block;
   width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d0d7e3;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+.pcp-input:focus { border-color: #4c80f1; box-shadow: 0 0 0 2px rgba(76,128,241,0.12); }
+
+/* ─── Label ─── */
+.pcp-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
   margin-bottom: 4px;
 }
-.popup-client-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 16px;
-  flex-wrap: wrap;
+.pcp-required { color: #e55; }
+
+/* ─── Field ─── */
+.pcp-field { margin-bottom: 14px; }
+
+/* ─── List ─── */
+.pcp-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e4e8f0;
+  border-radius: 8px;
 }
+.pcp-list-item {
+  display: flex;
+  flex-direction: column;
+  padding: 9px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.12s;
+}
+.pcp-list-item:last-child { border-bottom: none; }
+.pcp-list-item:hover { background: #f4f7ff; }
+.pcp-list-item.selected { background: #eef2ff; }
+.pcp-item-name { font-size: 0.92rem; font-weight: 600; color: #1a1a1a; }
+.pcp-item-sub  { font-size: 0.8rem; color: #888; margin-top: 1px; }
+.pcp-item-badge {
+  font-size: 0.74rem;
+  color: #4c80f1;
+  margin-top: 2px;
+}
+
+/* ─── Loading / Empty ─── */
+.pcp-loading { text-align: center; color: #888; padding: 14px; font-size: 0.88rem; }
+.pcp-empty   { text-align: center; color: #aaa; padding: 14px; font-size: 0.85rem; }
+
+/* ─── Actions ─── */
+.pcp-actions { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+.pcp-actions-split { justify-content: space-between; }
+
+/* ─── Buttons ─── */
+.pcp-btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.pcp-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pcp-btn-primary   { background: #4c80f1; color: #fff; }
+.pcp-btn-primary:hover:not(:disabled) { background: #3a6de0; }
+.pcp-btn-secondary { background: #f0f2f7; color: #333; }
+.pcp-btn-secondary:hover { background: #e3e7f0; }
+.pcp-btn-sm { padding: 6px 12px; font-size: 0.82rem; }
+.pcp-btn-full { width: 100%; text-align: center; }
+
+/* ─── Client badge (step 2) ─── */
+.pcp-client-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f7ff;
+  border: 1px solid #d5e0ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  color: #1a1a1a;
+}
+.pcp-client-icon { font-size: 1.1rem; }
+
+/* ─── Address list (step 2) ─── */
+.pcp-address-list {
+  border: 1px solid #e4e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.pcp-address-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.88rem;
+  transition: background 0.12s;
+}
+.pcp-address-item:last-child { border-bottom: none; }
+.pcp-address-item:hover { background: #f4f7ff; }
+.pcp-address-item.selected { background: #eef2ff; font-weight: 600; }
+.pcp-address-none { color: #999; font-style: italic; }
+.pcp-address-radio { color: #4c80f1; width: 14px; flex-shrink: 0; }
+
+/* ─── Add address link / form ─── */
+.pcp-add-link {
+  color: #4c80f1;
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+.pcp-add-link:hover { text-decoration: underline; }
+.pcp-add-form { margin-top: 6px; }
+
+/* ─── Room grid (step 2) ─── */
+.pcp-room-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pcp-room-item {
+  padding: 6px 12px;
+  border: 1px solid #d0d7e3;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  color: #333;
+  background: #fafafa;
+}
+.pcp-room-item:hover { border-color: #4c80f1; color: #4c80f1; }
+.pcp-room-item.selected { background: #4c80f1; border-color: #4c80f1; color: #fff; font-weight: 600; }
 
 /* Строка текущего клиента над canvas */
 .current-client-bar {

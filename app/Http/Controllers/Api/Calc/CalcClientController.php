@@ -148,4 +148,34 @@ class CalcClientController extends Controller
 
         return response()->json($address, 201);
     }
+
+    /**
+     * Поиск по адресам текущего оператора.
+     * GET /api/calc/addresses?search=...
+     * Возвращает [{address_id, address, client_id, client_name, client_phone}]
+     */
+    public function searchAddresses(Request $request): JsonResponse
+    {
+        $tgId   = $this->telegramId($request);
+        $search = trim($request->query('search', ''));
+
+        $query = CalcClientAddress::query()
+            ->join('calc_clients', 'calc_client_addresses.client_id', '=', 'calc_clients.id')
+            ->where('calc_clients.telegram_id', $tgId)
+            ->whereNull('calc_clients.deleted_at')
+            ->whereNull('calc_client_addresses.deleted_at')
+            ->select([
+                'calc_client_addresses.id   as address_id',
+                'calc_client_addresses.address',
+                'calc_clients.id            as client_id',
+                'calc_clients.name          as client_name',
+                'calc_clients.phone         as client_phone',
+            ]);
+
+        if ($search !== '') {
+            $query->where('calc_client_addresses.address', 'like', "%{$search}%");
+        }
+
+        return response()->json($query->orderBy('calc_client_addresses.address')->limit(50)->get());
+    }
 }
