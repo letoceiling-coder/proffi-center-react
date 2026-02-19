@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { Seo, JsonLd, getBaseUrl, getStaticMeta, breadcrumbList } from '../seo';
 import Header from '../components/Header';
 import NavMobile from '../components/NavMobile';
 import PopupCallback from '../components/PopupCallback';

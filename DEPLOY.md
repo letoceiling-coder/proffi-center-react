@@ -32,7 +32,7 @@ php artisan deploy --dry-run          # показать команды, не в
 
 ### Калькулятор по маршруту /calc
 
-Приложение из репозитория [cieling-calc](https://github.com/letoceiling-coder/cieling-calc) развёрнуто в папке `calc/` и отдаётся по адресу **/calc**. Сборка: `cd calc && npm install --legacy-peer-deps && npm run build`, затем скопировать содержимое `calc/dist/` и `calc/public/` в `public/calc/`. После первого клонирования и сборки файлы в `public/calc/` можно закоммитить; при изменении кода в `calc/` пересобрать и обновить `public/calc/`.
+Приложение из репозитория [cieling-calc](https://github.com/letoceiling-coder/cieling-calc) лежит в папке `calc/` и отдаётся по адресу **/calc**. При выполнении `php artisan deploy` на сервере автоматически запускаются: сборка в `calc/` (`npm install --legacy-peer-deps`, `npm run build`) и копирование `calc/dist/` и `calc/public/` в `public/calc/`. Ручная пересборка не требуется.
 
 ---
 
